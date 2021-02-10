@@ -1,0 +1,83 @@
+package dasm
+
+import (
+	"bytes"
+	"encoding/hex"
+	"io/ioutil"
+	"os"
+	"strings"
+	"testing"
+)
+
+func squish(assembly string) string {
+	chunks := strings.Split(assembly, "\n")
+	for i := range chunks {
+		chunks[i] = strings.TrimSpace(chunks[i])
+	}
+	return strings.Join(chunks, "\n") + "\n"
+}
+
+func decode(hexStr string) []byte {
+	b := []byte(strings.ReplaceAll(hexStr, " ", ""))
+	in := make([]byte, hex.DecodedLen(len(b)))
+	hex.Decode(in, b)
+	return in
+}
+
+func TestDisassemble(t *testing.T) {
+	for _, tC := range []struct {
+		desc string
+		code string
+		want string
+	}{
+		{
+			"Space invaders head",
+			"00 00 00 c3 d4 18 00 00 f5 c5 d5 e5 c3 8c 00",
+			`NOP
+				NOP
+				NOP
+				JMP $18D4
+				NOP
+				NOP
+				PUSH PSW
+				PUSH B
+				PUSH D
+				PUSH H
+				JMP $008C`,
+		},
+	} {
+		t.Run(tC.desc, func(t *testing.T) {
+			w := strings.Builder{}
+			err := Disassemble(bytes.NewReader(decode(tC.code)), &w)
+			if err != nil {
+				t.Errorf("unexpected error when dissassembling binary: %v", err)
+			}
+
+			want := squish(tC.want)
+			if got := w.String(); got != want {
+				t.Errorf("got:\n%s\nwant:\n%s", got, want)
+			}
+		})
+	}
+}
+
+func TestDisassemble_EndToEnd(t *testing.T) {
+	of, err := os.Open("../rom/invaders.h")
+	if err != nil {
+		t.Fatal("cannot read object file")
+	}
+	af, err := ioutil.ReadFile("../rom/invaders.a")
+	if err != nil {
+		t.Fatal("cannot read input assembly file")
+	}
+
+	w := strings.Builder{}
+	err = Disassemble(of, &w)
+	if err != nil {
+		t.Errorf("unexpected error when dissassembling binary: %v", err)
+	}
+
+	if got, want := w.String(), string(af); got != want {
+		t.Errorf("got %s \n\n want %s", got, want)
+	}
+}
