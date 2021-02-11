@@ -296,7 +296,7 @@ func DisassembleFrom(r io.Reader, w io.Writer, offset int) error {
 	lastOp := byte(len(instructions) - 1)
 	for op, err := br.ReadByte(); err == nil; op, err = br.ReadByte() {
 		if op > lastOp {
-			return fmt.Errorf("unkown op code %x", op)
+			return fmt.Errorf("unkown op code 0x%02X", op)
 		}
 
 		if instDasm := instructions[op]; instDasm != nil {
