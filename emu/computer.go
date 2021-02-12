@@ -129,6 +129,7 @@ var instructionTable = []instruction{
 	0x11: lxid,
 	0x1A: ldaxd,
 	0x21: lxih,
+	0x23: inxh,
 	0x31: lxisp,
 	0x77: movma,
 	0xC3: jmp,
@@ -172,6 +173,14 @@ func ldaxd(c *Computer) error {
 // Loads double word in the register pair HL
 func lxih(c *Computer) error {
 	return loadD16RegisterPair(c, &c.L, &c.H)
+}
+
+// 0x23: INX H | H <- H + 1
+// Increments H. No condition flags are affected
+func inxh(c *Computer) error {
+	c.H++
+	c.PC++
+	return nil
 }
 
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2

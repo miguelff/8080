@@ -126,6 +126,22 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"INX H",
+			&Computer{
+				mem: rom("23"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("23"),
+			},
+			nil,
+		},
+		{
 			"MOV M, A",
 			&Computer{
 				cpu: cpu{
