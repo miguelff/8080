@@ -127,6 +127,7 @@ var instructionTable = []instruction{
 	0x00: nop,
 	0x06: mvib,
 	0x11: lxid,
+	0x21: lxih,
 	0x31: lxisp,
 	0xC3: jmp,
 	0xCD: call,
@@ -148,6 +149,12 @@ func mvib(c *Computer) error {
 // Loads double word in registers D and E.
 func lxid(c *Computer) error {
 	return loadD16TwoRegisters(c, &c.E, &c.D)
+}
+
+// 0x21: LXI H, D16. H <- byte 3, L <- byte 2
+// Loads double word in registers H and L.
+func lxih(c *Computer) error {
+	return loadD16TwoRegisters(c, &c.L, &c.H)
 }
 
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2
