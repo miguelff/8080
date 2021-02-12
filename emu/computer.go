@@ -19,9 +19,13 @@ const (
 	ErrEOM   ComputerError = "reached end of memory"
 )
 
-// registerArray contains 8 registers: 6 single-word registers
-// (B-L); and two double-word registers: the stack pointer (SP)
+// registerArray contains 8 registers: 6 8-bit registers
+// (B-L); and two 16-bit registers: the stack pointer (SP)
 // and program counter (PC)
+//
+// 8 bit registers come in pairs (B-C, D-E, H-L) and some opcodes
+// operate on the pair itself, for instance LXI B, D16 loads two bytes
+// in registers B (most significant byte) and C (least significant byte)
 type registerArray struct {
 	B  byte
 	C  byte
@@ -33,16 +37,16 @@ type registerArray struct {
 	PC uint16
 }
 
-// alu (arithmetic-logic unit) contains 5 flags (zero, carry,
-// sign, parity, and auxiliary carry); an accumulator register
-// (ACC) a temporary register (TMP) and a temporary accumulator
-// register (TACC)
+// alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity,
+// carry, and auxiliary carry), an accumulator register (ACC),
+// a temporary register (TMP) and a temporary accumulator
+// register (TACC).
 type alu struct {
-	ZF bool
-	CF bool
-	SF bool
-	PF bool
-	AF bool
+	Z  bool
+	S  bool
+	P  bool
+	CY bool
+	AC bool
 
 	ACC  byte
 	TMP  byte
@@ -73,60 +77,93 @@ func (c *Computer) Load(rom []byte) {
 
 // Step executes one instruction of the code pointed by the Program Counter (PC) of the CPU
 func (c *Computer) Step() error {
-	var err error
-
-	opcode, err := c.currentByte()
+	opcode, err := c.readD8()
 	if err != nil {
 		return err
 	}
 
-	if instruction := instructionTable[opcode]; instruction != nil {
-		err = instruction(c)
-	} else {
-		err = fmt.Errorf("unimplemented opcode %02X", opcode)
+	if int(opcode) > len(instructionTable) || instructionTable[opcode] == nil {
+		return fmt.Errorf("unimplemented opcode %02X", opcode)
 	}
-	c.PC++
 
-	return err
+	err = instructionTable[opcode](c)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (c *Computer) nextByte() (byte, error) {
-	c.PC++
-	return c.currentByte()
+func (c *Computer) readD16() (uint16, error) {
+	l, err := c.readD8()
+	if err != nil {
+		return 0, err
+	}
+
+	h, err := c.readD8()
+	if err != nil {
+		return 0, err
+	}
+
+	return uint16(h)<<8 + uint16(l), nil
 }
 
-func (c *Computer) currentByte() (byte, error) {
-	if int(c.PC) > len(c.mem) {
+func (c *Computer) readD8() (byte, error) {
+	pc := c.PC
+	if int(pc) > len(c.mem) {
 		return 0, ErrEOM
 	}
-	return c.mem[c.PC], nil
+	c.PC++
+	return c.mem[pc], nil
 }
 
 type instruction func(*Computer) error
 
 var instructionTable = []instruction{
 	0x00: nop,
-	0x01: lxiB,
+	0x06: mvib,
+	0x31: lxisp,
+	0xC3: jmp,
 }
 
-// nop (do nothing)
-func nop(_ *Computer) error {
+// 0x00: NOP. Move to the next instruction
+func nop(c *Computer) error {
 	return nil
 }
 
-// LXI B, D16. Move to register pair B (registers B, C), the 16 bits
-// denoted by the following 2 bytes (in little endian form)
-func lxiB(c *Computer) error {
-	b, err := c.nextByte()
-	if err != nil {
-		return err
-	}
-	c.C = b
+// 0x06: MVI B, D8. B <- byte 2
+// Loads word into B register
+func mvib(c *Computer) error {
+	return loadD8Register(c, &c.B)
+}
 
-	b, err = c.nextByte()
+// 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2
+// Reset the stack pointer to a given value
+func lxisp(c *Computer) error {
+	return loadD16Register(c, &c.SP)
+}
+
+// 0xD3: JMP adr | PC <= adr.
+// Jump to the address denoted by the next two bytes.
+func jmp(c *Computer) error {
+	return loadD16Register(c, &c.PC)
+}
+
+func loadD8Register(c *Computer, register *byte) error {
+	w, err := c.readD8()
 	if err != nil {
 		return err
 	}
-	c.B = b
+
+	*register = w
+	return nil
+}
+
+func loadD16Register(c *Computer, register *uint16) error {
+	dw, err := c.readD16()
+	if err != nil {
+		return err
+	}
+
+	*register = dw
 	return nil
 }
