@@ -37,7 +37,7 @@ type registerArray struct {
 }
 
 // alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity,
-// carry, and auxiliary carry), an accumulator register (ACC),
+// carry, and auxiliary carry), an accumulator register (A),
 // a temporary register (TMP) and a temporary accumulator
 // register (TACC).
 type alu struct {
@@ -47,7 +47,7 @@ type alu struct {
 	CY bool
 	AC bool
 
-	ACC  byte
+	A    byte
 	TMP  byte
 	TACC byte
 }
@@ -130,29 +130,31 @@ var instructionTable = []instruction{
 	0x1A: ldaxd,
 	0x21: lxih,
 	0x31: lxisp,
+	0x77: movma,
 	0xC3: jmp,
 	0xCD: call,
 }
 
-// 0x00: NOP. Move to the next instruction
+// 0x00: NOP
+// Move to the next instruction
 func nop(c *Computer) error {
 	c.PC++
 	return nil
 }
 
-// 0x06: MVI B, D8. B <- byte 2
+// 0x06: MVI B | D8. B <- byte 2
 // Loads word into B register
 func mvib(c *Computer) error {
 	return loadD8Register(c, &c.B)
 }
 
-// 0x11: LXI D, D16. D <- byte 3, E <- byte 2
+// 0x11: LXI D | D16. D <- byte 3, E <- byte 2
 // Loads double word in registers D and E.
 func lxid(c *Computer) error {
 	return loadD16RegisterPair(c, &c.E, &c.D)
 }
 
-// 0x1A: LDAX D. A <- (DE)
+// 0x1A: LDAX D | A <- (DE)
 // Loads into the Accumulator record the value pointed
 // by the address denoted by the DE register group.
 func ldaxd(c *Computer) error {
@@ -161,24 +163,36 @@ func ldaxd(c *Computer) error {
 	if err != nil {
 		return err
 	}
-	c.ACC = b
+	c.A = b
 	c.PC++
 	return nil
 }
 
-// 0x21: LXI H, D16. H <- byte 3, L <- byte 2
-// Loads double word in registers H and L.
+// 0x21: LXI H, D161 | H <- byte 3, L <- byte 2
+// Loads double word in the register pair HL
 func lxih(c *Computer) error {
 	return loadD16RegisterPair(c, &c.L, &c.H)
 }
 
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2
-// Reset the stack pointer to a given value
+// Resets the stack pointer to a given value
 func lxisp(c *Computer) error {
 	return loadD16Register(c, &c.SP)
 }
 
-// 0xC3: JMP adr | PC <= adr.
+// 0x77: MOV M,A. | (HL) <- A
+// Writes A to the address pointed by the register pair HL.
+func movma(c *Computer) error {
+	addr := uint16(c.H)<<8 + uint16(c.L)
+	err := c.writeD8(addr, c.A)
+	if err != nil {
+		return err
+	}
+	c.PC++
+	return nil
+}
+
+// 0xC3: JMP adr | PC <- adr.
 // Jump to the address denoted by the next two bytes.
 func jmp(c *Computer) error {
 	return loadD16Register(c, &c.PC)

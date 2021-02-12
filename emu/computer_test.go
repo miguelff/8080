@@ -85,7 +85,7 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x02,
 					},
 					alu: alu{
-						ACC: 0xFF,
+						A: 0xFF,
 					},
 				},
 				mem: rom("1a 00 ff"),
@@ -122,6 +122,35 @@ func TestComputer_Step(t *testing.T) {
 					},
 				},
 				mem: rom("31 0B 01"),
+			},
+			nil,
+		},
+		{
+			"MOV M, A",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x00,
+						L: 0x03,
+					},
+					alu: alu{
+						A: 0xff,
+					},
+				},
+				mem: rom("77 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x00,
+						L:  0x03,
+					},
+					alu: alu{
+						A: 0xff,
+					},
+				},
+				mem: rom("77 00 00 FF"),
 			},
 			nil,
 		},
