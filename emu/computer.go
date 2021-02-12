@@ -13,10 +13,9 @@ func (e ComputerError) Error() string {
 }
 
 const (
-	kilobyte               = 1 << 10
-	MemSize                = 16 * kilobyte
-	RomSize                = 8 * kilobyte
-	ErrEOM   ComputerError = "reached end of memory"
+	kilobyte = 1 << 10
+	MemSize  = 16 * kilobyte
+	RomSize  = 8 * kilobyte
 )
 
 // registerArray contains 8 registers: 6 8-bit registers
@@ -77,7 +76,7 @@ func (c *Computer) Load(rom []byte) {
 
 // Step executes one instruction of the code pointed by the Program Counter (PC) of the CPU
 func (c *Computer) Step() error {
-	opcode, err := c.readD8()
+	opcode, err := c.readD8(c.PC)
 	if err != nil {
 		return err
 	}
@@ -93,13 +92,13 @@ func (c *Computer) Step() error {
 	return nil
 }
 
-func (c *Computer) readD16() (uint16, error) {
-	l, err := c.readD8()
+func (c *Computer) readD16(addr uint16) (uint16, error) {
+	l, err := c.readD8(addr)
 	if err != nil {
 		return 0, err
 	}
 
-	h, err := c.readD8()
+	h, err := c.readD8(addr + 1)
 	if err != nil {
 		return 0, err
 	}
@@ -107,13 +106,19 @@ func (c *Computer) readD16() (uint16, error) {
 	return uint16(h)<<8 + uint16(l), nil
 }
 
-func (c *Computer) readD8() (byte, error) {
-	pc := c.PC
-	if int(pc) > len(c.mem) {
-		return 0, ErrEOM
+func (c *Computer) readD8(addr uint16) (byte, error) {
+	if int(addr) > len(c.mem) {
+		return 0, ComputerError(fmt.Sprintf("segfault accessing %04X", addr))
 	}
-	c.PC++
-	return c.mem[pc], nil
+	return c.mem[addr], nil
+}
+
+func (c *Computer) writeD8(addr uint16, d8 byte) error {
+	if int(addr) > len(c.mem) {
+		return ComputerError(fmt.Sprintf("segfault accessing %04X", addr))
+	}
+	c.mem[addr] = d8
+	return nil
 }
 
 type instruction func(*Computer) error
@@ -123,10 +128,12 @@ var instructionTable = []instruction{
 	0x06: mvib,
 	0x31: lxisp,
 	0xC3: jmp,
+	0xCD: call,
 }
 
 // 0x00: NOP. Move to the next instruction
 func nop(c *Computer) error {
+	c.PC++
 	return nil
 }
 
@@ -142,14 +149,46 @@ func lxisp(c *Computer) error {
 	return loadD16Register(c, &c.SP)
 }
 
-// 0xD3: JMP adr | PC <= adr.
+// 0xC3: JMP adr | PC <= adr.
 // Jump to the address denoted by the next two bytes.
 func jmp(c *Computer) error {
 	return loadD16Register(c, &c.PC)
 }
 
+// 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
+// CALL pushes the program counter (PC) into the stack (SP), and
+// updates the program counter to point to adr.
+func call(c *Computer) error {
+	err := pushD16(c, c.PC)
+	if err != nil {
+		return err
+	}
+
+	jmp(c)
+	return nil
+}
+
+func pushD16(c *Computer, d16 uint16) error {
+	hi := byte(d16 & 0x00FF)
+	lo := byte(d16 >> 8)
+
+	err := c.writeD8(c.SP-1, hi)
+	if err != nil {
+		return err
+	}
+
+	err = c.writeD8(c.SP-2, lo)
+	if err != nil {
+		return err
+	}
+	c.SP -= 2
+	return nil
+}
+
 func loadD8Register(c *Computer, register *byte) error {
-	w, err := c.readD8()
+	c.PC++
+	w, err := c.readD8(c.PC)
+	c.PC++
 	if err != nil {
 		return err
 	}
@@ -159,7 +198,9 @@ func loadD8Register(c *Computer, register *byte) error {
 }
 
 func loadD16Register(c *Computer, register *uint16) error {
-	dw, err := c.readD16()
+	c.PC++
+	dw, err := c.readD16(c.PC)
+	c.PC += 2
 	if err != nil {
 		return err
 	}

@@ -65,6 +65,28 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"CALL adr",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						SP: 0x07,
+					},
+				},
+				mem: rom("00 CD 0A 00 00 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						SP: 0x05,
+						PC: 0x0A,
+					},
+				},
+				mem: rom("00 CD 0A 00 00 00 01 00"),
+			},
+			nil,
+		},
+		{
 			"LXI SP, D16",
 			&Computer{
 				mem: rom("31 0B 01"),
