@@ -127,6 +127,7 @@ var instructionTable = []instruction{
 	0x00: nop,
 	0x06: mvib,
 	0x11: lxid,
+	0x1A: ldaxd,
 	0x21: lxih,
 	0x31: lxisp,
 	0xC3: jmp,
@@ -148,13 +149,27 @@ func mvib(c *Computer) error {
 // 0x11: LXI D, D16. D <- byte 3, E <- byte 2
 // Loads double word in registers D and E.
 func lxid(c *Computer) error {
-	return loadD16TwoRegisters(c, &c.E, &c.D)
+	return loadD16RegisterPair(c, &c.E, &c.D)
+}
+
+// 0x1A: LDAX D. A <- (DE)
+// Loads into the Accumulator record the value pointed
+// by the address denoted by the DE register group.
+func ldaxd(c *Computer) error {
+	addr := uint16(c.D)<<8 + uint16(c.E)
+	b, err := c.readD8(addr)
+	if err != nil {
+		return err
+	}
+	c.ACC = b
+	c.PC++
+	return nil
 }
 
 // 0x21: LXI H, D16. H <- byte 3, L <- byte 2
 // Loads double word in registers H and L.
 func lxih(c *Computer) error {
-	return loadD16TwoRegisters(c, &c.L, &c.H)
+	return loadD16RegisterPair(c, &c.L, &c.H)
 }
 
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2
@@ -226,7 +241,7 @@ func loadD16Register(c *Computer, register *uint16) error {
 	return nil
 }
 
-func loadD16TwoRegisters(c *Computer, lsbRegister *byte, msbRegister *byte) error {
+func loadD16RegisterPair(c *Computer, lsbRegister *byte, msbRegister *byte) error {
 	lsb, err := c.readD8(c.PC + 1)
 	if err != nil {
 		return err

@@ -67,6 +67,32 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"LDAX D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0x00,
+						E: 0x02,
+					},
+				},
+				mem: rom("1a 00 ff"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x00,
+						E:  0x02,
+					},
+					alu: alu{
+						ACC: 0xFF,
+					},
+				},
+				mem: rom("1a 00 ff"),
+			},
+			nil,
+		},
+		{
 			"LXI H, D16",
 			&Computer{
 				mem: rom("21 0B 01"),
