@@ -50,6 +50,39 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"LXI D, D16",
+			&Computer{
+				mem: rom("11 0B 01"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x03,
+						D:  0x01,
+						E:  0x0B,
+					},
+				},
+				mem: rom("11 0B 01"),
+			},
+			nil,
+		},
+		{
+			"LXI SP, D16",
+			&Computer{
+				mem: rom("31 0B 01"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x03,
+						SP: 0x010B,
+					},
+				},
+				mem: rom("31 0B 01"),
+			},
+			nil,
+		},
+		{
 			"JMP adr",
 			&Computer{
 				mem: rom("C3 0A 00"),
@@ -83,22 +116,6 @@ func TestComputer_Step(t *testing.T) {
 					},
 				},
 				mem: rom("00 CD 0A 00 00 00 01 00"),
-			},
-			nil,
-		},
-		{
-			"LXI SP, D16",
-			&Computer{
-				mem: rom("31 0B 01"),
-			},
-			&Computer{
-				cpu: cpu{
-					registerArray: registerArray{
-						PC: 0x03,
-						SP: 0x010B,
-					},
-				},
-				mem: rom("31 0B 01"),
 			},
 			nil,
 		},

@@ -126,6 +126,7 @@ type instruction func(*Computer) error
 var instructionTable = []instruction{
 	0x00: nop,
 	0x06: mvib,
+	0x11: lxid,
 	0x31: lxisp,
 	0xC3: jmp,
 	0xCD: call,
@@ -141,6 +142,12 @@ func nop(c *Computer) error {
 // Loads word into B register
 func mvib(c *Computer) error {
 	return loadD8Register(c, &c.B)
+}
+
+// 0x11: LXI D, D16. D <- byte 3, E <- byte 2
+// Loads double word in registers D and E.
+func lxid(c *Computer) error {
+	return loadD16TwoRegisters(c, &c.E, &c.D)
 }
 
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2
@@ -164,20 +171,24 @@ func call(c *Computer) error {
 		return err
 	}
 
-	jmp(c)
-	return nil
-}
-
-func pushD16(c *Computer, d16 uint16) error {
-	hi := byte(d16 & 0x00FF)
-	lo := byte(d16 >> 8)
-
-	err := c.writeD8(c.SP-1, hi)
+	err = jmp(c)
 	if err != nil {
 		return err
 	}
 
-	err = c.writeD8(c.SP-2, lo)
+	return nil
+}
+
+func pushD16(c *Computer, d16 uint16) error {
+	msb := byte(d16 & 0x00FF)
+	lsb := byte(d16 >> 8)
+
+	err := c.writeD8(c.SP-1, msb)
+	if err != nil {
+		return err
+	}
+
+	err = c.writeD8(c.SP-2, lsb)
 	if err != nil {
 		return err
 	}
@@ -186,25 +197,41 @@ func pushD16(c *Computer, d16 uint16) error {
 }
 
 func loadD8Register(c *Computer, register *byte) error {
-	c.PC++
-	w, err := c.readD8(c.PC)
-	c.PC++
+	w, err := c.readD8(c.PC + 1)
 	if err != nil {
 		return err
 	}
 
+	c.PC += 2
 	*register = w
 	return nil
 }
 
 func loadD16Register(c *Computer, register *uint16) error {
-	c.PC++
-	dw, err := c.readD16(c.PC)
-	c.PC += 2
+	dw, err := c.readD16(c.PC + 1)
+
 	if err != nil {
 		return err
 	}
 
+	c.PC += 3
 	*register = dw
+	return nil
+}
+
+func loadD16TwoRegisters(c *Computer, lsbRegister *byte, msbRegister *byte) error {
+	lsb, err := c.readD8(c.PC + 1)
+	if err != nil {
+		return err
+	}
+
+	msb, err := c.readD8(c.PC + 2)
+	if err != nil {
+		return err
+	}
+
+	c.PC += 3
+	*lsbRegister = lsb
+	*msbRegister = msb
 	return nil
 }
