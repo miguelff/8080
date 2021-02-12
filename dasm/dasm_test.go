@@ -2,11 +2,12 @@ package dasm
 
 import (
 	"bytes"
-	"encoding/hex"
 	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/miguelff/8080/encoding"
 )
 
 func squish(assembly string) string {
@@ -15,13 +16,6 @@ func squish(assembly string) string {
 		chunks[i] = strings.TrimSpace(chunks[i])
 	}
 	return strings.Join(chunks, "\n") + "\n"
-}
-
-func decode(hexStr string) []byte {
-	b := []byte(strings.ReplaceAll(hexStr, " ", ""))
-	in := make([]byte, hex.DecodedLen(len(b)))
-	hex.Decode(in, b)
-	return in
 }
 
 func TestDisassemble(t *testing.T) {
@@ -48,7 +42,7 @@ func TestDisassemble(t *testing.T) {
 	} {
 		t.Run(tC.desc, func(t *testing.T) {
 			w := strings.Builder{}
-			err := Disassemble(bytes.NewReader(decode(tC.code)), &w)
+			err := Disassemble(bytes.NewReader(encoding.HexToBin(tC.code)), &w)
 			if err != nil {
 				t.Errorf("unexpected error when dissassembling binary: %v", err)
 			}
@@ -62,22 +56,22 @@ func TestDisassemble(t *testing.T) {
 }
 
 func TestDisassemble_EndToEnd(t *testing.T) {
-	of, err := os.Open("../rom/invaders.h")
+	bin, err := os.Open("../invaders/invaders.h")
 	if err != nil {
 		t.Fatal("cannot read object file")
 	}
-	af, err := ioutil.ReadFile("../rom/invaders.a")
+	asm, err := ioutil.ReadFile("../invaders/invaders.h.asm")
 	if err != nil {
 		t.Fatal("cannot read input assembly file")
 	}
 
 	w := strings.Builder{}
-	err = Disassemble(of, &w)
+	err = Disassemble(bin, &w)
 	if err != nil {
 		t.Errorf("unexpected error when dissassembling binary: %v", err)
 	}
 
-	if got, want := w.String(), string(af); got != want {
+	if got, want := w.String(), string(asm); got != want {
 		t.Errorf("got %s \n\n want %s", got, want)
 	}
 }
