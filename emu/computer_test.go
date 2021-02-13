@@ -22,7 +22,7 @@ func TestComputer_Step(t *testing.T) {
 			"CALL adr",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						SP: 0x07,
 					},
@@ -31,7 +31,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						SP: 0x05,
 						PC: 0x0A,
 					},
@@ -44,7 +44,7 @@ func TestComputer_Step(t *testing.T) {
 			"INX B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0xFF,
 					},
 				},
@@ -52,7 +52,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						B:  0x00,
@@ -66,7 +66,7 @@ func TestComputer_Step(t *testing.T) {
 			"INX D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0xFF,
 					},
 				},
@@ -74,7 +74,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0x01,
 						D:  0x00,
@@ -88,7 +88,7 @@ func TestComputer_Step(t *testing.T) {
 			"INX H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						L: 0xFF,
 					},
 				},
@@ -96,7 +96,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						H:  0x01,
 						L:  0x00,
@@ -110,7 +110,7 @@ func TestComputer_Step(t *testing.T) {
 			"INX SP",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						SP: 0x0F,
 					},
 				},
@@ -118,7 +118,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						SP: 0x10,
 					},
@@ -134,7 +134,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x0A,
 					},
 				},
@@ -146,7 +146,7 @@ func TestComputer_Step(t *testing.T) {
 			"LDAX D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0x00,
 						E: 0x02,
 					},
@@ -155,7 +155,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x00,
 						E:  0x02,
@@ -175,7 +175,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x03,
 						B:  0x01,
 						C:  0x0B,
@@ -192,7 +192,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x03,
 						D:  0x01,
 						E:  0x0B,
@@ -209,7 +209,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x03,
 						H:  0x01,
 						L:  0x0B,
@@ -226,7 +226,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x03,
 						SP: 0x010B,
 					},
@@ -247,7 +247,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 					},
 					alu: alu{
@@ -262,7 +262,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0x01,
 					},
 				},
@@ -270,7 +270,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 					},
@@ -286,7 +286,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, C",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						C: 0x01,
 					},
 				},
@@ -294,7 +294,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 					},
@@ -310,7 +310,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0x01,
 					},
 				},
@@ -318,7 +318,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 					},
@@ -334,7 +334,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, E",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						E: 0x01,
 					},
 				},
@@ -342,7 +342,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0x01,
 					},
@@ -358,7 +358,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x01,
 					},
 				},
@@ -366,7 +366,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						H:  0x01,
 					},
@@ -382,7 +382,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, L",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						L: 0x01,
 					},
 				},
@@ -390,7 +390,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						L:  0x01,
 					},
@@ -414,7 +414,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 					},
@@ -430,7 +430,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0x01,
 					},
 				},
@@ -438,7 +438,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 					},
@@ -451,7 +451,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, C",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						C: 0x01,
 					},
 				},
@@ -459,7 +459,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						C:  0x01,
@@ -473,7 +473,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0x01,
 					},
 				},
@@ -481,7 +481,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						D:  0x01,
@@ -495,7 +495,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, E",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						E: 0x01,
 					},
 				},
@@ -503,7 +503,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						E:  0x01,
@@ -517,7 +517,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x01,
 					},
 				},
@@ -525,7 +525,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						H:  0x01,
@@ -539,7 +539,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, L",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						L: 0x01,
 					},
 				},
@@ -547,7 +547,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						L:  0x01,
@@ -569,7 +569,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 					},
@@ -585,7 +585,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0x01,
 					},
 				},
@@ -593,7 +593,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						B:  0x01,
@@ -607,7 +607,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, C",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						C: 0x01,
 					},
 				},
@@ -615,7 +615,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 					},
@@ -628,7 +628,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0x01,
 					},
 				},
@@ -636,7 +636,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						D:  0x01,
@@ -650,7 +650,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, E",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						E: 0x01,
 					},
 				},
@@ -658,7 +658,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						E:  0x01,
@@ -672,7 +672,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x01,
 					},
 				},
@@ -680,7 +680,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						H:  0x01,
@@ -694,7 +694,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, L",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						L: 0x01,
 					},
 				},
@@ -702,7 +702,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						L:  0x01,
@@ -724,7 +724,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 					},
@@ -740,7 +740,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0x01,
 					},
 				},
@@ -748,7 +748,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						D:  0x01,
@@ -762,7 +762,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, C",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						C: 0x01,
 					},
 				},
@@ -770,7 +770,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						D:  0x01,
@@ -784,7 +784,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0x01,
 					},
 				},
@@ -792,7 +792,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 					},
@@ -805,7 +805,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, E",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						E: 0x01,
 					},
 				},
@@ -813,7 +813,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 						E:  0x01,
@@ -827,7 +827,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x01,
 					},
 				},
@@ -835,7 +835,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 						H:  0x01,
@@ -849,7 +849,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, L",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						L: 0x01,
 					},
 				},
@@ -857,7 +857,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 						L:  0x01,
@@ -879,7 +879,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0x01,
 					},
@@ -895,7 +895,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0x01,
 					},
 				},
@@ -903,7 +903,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						E:  0x01,
@@ -917,7 +917,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, C",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						C: 0x01,
 					},
 				},
@@ -925,7 +925,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						E:  0x01,
@@ -939,7 +939,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0x01,
 					},
 				},
@@ -947,7 +947,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 						E:  0x01,
@@ -961,7 +961,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, E",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						E: 0x01,
 					},
 				},
@@ -969,7 +969,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0x01,
 					},
@@ -982,7 +982,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x01,
 					},
 				},
@@ -990,7 +990,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0x01,
 						H:  0x01,
@@ -1004,7 +1004,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, L",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						L: 0x01,
 					},
 				},
@@ -1012,7 +1012,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0x01,
 						L:  0x01,
@@ -1034,7 +1034,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						H:  0x01,
 					},
@@ -1050,7 +1050,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0x01,
 					},
 				},
@@ -1058,7 +1058,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						H:  0x01,
@@ -1072,7 +1072,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, C",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						C: 0x01,
 					},
 				},
@@ -1080,7 +1080,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						H:  0x01,
@@ -1094,7 +1094,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0x01,
 					},
 				},
@@ -1102,7 +1102,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 						H:  0x01,
@@ -1116,7 +1116,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, E",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						E: 0x01,
 					},
 				},
@@ -1124,7 +1124,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0x01,
 						H:  0x01,
@@ -1138,7 +1138,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x01,
 					},
 				},
@@ -1146,7 +1146,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						H:  0x01,
 					},
@@ -1159,7 +1159,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, L",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						L: 0x01,
 					},
 				},
@@ -1167,7 +1167,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						H:  0x01,
 						L:  0x01,
@@ -1189,7 +1189,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						L:  0x01,
 					},
@@ -1205,7 +1205,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0x01,
 					},
 				},
@@ -1213,7 +1213,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0x01,
 						L:  0x01,
@@ -1227,7 +1227,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, C",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						C: 0x01,
 					},
 				},
@@ -1235,7 +1235,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0x01,
 						L:  0x01,
@@ -1249,7 +1249,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0x01,
 					},
 				},
@@ -1257,7 +1257,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0x01,
 						L:  0x01,
@@ -1271,7 +1271,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, E",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						E: 0x01,
 					},
 				},
@@ -1279,7 +1279,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0x01,
 						L:  0x01,
@@ -1293,7 +1293,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x01,
 					},
 				},
@@ -1301,7 +1301,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						L:  0x01,
 						H:  0x01,
@@ -1315,7 +1315,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, L",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						L: 0x01,
 					},
 				},
@@ -1323,7 +1323,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						L:  0x01,
 					},
@@ -1336,7 +1336,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, A",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x00,
 						L: 0x03,
 					},
@@ -1348,7 +1348,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						H:  0x00,
 						L:  0x03,
@@ -1365,7 +1365,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, B",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						B: 0xff,
 						H: 0x00,
 						L: 0x03,
@@ -1375,7 +1375,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						B:  0xff,
 						H:  0x00,
@@ -1390,7 +1390,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, C",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						C: 0xff,
 						H: 0x00,
 						L: 0x03,
@@ -1400,7 +1400,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						C:  0xff,
 						H:  0x00,
@@ -1415,7 +1415,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, D",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						D: 0xff,
 						H: 0x00,
 						L: 0x03,
@@ -1425,7 +1425,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						D:  0xff,
 						H:  0x00,
@@ -1440,7 +1440,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, E",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						E: 0xff,
 						H: 0x00,
 						L: 0x03,
@@ -1450,7 +1450,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						E:  0xff,
 						H:  0x00,
@@ -1465,7 +1465,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, H",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x00,
 						L: 0x03,
 					},
@@ -1474,7 +1474,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						H:  0x00,
 						L:  0x03,
@@ -1488,7 +1488,7 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, L",
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						H: 0x00,
 						L: 0x03,
 					},
@@ -1497,7 +1497,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 						H:  0x00,
 						L:  0x03,
@@ -1514,7 +1514,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x02,
 					},
 					alu: alu{
@@ -1532,7 +1532,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x02,
 						B:  0x0B,
 					},
@@ -1548,7 +1548,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x02,
 						C:  0x0B,
 					},
@@ -1564,7 +1564,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x02,
 						D:  0x0B,
 					},
@@ -1580,7 +1580,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x02,
 						E:  0x0B,
 					},
@@ -1596,7 +1596,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x02,
 						H:  0x0B,
 					},
@@ -1612,7 +1612,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x02,
 						L:  0x0B,
 					},
@@ -1628,7 +1628,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registerArray: registerArray{
+					registers: registers{
 						PC: 0x01,
 					},
 				},

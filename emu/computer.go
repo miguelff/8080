@@ -15,16 +15,18 @@ func (e ComputerError) Error() string {
 
 const (
 	kilobyte = 1 << 10
-	MemSize  = 16 * kilobyte
-	RomSize  = 8 * kilobyte
+	// MemSize is the whole amount of memory in the computer
+	MemSize = 16 * kilobyte
+	// RomSize is the size of the ROM area
+	RomSize = 8 * kilobyte
 )
 
-// registerArray contains 8 registers: 6 8-bit registers  (B-L); and two 16-bit registers: the stack pointer (SP) and
+// registers contains 8 registers: 6 8-bit registers  (B-L); and two 16-bit registers: the stack pointer (SP) and
 // program counter (PC)
 //
 // 8 bit registers come in pairs (B-C, D-E, H-L) and some opcodes operate on the pair itself, for instance LXI B, D16
 // loads two bytes in registers B (most significant byte) and C (least significant byte)
-type registerArray struct {
+type registers struct {
 	B byte
 	C byte
 	D byte
@@ -36,8 +38,9 @@ type registerArray struct {
 	PC uint16
 }
 
-// alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity,  carry, and auxiliary carry), an accumulator
-// register (A), a temporary register (TMP) and a temporary accumulator register (TACC).
+// alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity,  carry, and auxiliary carry), and special registers
+// that belong to the ALU and not the register array: Register (A), a temporary register (TMP) and a temporary
+// accumulator register (TACC).
 type alu struct {
 	Z  bool
 	S  bool
@@ -52,7 +55,7 @@ type alu struct {
 
 // cpu is the central processing unit comprised of the  registers and alu
 type cpu struct {
-	registerArray
+	registers
 	alu
 }
 
