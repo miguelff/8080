@@ -51,6 +51,28 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"INX B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0xFF,
+					},
+				},
+				mem: rom("03"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						B:  0x00,
+					},
+				},
+				mem: rom("03"),
+			},
+			nil,
+		},
+		{
 			"MVI B, D8",
 			&Computer{
 				mem: rom("06 0B"),
@@ -80,6 +102,28 @@ func TestComputer_Step(t *testing.T) {
 					},
 				},
 				mem: rom("11 0B 01"),
+			},
+			nil,
+		},
+		{
+			"INX D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0xFF,
+					},
+				},
+				mem: rom("13"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0x01,
+						D:  0x00,
+					},
+				},
+				mem: rom("13"),
 			},
 			nil,
 		},
@@ -127,6 +171,28 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"INX H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						L: 0xFF,
+					},
+				},
+				mem: rom("23"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x01,
+						L:  0x00,
+					},
+				},
+				mem: rom("23"),
+			},
+			nil,
+		},
+		{
 			"LXI SP, D16",
 			&Computer{
 				mem: rom("31 0B 01"),
@@ -143,18 +209,23 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
-			"INX H",
+			"INX SP",
 			&Computer{
-				mem: rom("23"),
+				cpu: cpu{
+					registerArray: registerArray{
+						SP: 0x0F,
+					},
+				},
+				mem: rom("33"),
 			},
 			&Computer{
 				cpu: cpu{
 					registerArray: registerArray{
 						PC: 0x01,
-						H:  0x01,
+						SP: 0x10,
 					},
 				},
-				mem: rom("23"),
+				mem: rom("33"),
 			},
 			nil,
 		},

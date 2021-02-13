@@ -126,12 +126,15 @@ type instruction func(*Computer) error
 var instructionTable = []instruction{
 	0x00: nop,
 	0x01: lxib,
+	0x03: inxb,
 	0x06: mvib,
 	0x11: lxid,
+	0x13: inxd,
 	0x1A: ldaxd,
 	0x21: lxih,
 	0x23: inxh,
 	0x31: lxisp,
+	0x33: inxsp,
 	0x70: movmb,
 	0x71: movmc,
 	0x72: movmd,
@@ -156,6 +159,12 @@ func lxib(c *Computer) error {
 	return lxi(c, &c.C, &c.B)
 }
 
+// 0x03: INX B | B <- B + 1
+// Increments B. No condition flags are affected
+func inxb(c *Computer) error {
+	return inx(c, &c.B, &c.C)
+}
+
 // 0x06: MVI B | D8. B <- byte 2
 // Loads word into B register
 func mvib(c *Computer) error {
@@ -166,6 +175,12 @@ func mvib(c *Computer) error {
 // Loads double word in registers D and E.
 func lxid(c *Computer) error {
 	return lxi(c, &c.E, &c.D)
+}
+
+// 0x13: INX D | D <- D + 1
+// Increments D. No condition flags are affected
+func inxd(c *Computer) error {
+	return inx(c, &c.D, &c.E)
 }
 
 // 0x1A: LDAX D | A <- (DE)
@@ -191,15 +206,19 @@ func lxih(c *Computer) error {
 // 0x23: INX H | H <- H + 1
 // Increments H. No condition flags are affected
 func inxh(c *Computer) error {
-	c.H++
-	c.PC++
-	return nil
+	return inx(c, &c.L, &c.H)
 }
 
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2
 // Resets the stack pointer to a given value
 func lxisp(c *Computer) error {
 	return lxiD16(c, &c.SP)
+}
+
+// 0x33: INX SP | SP <- SP + 1
+// Increments SP. No condition flags are affected
+func inxsp(c *Computer) error {
+	return inxD16(c, &c.SP)
 }
 
 // 0x77: MOV M,A. | (HL) <- B
@@ -275,6 +294,20 @@ func mvi(c *Computer, register *byte) error {
 
 	c.PC += 2
 	*register = w
+	return nil
+}
+
+func inx(c *Computer, lsbRegister *byte, msbRegister *byte) error {
+	incr := (uint16(*msbRegister)<<8 + uint16(*lsbRegister)) + 1
+	c.PC++
+	*msbRegister = byte((incr >> 8) & 0x00ff)
+	*lsbRegister = byte(incr & 0x00ff)
+	return nil
+}
+
+func inxD16(c *Computer, register *uint16) error {
+	*register++
+	c.PC++
 	return nil
 }
 
