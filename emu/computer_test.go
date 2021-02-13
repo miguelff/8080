@@ -142,6 +142,152 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"MOV M, B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0xff,
+						H: 0x00,
+						L: 0x03,
+					},
+				},
+				mem: rom("70 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0xff,
+						H:  0x00,
+						L:  0x03,
+					},
+				},
+				mem: rom("70 00 00 FF"),
+			},
+			nil,
+		},
+		{
+			"MOV M, C",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						C: 0xff,
+						H: 0x00,
+						L: 0x03,
+					},
+				},
+				mem: rom("71 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0xff,
+						H:  0x00,
+						L:  0x03,
+					},
+				},
+				mem: rom("71 00 00 FF"),
+			},
+			nil,
+		},
+		{
+			"MOV M, D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0xff,
+						H: 0x00,
+						L: 0x03,
+					},
+				},
+				mem: rom("72 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0xff,
+						H:  0x00,
+						L:  0x03,
+					},
+				},
+				mem: rom("72 00 00 FF"),
+			},
+			nil,
+		},
+		{
+			"MOV M, E",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						E: 0xff,
+						H: 0x00,
+						L: 0x03,
+					},
+				},
+				mem: rom("73 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0xff,
+						H:  0x00,
+						L:  0x03,
+					},
+				},
+				mem: rom("73 00 00 FF"),
+			},
+			nil,
+		},
+		{
+			"MOV M, H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x00,
+						L: 0x03,
+					},
+				},
+				mem: rom("74 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x00,
+						L:  0x03,
+					},
+				},
+				mem: rom("74 00 00 00"),
+			},
+			nil,
+		},
+		{
+			"MOV M, L",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x00,
+						L: 0x03,
+					},
+				},
+				mem: rom("75 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x00,
+						L:  0x03,
+					},
+				},
+				mem: rom("75 00 00 03"),
+			},
+			nil,
+		},
+		{
 			"MOV M, A",
 			&Computer{
 				cpu: cpu{

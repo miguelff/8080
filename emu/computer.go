@@ -131,6 +131,12 @@ var instructionTable = []instruction{
 	0x21: lxih,
 	0x23: inxh,
 	0x31: lxisp,
+	0x70: movmb,
+	0x71: movmc,
+	0x72: movmd,
+	0x73: movme,
+	0x74: movmh,
+	0x75: movml,
 	0x77: movma,
 	0xC3: jmp,
 	0xCD: call,
@@ -189,16 +195,46 @@ func lxisp(c *Computer) error {
 	return loadD16Register(c, &c.SP)
 }
 
+// 0x77: MOV M,A. | (HL) <- B
+// Writes B to the address pointed by the register pair HL.
+func movmb(c *Computer) error {
+	return movm(c, c.B)
+}
+
+// 0x77: MOV M,A. | (HL) <- C
+// Writes C to the address pointed by the register pair HL.
+func movmc(c *Computer) error {
+	return movm(c, c.C)
+}
+
+// 0x77: MOV M,A. | (HL) <- D
+// Writes D to the address pointed by the register pair HL.
+func movmd(c *Computer) error {
+	return movm(c, c.D)
+}
+
+// 0x77: MOV M,A. | (HL) <- E
+// Writes E to the address pointed by the register pair HL.
+func movme(c *Computer) error {
+	return movm(c, c.E)
+}
+
+// 0x77: MOV M,A. | (HL) <- H
+// Writes H to the address pointed by the register pair HL.
+func movmh(c *Computer) error {
+	return movm(c, c.H)
+}
+
+// 0x77: MOV M,A. | (HL) <- L
+// Writes L to the address pointed by the register pair HL.
+func movml(c *Computer) error {
+	return movm(c, c.L)
+}
+
 // 0x77: MOV M,A. | (HL) <- A
 // Writes A to the address pointed by the register pair HL.
 func movma(c *Computer) error {
-	addr := uint16(c.H)<<8 + uint16(c.L)
-	err := c.writeD8(addr, c.A)
-	if err != nil {
-		return err
-	}
-	c.PC++
-	return nil
+	return movm(c, c.A)
 }
 
 // 0xC3: JMP adr | PC <- adr.
@@ -221,23 +257,6 @@ func call(c *Computer) error {
 		return err
 	}
 
-	return nil
-}
-
-func pushD16(c *Computer, d16 uint16) error {
-	msb := byte(d16 & 0x00FF)
-	lsb := byte(d16 >> 8)
-
-	err := c.writeD8(c.SP-1, msb)
-	if err != nil {
-		return err
-	}
-
-	err = c.writeD8(c.SP-2, lsb)
-	if err != nil {
-		return err
-	}
-	c.SP -= 2
 	return nil
 }
 
@@ -278,5 +297,31 @@ func loadD16RegisterPair(c *Computer, lsbRegister *byte, msbRegister *byte) erro
 	c.PC += 3
 	*lsbRegister = lsb
 	*msbRegister = msb
+	return nil
+}
+func movm(c *Computer, r byte) error {
+	addr := uint16(c.H)<<8 + uint16(c.L)
+	err := c.writeD8(addr, r)
+	if err != nil {
+		return err
+	}
+	c.PC++
+	return nil
+}
+
+func pushD16(c *Computer, d16 uint16) error {
+	msb := byte(d16 & 0x00FF)
+	lsb := byte((d16 & 0xFF00) >> 8)
+
+	err := c.writeD8(c.SP-1, msb)
+	if err != nil {
+		return err
+	}
+
+	err = c.writeD8(c.SP-2, lsb)
+	if err != nil {
+		return err
+	}
+	c.SP -= 2
 	return nil
 }
