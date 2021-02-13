@@ -42,16 +42,11 @@ type registers struct {
 type flags byte
 
 const (
-	none = iota
-	// Zero. Toggled when arithmetic operation was 0.
-	z flags = 1 << iota
-	// Sign. Toggled when arithmetic operation results in a negative number (i.e. Its most significant bit active)
+	none       = iota
+	z    flags = 1 << iota
 	s
-	// Parity
 	p
-	// Carry
 	cy
-	// Auxiliary Carry
 	ac
 )
 
@@ -66,22 +61,27 @@ type alu struct {
 	TACC byte
 }
 
+// Zero. Active when arithmetic operation was 0.
 func (a *alu) Z() bool {
 	return (a.flags & z) != 0
 }
 
+// Sign. Active when arithmetic operation results in a negative number (i.e. Its most significant bit active)
 func (a *alu) S() bool {
 	return (a.flags & s) != 0
 }
 
+// Parity. Active when the number of 1s in the result is even
 func (a *alu) P() bool {
 	return (a.flags & p) != 0
 }
 
+// Carry
 func (a *alu) CY() bool {
 	return (a.flags & cy) != 0
 }
 
+// Auxiliary Carry
 func (a *alu) AC() bool {
 	return (a.flags & ac) != 0
 }
