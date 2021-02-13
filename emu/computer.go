@@ -42,71 +42,79 @@ type registers struct {
 type flags byte
 
 const (
-	none       = iota
-	z    flags = 1 << iota
-	s
-	p
-	cy
-	ac
+	none flags = iota
+	zf   flags = 1 << iota
+	sf
+	pf
+	cyf
+	acf
 )
 
 // alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity, carry, and auxiliary carry), and special registers
 // that belong to the ALU and not the register array: Register (A), a temporary register (TMP) and a temporary
 // accumulator register (TACC).
 type alu struct {
-	flags flags
+	Flags flags
 
 	A    byte
 	TMP  byte
 	TACC byte
 }
 
-// Zero. Active when arithmetic operation was 0.
+// The Z (Zero) flag is set when an arithmetic operation results in 0.
 func (a *alu) Z() bool {
-	return (a.flags & z) != 0
+	return (a.Flags & zf) != 0
 }
 
-// Sign. Active when arithmetic operation results in a negative number (i.e. Its most significant bit active)
+// The S (Sign) flag is set when an arithmetic operation results in a negative number (Its most significant bit is active)
 func (a *alu) S() bool {
-	return (a.flags & s) != 0
+	return (a.Flags & sf) != 0
 }
 
-// Parity. Active when the number of 1s in the result is even
+// The P (Parity) flag is set when the number of 1s in the result of an arithmetic operation is even
 func (a *alu) P() bool {
-	return (a.flags & p) != 0
+	return (a.Flags & pf) != 0
 }
 
-// Carry
+// The CY (Carry) is set if the instruction resulted in a carry (from addition), or a borrow (from subtraction or a
+// comparison) out of the high-order bit. otherwise it is reset.
 func (a *alu) CY() bool {
-	return (a.flags & cy) != 0
+	return (a.Flags & cyf) != 0
 }
 
-// Auxiliary Carry
+// The AC (Auxiliary Carry) is set if the instruction caused a carry out of bit 3 and into bit 4 of the resulting value
+// otherwise it is reset. This flag is affected by single precision additions, subtractions, increments, decrements,
+// comparisons and logical operations, but is principally used with additions and increments preceding a DAA (Decimal
+// Adjust Accumulator) instruction.
 func (a *alu) AC() bool {
-	return (a.flags & ac) != 0
+	return (a.Flags & acf) != 0
 }
 
-// parity8 calculates the parity of the given byte, and returns a flags value with the parity flag set appropriately
-func parity8(result byte) flags {
-	i := result ^ (result >> 1)
+// parity calculates the parity of the given byte, and returns a flags value with the parity flag set appropriately
+func parity(b byte) flags {
+	i := b ^ (b >> 1)
 	i = i ^ (i >> 2)
 	i = i ^ (i >> 4)
 	if i&1 == 0 {
-		return p
+		return pf
 	}
 	return 0
 }
 
-// parity16 calculates the parity of the given 16 bits, and returns a flags value with the parity flag set appropriately
-func parity16(result uint16) flags {
-	i := result ^ (result >> 1)
-	i = i ^ (i >> 2)
-	i = i ^ (i >> 4)
-	i = i ^ (i >> 8)
-	if i&1 == 0 {
-		return p
+// sign calculates the parity of the given byte, and returns a flags value with the sign flag set appropriately
+func sign(b byte) flags {
+	if b&0x80 == 0x80 {
+		return sf
 	}
-	return 0
+	return none
+}
+
+// zero calculates the zero flag of the given byte, and returns a flags value with the sign flag set appropriately
+func zero(b byte) flags {
+	if b == 0x00 {
+		return zf
+	}
+	return none
 }
 
 // cpu is the central processing unit comprised of the  registers and alu
@@ -253,8 +261,39 @@ var instructionTable = []instruction{
 	0x7C: movah,
 	0x7D: moval,
 	0x7F: movaa,
+	0x80: addb,
+	/*
+		0x81: addc,
+		0x82: addd,
+		0x83: adde,
+		0x84: addh,
+		0x85: addl,
+		0x87: adda,*/
 	0xC3: jmp,
 	0xCD: call,
+}
+
+func add(c *Computer, reg *byte) error {
+	sum := c.A + *reg
+	flags := zero(sum) | sign(sum) | parity(sum)
+	// there was carry if the result of an addition is lower than one of the summands
+	if sum < c.A {
+		flags |= cyf
+	}
+	// there was auxiliary carry if there was carry on the least significant nibble
+	if (c.A&0b111 < 8) && (*reg&0b111 < 8) && (sum&0b1111 > 8) {
+		flags |= acf
+	}
+
+	c.A = sum
+	c.Flags = flags
+	c.PC++
+	return nil
+}
+
+// 0x80 ADD B |	A <- A + B (Z, S, P, CY, AC)
+func addb(c *Computer) error {
+	return add(c, &c.B)
 }
 
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
@@ -275,8 +314,8 @@ func call(c *Computer) error {
 
 func inx(c *Computer, lsreg, msreg *byte) error {
 	incr := (uint16(*msreg)<<8 + uint16(*lsreg)) + 1
-	*msreg = byte((incr >> 8) & 0x00ff)
-	*lsreg = byte(incr & 0x00ff)
+	*msreg = byte((incr >> 8) & 0xFF)
+	*lsreg = byte(incr & 0xFF)
 	c.PC++
 	return nil
 }
@@ -800,7 +839,7 @@ func nop(c *Computer) error {
 
 func push16(c *Computer, d16 uint16) error {
 	msb := byte(d16 & 0x00FF)
-	lsb := byte((d16 & 0xFF00) >> 8)
+	lsb := byte(d16 >> 8)
 
 	err := c.write8(c.SP-1, msb)
 	if err != nil {

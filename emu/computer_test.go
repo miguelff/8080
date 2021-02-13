@@ -11,41 +11,60 @@ func rom(rom string) memory {
 	return encoding.HexToBin(rom)
 }
 
-func TestParity8(t *testing.T) {
+func TestParity(t *testing.T) {
 	for _, tC := range []struct {
 		b    byte
 		want flags
 	}{
 		{
 			0b00001111,
-			p,
+			pf,
 		},
 		{
 			0b00001110,
 			none,
 		},
 	} {
-		if got := parity8(tC.b); got != tC.want {
+		if got := parity(tC.b); got != tC.want {
+			t.Errorf("got %b, want %b", got, tC.want)
+		}
+	}
+}
+func TestSign(t *testing.T) {
+	for _, tC := range []struct {
+		b    byte
+		want flags
+	}{
+		{
+			0b10001111,
+			sf,
+		},
+		{
+			0b00001110,
+			none,
+		},
+	} {
+		if got := sign(tC.b); got != tC.want {
 			t.Errorf("got %b, want %b", got, tC.want)
 		}
 	}
 }
 
-func TestParity16(t *testing.T) {
+func TestZero(t *testing.T) {
 	for _, tC := range []struct {
-		b    uint16
+		b    byte
 		want flags
 	}{
 		{
-			0b0000001100001111,
-			p,
-		},
-		{
-			0b0000001100001110,
+			0b10001111,
 			none,
 		},
+		{
+			0b00000000,
+			zf,
+		},
 	} {
-		if got := parity16(tC.b); got != tC.want {
+		if got := zero(tC.b); got != tC.want {
 			t.Errorf("got %b, want %b", got, tC.want)
 		}
 	}
