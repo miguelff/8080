@@ -46,63 +46,14 @@ Opcode	Instruction	size	flags	function
 0x3c	INR A	1	Z, S, P, AC	A <- A+1
 0x3d	DCR A	1	Z, S, P, AC	A <- A-1
 0x3f	CMC	1	CY	CY=!CY
-0x40	MOV B,B	1		B <- B
-0x41	MOV B,C	1		B <- C
-0x42	MOV B,D	1		B <- D
-0x43	MOV B,E	1		B <- E
-0x44	MOV B,H	1		B <- H
-0x45	MOV B,L	1		B <- L
 0x46	MOV B,M	1		B <- (HL)
-0x47	MOV B,A	1		B <- A
-0x48	MOV C,B	1		C <- B
-0x49	MOV C,C	1		C <- C
-0x4a	MOV C,D	1		C <- D
-0x4b	MOV C,E	1		C <- E
-0x4c	MOV C,H	1		C <- H
-0x4d	MOV C,L	1		C <- L
 0x4e	MOV C,M	1		C <- (HL)
-0x4f	MOV C,A	1		C <- A
-0x50	MOV D,B	1		D <- B
-0x51	MOV D,C	1		D <- C
-0x52	MOV D,D	1		D <- D
-0x53	MOV D,E	1		D <- E
-0x54	MOV D,H	1		D <- H
-0x55	MOV D,L	1		D <- L
 0x56	MOV D,M	1		D <- (HL)
-0x57	MOV D,A	1		D <- A
-0x58	MOV E,B	1		E <- B
-0x59	MOV E,C	1		E <- C
-0x5a	MOV E,D	1		E <- D
-0x5b	MOV E,E	1		E <- E
-0x5c	MOV E,H	1		E <- H
-0x5d	MOV E,L	1		E <- L
 0x5e	MOV E,M	1		E <- (HL)
-0x5f	MOV E,A	1		E <- A
-0x60	MOV H,B	1		H <- B
-0x61	MOV H,C	1		H <- C
-0x62	MOV H,D	1		H <- D
-0x63	MOV H,E	1		H <- E
-0x64	MOV H,H	1		H <- H
-0x65	MOV H,L	1		H <- L
 0x66	MOV H,M	1		H <- (HL)
-0x67	MOV H,A	1		H <- A
-0x68	MOV L,B	1		L <- B
-0x69	MOV L,C	1		L <- C
-0x6a	MOV L,D	1		L <- D
-0x6b	MOV L,E	1		L <- E
-0x6c	MOV L,H	1		L <- H
-0x6d	MOV L,L	1		L <- L
 0x6e	MOV L,M	1		L <- (HL)
-0x6f	MOV L,A	1		L <- A
 0x76	HLT	1		special
-0x78	MOV A,B	1		A <- B
-0x79	MOV A,C	1		A <- C
-0x7a	MOV A,D	1		A <- D
-0x7b	MOV A,E	1		A <- E
-0x7c	MOV A,H	1		A <- H
-0x7d	MOV A,L	1		A <- L
 0x7e	MOV A,M	1		A <- (HL)
-0x7f	MOV A,A	1		A <- A
 0x80	ADD B	1	Z, S, P, CY, AC	A <- A + B
 0x81	ADD C	1	Z, S, P, CY, AC	A <- A + C
 0x82	ADD D	1	Z, S, P, CY, AC	A <- A + D

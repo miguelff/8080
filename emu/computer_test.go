@@ -236,6 +236,1103 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"MOV A, A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("7F"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("7F"),
+			},
+			nil,
+		},
+		{
+			"MOV A, B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0x01,
+					},
+				},
+				mem: rom("78"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("78"),
+			},
+			nil,
+		},
+		{
+			"MOV A, C",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						C: 0x01,
+					},
+				},
+				mem: rom("79"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("79"),
+			},
+			nil,
+		},
+		{
+			"MOV A, D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0x01,
+					},
+				},
+				mem: rom("7A"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("7A"),
+			},
+			nil,
+		},
+		{
+			"MOV A, E",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						E: 0x01,
+					},
+				},
+				mem: rom("7B"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("7B"),
+			},
+			nil,
+		},
+		{
+			"MOV A, H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x01,
+					},
+				},
+				mem: rom("7C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("7C"),
+			},
+			nil,
+		},
+		{
+			"MOV A, L",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						L: 0x01,
+					},
+				},
+				mem: rom("7D"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						L:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("7D"),
+			},
+			nil,
+		},
+		{
+			"MOV B, A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("47"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("47"),
+			},
+			nil,
+		},
+		{
+			"MOV B, B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0x01,
+					},
+				},
+				mem: rom("40"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+					},
+				},
+				mem: rom("40"),
+			},
+			nil,
+		},
+		{
+			"MOV B, C",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						C: 0x01,
+					},
+				},
+				mem: rom("41"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						C:  0x01,
+					},
+				},
+				mem: rom("41"),
+			},
+			nil,
+		},
+		{
+			"MOV B, D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0x01,
+					},
+				},
+				mem: rom("42"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						D:  0x01,
+					},
+				},
+				mem: rom("42"),
+			},
+			nil,
+		},
+		{
+			"MOV B, E",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						E: 0x01,
+					},
+				},
+				mem: rom("43"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						E:  0x01,
+					},
+				},
+				mem: rom("43"),
+			},
+			nil,
+		},
+		{
+			"MOV B, H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x01,
+					},
+				},
+				mem: rom("44"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("44"),
+			},
+			nil,
+		},
+		{
+			"MOV B, L",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						L: 0x01,
+					},
+				},
+				mem: rom("45"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("45"),
+			},
+			nil,
+		},
+		{
+			"MOV C, A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("4F"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("4F"),
+			},
+			nil,
+		},
+		{
+			"MOV C, B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0x01,
+					},
+				},
+				mem: rom("48"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						B:  0x01,
+					},
+				},
+				mem: rom("48"),
+			},
+			nil,
+		},
+		{
+			"MOV C, C",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						C: 0x01,
+					},
+				},
+				mem: rom("49"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+					},
+				},
+				mem: rom("49"),
+			},
+			nil,
+		},
+		{
+			"MOV C, D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0x01,
+					},
+				},
+				mem: rom("4A"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						D:  0x01,
+					},
+				},
+				mem: rom("4A"),
+			},
+			nil,
+		},
+		{
+			"MOV C, E",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						E: 0x01,
+					},
+				},
+				mem: rom("4B"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						E:  0x01,
+					},
+				},
+				mem: rom("4B"),
+			},
+			nil,
+		},
+		{
+			"MOV C, H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x01,
+					},
+				},
+				mem: rom("4C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("4C"),
+			},
+			nil,
+		},
+		{
+			"MOV C, L",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						L: 0x01,
+					},
+				},
+				mem: rom("4D"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("4D"),
+			},
+			nil,
+		},
+		{
+			"MOV D, A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("57"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("57"),
+			},
+			nil,
+		},
+		{
+			"MOV D, B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0x01,
+					},
+				},
+				mem: rom("50"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						D:  0x01,
+					},
+				},
+				mem: rom("50"),
+			},
+			nil,
+		},
+		{
+			"MOV D, C",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						C: 0x01,
+					},
+				},
+				mem: rom("51"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						D:  0x01,
+					},
+				},
+				mem: rom("51"),
+			},
+			nil,
+		},
+		{
+			"MOV D, D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0x01,
+					},
+				},
+				mem: rom("52"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+					},
+				},
+				mem: rom("52"),
+			},
+			nil,
+		},
+		{
+			"MOV D, E",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						E: 0x01,
+					},
+				},
+				mem: rom("53"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+						E:  0x01,
+					},
+				},
+				mem: rom("53"),
+			},
+			nil,
+		},
+		{
+			"MOV D, H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x01,
+					},
+				},
+				mem: rom("54"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("54"),
+			},
+			nil,
+		},
+		{
+			"MOV D, L",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						L: 0x01,
+					},
+				},
+				mem: rom("55"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("55"),
+			},
+			nil,
+		},
+		{
+			"MOV E, A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("5F"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("5F"),
+			},
+			nil,
+		},
+		{
+			"MOV E, B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0x01,
+					},
+				},
+				mem: rom("58"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						E:  0x01,
+					},
+				},
+				mem: rom("58"),
+			},
+			nil,
+		},
+		{
+			"MOV E, C",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						C: 0x01,
+					},
+				},
+				mem: rom("59"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						E:  0x01,
+					},
+				},
+				mem: rom("59"),
+			},
+			nil,
+		},
+		{
+			"MOV E, D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0x01,
+					},
+				},
+				mem: rom("5A"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+						E:  0x01,
+					},
+				},
+				mem: rom("5A"),
+			},
+			nil,
+		},
+		{
+			"MOV E, E",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						E: 0x01,
+					},
+				},
+				mem: rom("5B"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0x01,
+					},
+				},
+				mem: rom("5B"),
+			},
+			nil,
+		},
+		{
+			"MOV E, H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x01,
+					},
+				},
+				mem: rom("5C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("5C"),
+			},
+			nil,
+		},
+		{
+			"MOV E, L",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						L: 0x01,
+					},
+				},
+				mem: rom("5D"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("5D"),
+			},
+			nil,
+		},
+		{
+			"MOV H, A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("67"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("67"),
+			},
+			nil,
+		},
+		{
+			"MOV H, B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0x01,
+					},
+				},
+				mem: rom("60"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("60"),
+			},
+			nil,
+		},
+		{
+			"MOV H, C",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						C: 0x01,
+					},
+				},
+				mem: rom("61"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("61"),
+			},
+			nil,
+		},
+		{
+			"MOV H, D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0x01,
+					},
+				},
+				mem: rom("62"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("62"),
+			},
+			nil,
+		},
+		{
+			"MOV H, E",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						E: 0x01,
+					},
+				},
+				mem: rom("63"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("63"),
+			},
+			nil,
+		},
+		{
+			"MOV H, H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x01,
+					},
+				},
+				mem: rom("64"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("64"),
+			},
+			nil,
+		},
+		{
+			"MOV H, L",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						L: 0x01,
+					},
+				},
+				mem: rom("65"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						H:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("65"),
+			},
+			nil,
+		},
+		{
+			"MOV L, A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("6F"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						L:  0x01,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("6F"),
+			},
+			nil,
+		},
+		{
+			"MOV L, B",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						B: 0x01,
+					},
+				},
+				mem: rom("68"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						B:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("68"),
+			},
+			nil,
+		},
+		{
+			"MOV L, C",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						C: 0x01,
+					},
+				},
+				mem: rom("69"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						C:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("69"),
+			},
+			nil,
+		},
+		{
+			"MOV L, D",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						D: 0x01,
+					},
+				},
+				mem: rom("6A"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						D:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("6A"),
+			},
+			nil,
+		},
+		{
+			"MOV L, E",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						E: 0x01,
+					},
+				},
+				mem: rom("6B"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						E:  0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("6B"),
+			},
+			nil,
+		},
+		{
+			"MOV L, H",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						H: 0x01,
+					},
+				},
+				mem: rom("6C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						L:  0x01,
+						H:  0x01,
+					},
+				},
+				mem: rom("6C"),
+			},
+			nil,
+		},
+		{
+			"MOV L, L",
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						L: 0x01,
+					},
+				},
+				mem: rom("6D"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x01,
+						L:  0x01,
+					},
+				},
+				mem: rom("6D"),
+			},
+			nil,
+		},
+		{
 			"MOV M, A",
 			&Computer{
 				cpu: cpu{

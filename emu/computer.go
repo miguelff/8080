@@ -141,6 +141,48 @@ var instructionTable = []instruction{
 	0x31: lxisp,
 	0x33: inxsp,
 	0x3E: mvia,
+	0x40: movbb,
+	0x41: movbc,
+	0x42: movbd,
+	0x43: movbe,
+	0x44: movbh,
+	0x45: movbl,
+	0x47: movba,
+	0x48: movcb,
+	0x49: movcc,
+	0x4A: movcd,
+	0x4B: movce,
+	0x4C: movch,
+	0x4D: movcl,
+	0x4F: movca,
+	0x50: movdb,
+	0x51: movdc,
+	0x52: movdd,
+	0x53: movde,
+	0x54: movdh,
+	0x55: movdl,
+	0x57: movda,
+	0x58: moveb,
+	0x59: movec,
+	0x5A: moved,
+	0x5B: movee,
+	0x5C: moveh,
+	0x5D: movel,
+	0x5F: movea,
+	0x60: movhb,
+	0x61: movhc,
+	0x62: movhd,
+	0x63: movhe,
+	0x64: movhh,
+	0x65: movhl,
+	0x67: movha,
+	0x68: movlb,
+	0x69: movlc,
+	0x6A: movld,
+	0x6B: movle,
+	0x6C: movlh,
+	0x6D: movll,
+	0x6F: movla,
 	0x70: movmb,
 	0x71: movmc,
 	0x72: movmd,
@@ -148,6 +190,13 @@ var instructionTable = []instruction{
 	0x74: movmh,
 	0x75: movml,
 	0x77: movma,
+	0x78: movab,
+	0x79: movac,
+	0x7A: movad,
+	0x7B: movae,
+	0x7C: movah,
+	0x7D: moval,
+	0x7F: movaa,
 	0xC3: jmp,
 	0xCD: call,
 }
@@ -169,7 +218,7 @@ func call(c *Computer) error {
 	return nil
 }
 
-func inx(c *Computer, lsbRegister *byte, msbRegister *byte) error {
+func inx(c *Computer, lsbRegister, msbRegister *byte) error {
 	incr := (uint16(*msbRegister)<<8 + uint16(*lsbRegister)) + 1
 	c.PC++
 	*msbRegister = byte((incr >> 8) & 0x00ff)
@@ -278,6 +327,306 @@ func lxih(c *Computer) error {
 // Resets the stack pointer to a given value
 func lxisp(c *Computer) error {
 	return lxi16(c, &c.SP)
+}
+
+func mov(c *Computer, dstRegister, srcRegister *byte) error {
+	c.PC++
+	*dstRegister = *srcRegister
+	return nil
+}
+
+// 0x7F: MOV A, A | A <- A
+// Copies contents from record A to A
+func movaa(c *Computer) error {
+	return nop(c)
+}
+
+// 0x78: MOV A, B | A <- B
+// Copies contents from record B to A
+func movab(c *Computer) error {
+	return mov(c, &c.A, &c.B)
+}
+
+// 0x79: MOV A, C | A <- C
+// Copies contents from record C to A
+func movac(c *Computer) error {
+	return mov(c, &c.A, &c.C)
+}
+
+// 0x7A: MOV A, D | A <- D
+// Copies contents from record D to A
+func movad(c *Computer) error {
+	return mov(c, &c.A, &c.D)
+}
+
+// 0x7B: MOV A, E | A <- E
+// Copies contents from record E to A
+func movae(c *Computer) error {
+	return mov(c, &c.A, &c.E)
+}
+
+// 0x7C: MOV A, H | A <- H
+// Copies contents from record H to A
+func movah(c *Computer) error {
+	return mov(c, &c.A, &c.H)
+}
+
+// 0x7D: MOV A, L | A <- L
+// Copies contents from record L to A
+func moval(c *Computer) error {
+	return mov(c, &c.A, &c.L)
+}
+
+// 0x47: MOV B, A | B <- A
+// Copies contents from record A to B
+func movba(c *Computer) error {
+	return mov(c, &c.B, &c.A)
+}
+
+// 0x40: MOV B, B | B <- B
+// Copies contents from record B to B
+func movbb(c *Computer) error {
+	return nop(c)
+}
+
+// 0x41: MOV B, C | B <- C
+// Copies contents from record C to B
+func movbc(c *Computer) error {
+	return mov(c, &c.B, &c.C)
+}
+
+// 0x42: MOV B, D | B <- D
+// Copies contents from record D to B
+func movbd(c *Computer) error {
+	return mov(c, &c.B, &c.D)
+}
+
+// 0x43: MOV B, E | B <- E
+// Copies contents from record E to B
+func movbe(c *Computer) error {
+	return mov(c, &c.B, &c.E)
+}
+
+// 0x44: MOV B, H | B <- H
+// Copies contents from record H to B
+func movbh(c *Computer) error {
+	return mov(c, &c.B, &c.H)
+}
+
+// 0x45: MOV B, L | B <- L
+// Copies contents from record L to B
+func movbl(c *Computer) error {
+	return mov(c, &c.B, &c.L)
+}
+
+// 0x4F: MOV C, A | C <- A
+// Copies contents from record A to C
+func movca(c *Computer) error {
+	return mov(c, &c.C, &c.A)
+}
+
+// 0x48: MOV C, B | C <- B
+// Copies contents from record B to C
+func movcb(c *Computer) error {
+	return mov(c, &c.C, &c.B)
+}
+
+// 0x49: MOV C, C | C <- C
+// Copies contents from record C to C
+func movcc(c *Computer) error {
+	return nop(c)
+}
+
+// 0x4A: MOV C, D | C <- D
+// Copies contents from record D to C
+func movcd(c *Computer) error {
+	return mov(c, &c.C, &c.D)
+}
+
+// 0x4B: MOV C, E | C <- E
+// Copies contents from record E to C
+func movce(c *Computer) error {
+	return mov(c, &c.C, &c.E)
+}
+
+// 0x4C: MOV C, H | C <- H
+// Copies contents from record H to C
+func movch(c *Computer) error {
+	return mov(c, &c.C, &c.H)
+}
+
+// 0x4D: MOV C, L | C <- L
+// Copies contents from record L to C
+func movcl(c *Computer) error {
+	return mov(c, &c.C, &c.L)
+}
+
+// 0x57: MOV D, A | D <- A
+// Copies contents from record A to D
+func movda(c *Computer) error {
+	return mov(c, &c.D, &c.A)
+}
+
+// 0x50: MOV D, B | D <- B
+// Copies contents from record B to D
+func movdb(c *Computer) error {
+	return mov(c, &c.D, &c.B)
+}
+
+// 0x51: MOV D, C | D <- C
+// Copies contents from record C to D
+func movdc(c *Computer) error {
+	return mov(c, &c.D, &c.C)
+}
+
+// 0x52: MOV D, D | D <- D
+// Copies contents from record D to D
+func movdd(c *Computer) error {
+	return nop(c)
+}
+
+// 0x53: MOV D, E | D <- E
+// Copies contents from record E to D
+func movde(c *Computer) error {
+	return mov(c, &c.D, &c.E)
+}
+
+// 0x54: MOV D, H | D <- H
+// Copies contents from record H to D
+func movdh(c *Computer) error {
+	return mov(c, &c.D, &c.H)
+}
+
+// 0x55: MOV D, L | D <- L
+// Copies contents from record L to D
+func movdl(c *Computer) error {
+	return mov(c, &c.D, &c.L)
+}
+
+// 0x5F: MOV E, A | E <- A
+// Copies contents from record A to E
+func movea(c *Computer) error {
+	return mov(c, &c.E, &c.A)
+}
+
+// 0x58: MOV E, B | E <- B
+// Copies contents from record B to E
+func moveb(c *Computer) error {
+	return mov(c, &c.E, &c.B)
+}
+
+// 0x59: MOV E, C | E <- C
+// Copies contents from record C to E
+func movec(c *Computer) error {
+	return mov(c, &c.E, &c.C)
+}
+
+// 0x5A: MOV E, D | E <- D
+// Copies contents from record D to E
+func moved(c *Computer) error {
+	return mov(c, &c.E, &c.D)
+}
+
+// 0x5B: MOV E, E | E <- E
+// Copies contents from record E to E
+func movee(c *Computer) error {
+	return nop(c)
+}
+
+// 0x5C: MOV E, H | E <- H
+// Copies contents from record H to E
+func moveh(c *Computer) error {
+	return mov(c, &c.E, &c.H)
+}
+
+// 0x5D: MOV E, L | E <- L
+// Copies contents from record L to E
+func movel(c *Computer) error {
+	return mov(c, &c.E, &c.L)
+}
+
+// 0x67: MOV H, A | H <- A
+// Copies contents from record A to H
+func movha(c *Computer) error {
+	return mov(c, &c.H, &c.A)
+}
+
+// 0x60: MOV H, B | H <- B
+// Copies contents from record B to H
+func movhb(c *Computer) error {
+	return mov(c, &c.H, &c.B)
+}
+
+// 0x61: MOV H, C | H <- C
+// Copies contents from record C to H
+func movhc(c *Computer) error {
+	return mov(c, &c.H, &c.C)
+}
+
+// 0x62: MOV H, D | H <- D
+// Copies contents from record D to H
+func movhd(c *Computer) error {
+	return mov(c, &c.H, &c.D)
+}
+
+// 0x63: MOV H, E | H <- E
+// Copies contents from record E to H
+func movhe(c *Computer) error {
+	return mov(c, &c.H, &c.E)
+}
+
+// 0x64: MOV H, H | H <- H
+// Copies contents from record H to H
+func movhh(c *Computer) error {
+	return nop(c)
+}
+
+// 0x65: MOV H, L | H <- L
+// Copies contents from record L to H
+func movhl(c *Computer) error {
+	return mov(c, &c.H, &c.L)
+}
+
+// 0x6F: MOV L, A | L <- A
+// Copies contents from record A to L
+func movla(c *Computer) error {
+	return mov(c, &c.L, &c.A)
+}
+
+// 0x68: MOV L, B | L <- B
+// Copies contents from record B to L
+func movlb(c *Computer) error {
+	return mov(c, &c.L, &c.B)
+}
+
+// 0x69: MOV L, C | L <- C
+// Copies contents from record C to L
+func movlc(c *Computer) error {
+	return mov(c, &c.L, &c.C)
+}
+
+// 0x6A: MOV L, D | L <- D
+// Copies contents from record D to L
+func movld(c *Computer) error {
+	return mov(c, &c.L, &c.D)
+}
+
+// 0x6B: MOV L, E | L <- E
+// Copies contents from record E to L
+func movle(c *Computer) error {
+	return mov(c, &c.L, &c.E)
+}
+
+// 0x6C: MOV L, H | L <- H
+// Copies contents from record H to L
+func movlh(c *Computer) error {
+	return mov(c, &c.L, &c.H)
+}
+
+// 0x6D: MOV L, L | L <- L
+// Copies contents from record L to L
+func movll(c *Computer) error {
+	return nop(c)
 }
 
 func movm(c *Computer, r byte) error {
