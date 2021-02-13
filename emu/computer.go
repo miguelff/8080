@@ -128,13 +128,19 @@ var instructionTable = []instruction{
 	0x01: lxib,
 	0x03: inxb,
 	0x06: mvib,
+	0x0E: mvic,
 	0x11: lxid,
 	0x13: inxd,
+	0x16: mvid,
+	0x1E: mvie,
 	0x1A: ldaxd,
 	0x21: lxih,
 	0x23: inxh,
+	0x26: mvih,
+	0x2E: mvil,
 	0x31: lxisp,
 	0x33: inxsp,
+	0x3E: mvia,
 	0x70: movmb,
 	0x71: movmc,
 	0x72: movmd,
@@ -146,17 +152,35 @@ var instructionTable = []instruction{
 	0xCD: call,
 }
 
-// 0x00: NOP
-// Move to the next instruction
-func nop(c *Computer) error {
-	c.PC++
+// 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
+// CALL pushes the program counter (PC) into the stack (SP), and
+// updates the program counter to point to adr.
+func call(c *Computer) error {
+	err := pushD16(c, c.PC)
+	if err != nil {
+		return err
+	}
+
+	err = jmp(c)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-// 0x01: LXI B | D16. B <- byte 3, C <- byte 2
-// Loads double word in registers B and C.
-func lxib(c *Computer) error {
-	return lxi(c, &c.C, &c.B)
+func inx(c *Computer, lsbRegister *byte, msbRegister *byte) error {
+	incr := (uint16(*msbRegister)<<8 + uint16(*lsbRegister)) + 1
+	c.PC++
+	*msbRegister = byte((incr >> 8) & 0x00ff)
+	*lsbRegister = byte(incr & 0x00ff)
+	return nil
+}
+
+func inx16(c *Computer, register *uint16) error {
+	*register++
+	c.PC++
+	return nil
 }
 
 // 0x03: INX B | B <- B + 1
@@ -165,22 +189,28 @@ func inxb(c *Computer) error {
 	return inx(c, &c.B, &c.C)
 }
 
-// 0x06: MVI B | D8. B <- byte 2
-// Loads word into B register
-func mvib(c *Computer) error {
-	return mvi(c, &c.B)
-}
-
-// 0x11: LXI D | D16. D <- byte 3, E <- byte 2
-// Loads double word in registers D and E.
-func lxid(c *Computer) error {
-	return lxi(c, &c.E, &c.D)
-}
-
 // 0x13: INX D | D <- D + 1
 // Increments D. No condition flags are affected
 func inxd(c *Computer) error {
 	return inx(c, &c.D, &c.E)
+}
+
+// 0x23: INX H | H <- H + 1
+// Increments H. No condition flags are affected
+func inxh(c *Computer) error {
+	return inx(c, &c.L, &c.H)
+}
+
+// 0x33: INX SP | SP <- SP + 1
+// Increments SP. No condition flags are affected
+func inxsp(c *Computer) error {
+	return inx16(c, &c.SP)
+}
+
+// 0xC3: JMP adr | PC <- adr.
+// Jump to the address denoted by the next two bytes.
+func jmp(c *Computer) error {
+	return lxi16(c, &c.PC)
 }
 
 // 0x1A: LDAX D | A <- (DE)
@@ -197,28 +227,73 @@ func ldaxd(c *Computer) error {
 	return nil
 }
 
+func lxi(c *Computer, lsbRegister *byte, msbRegister *byte) error {
+	lsb, err := c.readD8(c.PC + 1)
+	if err != nil {
+		return err
+	}
+
+	msb, err := c.readD8(c.PC + 2)
+	if err != nil {
+		return err
+	}
+
+	c.PC += 3
+	*lsbRegister = lsb
+	*msbRegister = msb
+	return nil
+}
+
+func lxi16(c *Computer, register *uint16) error {
+	dw, err := c.readD16(c.PC + 1)
+
+	if err != nil {
+		return err
+	}
+
+	c.PC += 3
+	*register = dw
+	return nil
+}
+
+// 0x01: LXI B | D16. B <- byte 3, C <- byte 2
+// Loads double word in registers B and C.
+func lxib(c *Computer) error {
+	return lxi(c, &c.C, &c.B)
+}
+
+// 0x11: LXI D | D16. D <- byte 3, E <- byte 2
+// Loads double word in registers D and E.
+func lxid(c *Computer) error {
+	return lxi(c, &c.E, &c.D)
+}
+
 // 0x21: LXI H, D161 | H <- byte 3, L <- byte 2
 // Loads double word in the register pair HL
 func lxih(c *Computer) error {
 	return lxi(c, &c.L, &c.H)
 }
 
-// 0x23: INX H | H <- H + 1
-// Increments H. No condition flags are affected
-func inxh(c *Computer) error {
-	return inx(c, &c.L, &c.H)
-}
-
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2
 // Resets the stack pointer to a given value
 func lxisp(c *Computer) error {
-	return lxiD16(c, &c.SP)
+	return lxi16(c, &c.SP)
 }
 
-// 0x33: INX SP | SP <- SP + 1
-// Increments SP. No condition flags are affected
-func inxsp(c *Computer) error {
-	return inxD16(c, &c.SP)
+func movm(c *Computer, r byte) error {
+	addr := uint16(c.H)<<8 + uint16(c.L)
+	err := c.writeD8(addr, r)
+	if err != nil {
+		return err
+	}
+	c.PC++
+	return nil
+}
+
+// 0x77: MOV M,A. | (HL) <- A
+// Writes A to the address pointed by the register pair HL.
+func movma(c *Computer) error {
+	return movm(c, c.A)
 }
 
 // 0x77: MOV M,A. | (HL) <- B
@@ -257,35 +332,6 @@ func movml(c *Computer) error {
 	return movm(c, c.L)
 }
 
-// 0x77: MOV M,A. | (HL) <- A
-// Writes A to the address pointed by the register pair HL.
-func movma(c *Computer) error {
-	return movm(c, c.A)
-}
-
-// 0xC3: JMP adr | PC <- adr.
-// Jump to the address denoted by the next two bytes.
-func jmp(c *Computer) error {
-	return lxiD16(c, &c.PC)
-}
-
-// 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
-// CALL pushes the program counter (PC) into the stack (SP), and
-// updates the program counter to point to adr.
-func call(c *Computer) error {
-	err := pushD16(c, c.PC)
-	if err != nil {
-		return err
-	}
-
-	err = jmp(c)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func mvi(c *Computer, register *byte) error {
 	w, err := c.readD8(c.PC + 1)
 	if err != nil {
@@ -297,55 +343,51 @@ func mvi(c *Computer, register *byte) error {
 	return nil
 }
 
-func inx(c *Computer, lsbRegister *byte, msbRegister *byte) error {
-	incr := (uint16(*msbRegister)<<8 + uint16(*lsbRegister)) + 1
-	c.PC++
-	*msbRegister = byte((incr >> 8) & 0x00ff)
-	*lsbRegister = byte(incr & 0x00ff)
-	return nil
+// 0x3E: MVI A, D8 | A <- byte 2
+// Loads word into A register
+func mvia(c *Computer) error {
+	return mvi(c, &c.A)
 }
 
-func inxD16(c *Computer, register *uint16) error {
-	*register++
-	c.PC++
-	return nil
+// 0x06: MVI B, D8 | B <- byte 2
+// Loads word into B register
+func mvib(c *Computer) error {
+	return mvi(c, &c.B)
 }
 
-func lxi(c *Computer, lsbRegister *byte, msbRegister *byte) error {
-	lsb, err := c.readD8(c.PC + 1)
-	if err != nil {
-		return err
-	}
-
-	msb, err := c.readD8(c.PC + 2)
-	if err != nil {
-		return err
-	}
-
-	c.PC += 3
-	*lsbRegister = lsb
-	*msbRegister = msb
-	return nil
+// 0x0E: MVI C, D8 | C <- byte 2
+// Loads word into C register
+func mvic(c *Computer) error {
+	return mvi(c, &c.C)
 }
 
-func lxiD16(c *Computer, register *uint16) error {
-	dw, err := c.readD16(c.PC + 1)
-
-	if err != nil {
-		return err
-	}
-
-	c.PC += 3
-	*register = dw
-	return nil
+// 0x16: MVI D, D8 | D <- byte 2
+// Loads word into D register
+func mvid(c *Computer) error {
+	return mvi(c, &c.D)
 }
 
-func movm(c *Computer, r byte) error {
-	addr := uint16(c.H)<<8 + uint16(c.L)
-	err := c.writeD8(addr, r)
-	if err != nil {
-		return err
-	}
+// 0x1E: MVI E, D8 | E <- byte 2
+// Loads word into E register
+func mvie(c *Computer) error {
+	return mvi(c, &c.E)
+}
+
+// 0x26: MVI H, D8 | H <- byte 2
+// Loads word into H register
+func mvih(c *Computer) error {
+	return mvi(c, &c.H)
+}
+
+// 0x2E: MVI L, D8 | L <- byte 2
+// Loads word into L register
+func mvil(c *Computer) error {
+	return mvi(c, &c.L)
+}
+
+// 0x00: NOP
+// Move to the next instruction
+func nop(c *Computer) error {
 	c.PC++
 	return nil
 }
