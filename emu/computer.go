@@ -5,14 +5,6 @@ import (
 	"fmt"
 )
 
-// ComputerError denotes an error condition in the computer
-type ComputerError string
-
-// Error implements the error interface
-func (e ComputerError) Error() string {
-	return string(e)
-}
-
 const (
 	kilobyte = 1 << 10
 	// MemSize is the whole amount of memory in the computer
@@ -20,6 +12,14 @@ const (
 	// RomSize is the size of the ROM area
 	RomSize = 8 * kilobyte
 )
+
+// ComputerError denotes an error condition in the computer
+type ComputerError string
+
+// Error implements the error interface
+func (e ComputerError) Error() string {
+	return string(e)
+}
 
 // registers contains 8 registers: 6 8-bit registers  (B-L); and two 16-bit registers: the stack pointer (SP) and
 // program counter (PC)
@@ -38,19 +38,75 @@ type registers struct {
 	PC uint16
 }
 
-// alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity,  carry, and auxiliary carry), and special registers
+// flags encapsulate
+type flags byte
+
+const (
+	none = iota
+	// Zero. Toggled when arithmetic operation was 0.
+	z flags = 1 << iota
+	// Sign. Toggled when arithmetic operation results in a negative number (i.e. Its most significant bit active)
+	s
+	// Parity
+	p
+	// Carry
+	cy
+	// Auxiliary Carry
+	ac
+)
+
+// alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity, carry, and auxiliary carry), and special registers
 // that belong to the ALU and not the register array: Register (A), a temporary register (TMP) and a temporary
 // accumulator register (TACC).
 type alu struct {
-	Z  bool
-	S  bool
-	P  bool
-	CY bool
-	AC bool
+	flags flags
 
 	A    byte
 	TMP  byte
 	TACC byte
+}
+
+func (a *alu) Z() bool {
+	return (a.flags & z) != 0
+}
+
+func (a *alu) S() bool {
+	return (a.flags & s) != 0
+}
+
+func (a *alu) P() bool {
+	return (a.flags & p) != 0
+}
+
+func (a *alu) CY() bool {
+	return (a.flags & cy) != 0
+}
+
+func (a *alu) AC() bool {
+	return (a.flags & ac) != 0
+}
+
+// parity8 calculates the parity of the given byte, and returns a flags value with the parity flag set appropriately
+func parity8(result byte) flags {
+	i := result ^ (result >> 1)
+	i = i ^ (i >> 2)
+	i = i ^ (i >> 4)
+	if i&1 == 0 {
+		return p
+	}
+	return 0
+}
+
+// parity16 calculates the parity of the given 16 bits, and returns a flags value with the parity flag set appropriately
+func parity16(result uint16) flags {
+	i := result ^ (result >> 1)
+	i = i ^ (i >> 2)
+	i = i ^ (i >> 4)
+	i = i ^ (i >> 8)
+	if i&1 == 0 {
+		return p
+	}
+	return 0
 }
 
 // cpu is the central processing unit comprised of the  registers and alu
