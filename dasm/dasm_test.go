@@ -10,8 +10,8 @@ import (
 	"github.com/miguelff/8080/encoding"
 )
 
-func squish(assembly string) string {
-	chunks := strings.Split(assembly, "\n")
+func squish(asm string) string {
+	chunks := strings.Split(asm, "\n")
 	for i := range chunks {
 		chunks[i] = strings.TrimSpace(chunks[i])
 	}

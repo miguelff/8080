@@ -8,6 +8,7 @@ import (
 // ComputerError denotes an error condition in the computer
 type ComputerError string
 
+// Error implements the error interface
 func (e ComputerError) Error() string {
 	return string(e)
 }
@@ -72,7 +73,7 @@ func (c *Computer) Load(rom []byte) {
 
 // Step executes one instruction of the code pointed by the Program Counter (PC) of the CPU
 func (c *Computer) Step() error {
-	opcode, err := c.readD8(c.PC)
+	opcode, err := c.read8(c.PC)
 	if err != nil {
 		return err
 	}
@@ -88,13 +89,13 @@ func (c *Computer) Step() error {
 	return nil
 }
 
-func (c *Computer) readD16(addr uint16) (uint16, error) {
-	l, err := c.readD8(addr)
+func (c *Computer) read16(addr uint16) (uint16, error) {
+	l, err := c.read8(addr)
 	if err != nil {
 		return 0, err
 	}
 
-	h, err := c.readD8(addr + 1)
+	h, err := c.read8(addr + 1)
 	if err != nil {
 		return 0, err
 	}
@@ -102,14 +103,14 @@ func (c *Computer) readD16(addr uint16) (uint16, error) {
 	return uint16(h)<<8 + uint16(l), nil
 }
 
-func (c *Computer) readD8(addr uint16) (byte, error) {
+func (c *Computer) read8(addr uint16) (byte, error) {
 	if int(addr) > len(c.mem) {
 		return 0, ComputerError(fmt.Sprintf("segfault accessing %04X", addr))
 	}
 	return c.mem[addr], nil
 }
 
-func (c *Computer) writeD8(addr uint16, d8 byte) error {
+func (c *Computer) write8(addr uint16, d8 byte) error {
 	if int(addr) > len(c.mem) {
 		return ComputerError(fmt.Sprintf("segfault accessing %04X", addr))
 	}
@@ -200,7 +201,7 @@ var instructionTable = []instruction{
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
 // CALL pushes the program counter (PC) into the stack (SP), and updates the program counter to point to adr.
 func call(c *Computer) error {
-	err := pushD16(c, c.PC)
+	err := push16(c, c.PC)
 	if err != nil {
 		return err
 	}
@@ -213,17 +214,19 @@ func call(c *Computer) error {
 	return nil
 }
 
-func inx(c *Computer, lsbRegister, msbRegister *byte) error {
-	incr := (uint16(*msbRegister)<<8 + uint16(*lsbRegister)) + 1
+func inx(c *Computer, lsreg, msreg *byte) error {
+	incr := (uint16(*msreg)<<8 + uint16(*lsreg)) + 1
+	*msreg = byte((incr >> 8) & 0x00ff)
+	*lsreg = byte(incr & 0x00ff)
 	c.PC++
-	*msbRegister = byte((incr >> 8) & 0x00ff)
-	*lsbRegister = byte(incr & 0x00ff)
 	return nil
 }
 
-func inx16(c *Computer, register *uint16) error {
-	*register++
-	c.PC++
+func inx16(c *Computer, reg *uint16) error {
+	*reg++
+	if reg != &c.PC {
+		c.PC++
+	}
 	return nil
 }
 
@@ -261,41 +264,42 @@ func jmp(c *Computer) error {
 // Loads into the Accumulator record the value pointed by the address denoted by the DE register group.
 func ldaxd(c *Computer) error {
 	addr := uint16(c.D)<<8 + uint16(c.E)
-	b, err := c.readD8(addr)
+	b, err := c.read8(addr)
 	if err != nil {
 		return err
 	}
+
 	c.A = b
 	c.PC++
 	return nil
 }
 
-func lxi(c *Computer, lsbRegister *byte, msbRegister *byte) error {
-	lsb, err := c.readD8(c.PC + 1)
+func lxi(c *Computer, lsreg, msreg *byte) error {
+	lsb, err := c.read8(c.PC + 1)
 	if err != nil {
 		return err
 	}
 
-	msb, err := c.readD8(c.PC + 2)
+	msb, err := c.read8(c.PC + 2)
 	if err != nil {
 		return err
 	}
 
+	*lsreg, *msreg = lsb, msb
 	c.PC += 3
-	*lsbRegister = lsb
-	*msbRegister = msb
 	return nil
 }
 
-func lxi16(c *Computer, register *uint16) error {
-	dw, err := c.readD16(c.PC + 1)
-
+func lxi16(c *Computer, reg *uint16) error {
+	dw, err := c.read16(c.PC + 1)
 	if err != nil {
 		return err
 	}
 
-	c.PC += 3
-	*register = dw
+	*reg = dw
+	if reg != &c.PC {
+		c.PC += 3
+	}
 	return nil
 }
 
@@ -323,9 +327,9 @@ func lxisp(c *Computer) error {
 	return lxi16(c, &c.SP)
 }
 
-func mov(c *Computer, dstRegister, srcRegister *byte) error {
+func mov(c *Computer, dstreg, srcreg *byte) error {
+	*dstreg = *srcreg
 	c.PC++
-	*dstRegister = *srcRegister
 	return nil
 }
 
@@ -625,7 +629,7 @@ func movll(c *Computer) error {
 
 func movm(c *Computer, r byte) error {
 	addr := uint16(c.H)<<8 + uint16(c.L)
-	err := c.writeD8(addr, r)
+	err := c.write8(addr, r)
 	if err != nil {
 		return err
 	}
@@ -675,14 +679,14 @@ func movml(c *Computer) error {
 	return movm(c, c.L)
 }
 
-func mvi(c *Computer, register *byte) error {
-	w, err := c.readD8(c.PC + 1)
+func mvi(c *Computer, reg *byte) error {
+	w, err := c.read8(c.PC + 1)
 	if err != nil {
 		return err
 	}
 
+	*reg = w
 	c.PC += 2
-	*register = w
 	return nil
 }
 
@@ -735,16 +739,16 @@ func nop(c *Computer) error {
 	return nil
 }
 
-func pushD16(c *Computer, d16 uint16) error {
+func push16(c *Computer, d16 uint16) error {
 	msb := byte(d16 & 0x00FF)
 	lsb := byte((d16 & 0xFF00) >> 8)
 
-	err := c.writeD8(c.SP-1, msb)
+	err := c.write8(c.SP-1, msb)
 	if err != nil {
 		return err
 	}
 
-	err = c.writeD8(c.SP-2, lsb)
+	err = c.write8(c.SP-2, lsb)
 	if err != nil {
 		return err
 	}
