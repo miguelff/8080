@@ -26,12 +26,13 @@ const (
 // operate on the pair itself, for instance LXI B, D16 loads two bytes
 // in registers B (most significant byte) and C (least significant byte)
 type registerArray struct {
-	B  byte
-	C  byte
-	D  byte
-	E  byte
-	H  byte
-	L  byte
+	B byte
+	C byte
+	D byte
+	E byte
+	H byte
+	L byte
+
 	SP uint16
 	PC uint16
 }
