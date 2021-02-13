@@ -13,8 +13,7 @@ type byteReader struct {
 	cursor int
 }
 
-// ReadByte reads a single byte from the reader, keeping
-// track of the number of bytes read
+// ReadByte reads a single byte from the reader, keeping track of the number of bytes read
 func (r *byteReader) ReadByte() (byte, error) {
 	b, err := r.Reader.ReadByte()
 	if err == nil {
@@ -276,14 +275,12 @@ var instructions = []instDasm{
 	0xff: singleWordInst("RST 7"),
 }
 
-// Disassemble reads machine code from the reader, and writes
-// assembly code to the writer
+// Disassemble reads machine code from the reader, and writes assembly code to the writer
 func Disassemble(r io.Reader, w io.Writer) error {
 	return DisassembleFrom(r, w, 0)
 }
 
-// DisassembleFrom reads machine code from the reader starting
-// at the given offset, and writes assembly code to the writer
+// DisassembleFrom reads machine code from the reader starting at the given offset, and writes assembly code to the writer
 func DisassembleFrom(r io.Reader, w io.Writer, offset int) error {
 	br := newByteReader(r, offset)
 	bw := bufio.NewWriter(w)

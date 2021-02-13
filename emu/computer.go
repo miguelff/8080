@@ -18,13 +18,11 @@ const (
 	RomSize  = 8 * kilobyte
 )
 
-// registerArray contains 8 registers: 6 8-bit registers
-// (B-L); and two 16-bit registers: the stack pointer (SP)
-// and program counter (PC)
+// registerArray contains 8 registers: 6 8-bit registers  (B-L); and two 16-bit registers: the stack pointer (SP) and
+// program counter (PC)
 //
-// 8 bit registers come in pairs (B-C, D-E, H-L) and some opcodes
-// operate on the pair itself, for instance LXI B, D16 loads two bytes
-// in registers B (most significant byte) and C (least significant byte)
+// 8 bit registers come in pairs (B-C, D-E, H-L) and some opcodes operate on the pair itself, for instance LXI B, D16
+// loads two bytes in registers B (most significant byte) and C (least significant byte)
 type registerArray struct {
 	B byte
 	C byte
@@ -37,10 +35,8 @@ type registerArray struct {
 	PC uint16
 }
 
-// alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity,
-// carry, and auxiliary carry), an accumulator register (A),
-// a temporary register (TMP) and a temporary accumulator
-// register (TACC).
+// alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity,  carry, and auxiliary carry), an accumulator
+// register (A), a temporary register (TMP) and a temporary accumulator register (TACC).
 type alu struct {
 	Z  bool
 	S  bool
@@ -53,8 +49,7 @@ type alu struct {
 	TACC byte
 }
 
-// cpu is the central processing unit comprised of the
-// registers and alu
+// cpu is the central processing unit comprised of the  registers and alu
 type cpu struct {
 	registerArray
 	alu
@@ -203,8 +198,7 @@ var instructionTable = []instruction{
 }
 
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
-// CALL pushes the program counter (PC) into the stack (SP), and
-// updates the program counter to point to adr.
+// CALL pushes the program counter (PC) into the stack (SP), and updates the program counter to point to adr.
 func call(c *Computer) error {
 	err := pushD16(c, c.PC)
 	if err != nil {
@@ -264,8 +258,7 @@ func jmp(c *Computer) error {
 }
 
 // 0x1A: LDAX D | A <- (DE)
-// Loads into the Accumulator record the value pointed
-// by the address denoted by the DE register group.
+// Loads into the Accumulator record the value pointed by the address denoted by the DE register group.
 func ldaxd(c *Computer) error {
 	addr := uint16(c.D)<<8 + uint16(c.E)
 	b, err := c.readD8(addr)
