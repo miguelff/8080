@@ -125,6 +125,7 @@ type instruction func(*Computer) error
 
 var instructionTable = []instruction{
 	0x00: nop,
+	0x01: lxib,
 	0x06: mvib,
 	0x11: lxid,
 	0x1A: ldaxd,
@@ -149,16 +150,22 @@ func nop(c *Computer) error {
 	return nil
 }
 
+// 0x01: LXI B | D16. B <- byte 3, C <- byte 2
+// Loads double word in registers B and C.
+func lxib(c *Computer) error {
+	return lxi(c, &c.C, &c.B)
+}
+
 // 0x06: MVI B | D8. B <- byte 2
 // Loads word into B register
 func mvib(c *Computer) error {
-	return loadD8Register(c, &c.B)
+	return mvi(c, &c.B)
 }
 
 // 0x11: LXI D | D16. D <- byte 3, E <- byte 2
 // Loads double word in registers D and E.
 func lxid(c *Computer) error {
-	return loadD16RegisterPair(c, &c.E, &c.D)
+	return lxi(c, &c.E, &c.D)
 }
 
 // 0x1A: LDAX D | A <- (DE)
@@ -178,7 +185,7 @@ func ldaxd(c *Computer) error {
 // 0x21: LXI H, D161 | H <- byte 3, L <- byte 2
 // Loads double word in the register pair HL
 func lxih(c *Computer) error {
-	return loadD16RegisterPair(c, &c.L, &c.H)
+	return lxi(c, &c.L, &c.H)
 }
 
 // 0x23: INX H | H <- H + 1
@@ -192,7 +199,7 @@ func inxh(c *Computer) error {
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2
 // Resets the stack pointer to a given value
 func lxisp(c *Computer) error {
-	return loadD16Register(c, &c.SP)
+	return lxiD16(c, &c.SP)
 }
 
 // 0x77: MOV M,A. | (HL) <- B
@@ -240,7 +247,7 @@ func movma(c *Computer) error {
 // 0xC3: JMP adr | PC <- adr.
 // Jump to the address denoted by the next two bytes.
 func jmp(c *Computer) error {
-	return loadD16Register(c, &c.PC)
+	return lxiD16(c, &c.PC)
 }
 
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
@@ -260,7 +267,7 @@ func call(c *Computer) error {
 	return nil
 }
 
-func loadD8Register(c *Computer, register *byte) error {
+func mvi(c *Computer, register *byte) error {
 	w, err := c.readD8(c.PC + 1)
 	if err != nil {
 		return err
@@ -271,19 +278,7 @@ func loadD8Register(c *Computer, register *byte) error {
 	return nil
 }
 
-func loadD16Register(c *Computer, register *uint16) error {
-	dw, err := c.readD16(c.PC + 1)
-
-	if err != nil {
-		return err
-	}
-
-	c.PC += 3
-	*register = dw
-	return nil
-}
-
-func loadD16RegisterPair(c *Computer, lsbRegister *byte, msbRegister *byte) error {
+func lxi(c *Computer, lsbRegister *byte, msbRegister *byte) error {
 	lsb, err := c.readD8(c.PC + 1)
 	if err != nil {
 		return err
@@ -299,6 +294,19 @@ func loadD16RegisterPair(c *Computer, lsbRegister *byte, msbRegister *byte) erro
 	*msbRegister = msb
 	return nil
 }
+
+func lxiD16(c *Computer, register *uint16) error {
+	dw, err := c.readD16(c.PC + 1)
+
+	if err != nil {
+		return err
+	}
+
+	c.PC += 3
+	*register = dw
+	return nil
+}
+
 func movm(c *Computer, r byte) error {
 	addr := uint16(c.H)<<8 + uint16(c.L)
 	err := c.writeD8(addr, r)

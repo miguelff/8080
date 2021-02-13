@@ -34,6 +34,23 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"LXI B, D16",
+			&Computer{
+				mem: rom("01 0B 01"),
+			},
+			&Computer{
+				cpu: cpu{
+					registerArray: registerArray{
+						PC: 0x03,
+						B:  0x01,
+						C:  0x0B,
+					},
+				},
+				mem: rom("01 0B 01"),
+			},
+			nil,
+		},
+		{
 			"MVI B, D8",
 			&Computer{
 				mem: rom("06 0B"),
