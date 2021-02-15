@@ -1,37 +1,30 @@
-
 Opcode	Instruction	size	flags	function
 0x02	STAX B	1		(BC) <- A
-0x04	INR B	1	Z, S, P, AC	B <- B+1
 0x05	DCR B	1	Z, S, P, AC	B <- B-1
 0x07	RLC	1	CY	A = A << 1; bit 0 = prev bit 7; CY = prev bit 7
 0x08	-			
 0x09	DAD B	1	CY	HL = HL + BC
 0x0a	LDAX B	1		A <- (BC)
 0x0b	DCX B	1		BC = BC-1
-0x0c	INR C	1	Z, S, P, AC	C <- C+1
 0x0d	DCR C	1	Z, S, P, AC	C <-C-1
 0x0f	RRC	1	CY	A = A >> 1; bit 7 = prev bit 0; CY = prev bit 0
 0x10	-			
 0x12	STAX D	1		(DE) <- A
-0x14	INR D	1	Z, S, P, AC	D <- D+1
 0x15	DCR D	1	Z, S, P, AC	D <- D-1
 0x17	RAL	1	CY	A = A << 1; bit 0 = prev CY; CY = prev bit 7
 0x18	-			
 0x19	DAD D	1	CY	HL = HL + DE
 0x1b	DCX D	1		DE = DE-1
-0x1c	INR E	1	Z, S, P, AC	E <-E+1
 0x1d	DCR E	1	Z, S, P, AC	E <- E-1
 0x1f	RAR	1	CY	A = A >> 1; bit 7 = prev bit 7; CY = prev bit 0
 0x20	-			
 0x22	SHLD adr	3		(adr) <-L; (adr+1)<-H
-0x24	INR H	1	Z, S, P, AC	H <- H+1
 0x25	DCR H	1	Z, S, P, AC	H <- H-1
 0x27	DAA	1		special
 0x28	-			
 0x29	DAD H	1	CY	HL = HL + HI
 0x2a	LHLD adr	3		L <- (adr); H<-(adr+1)
 0x2b	DCX H	1		HL = HL-1
-0x2c	INR L	1	Z, S, P, AC	L <- L+1
 0x2d	DCR L	1	Z, S, P, AC	L <- L-1
 0x2f	CMA	1		A <- !A
 0x30	-			
@@ -43,7 +36,6 @@ Opcode	Instruction	size	flags	function
 0x39	DAD SP	1	CY	HL = HL + SP
 0x3a	LDA adr	3		A <- (adr)
 0x3b	DCX SP	1		SP = SP-1
-0x3c	INR A	1	Z, S, P, AC	A <- A+1
 0x3d	DCR A	1	Z, S, P, AC	A <- A-1
 0x3f	CMC	1	CY	CY=!CY
 0x46	MOV B,M	1		B <- (HL)

@@ -191,19 +191,26 @@ var instructionTable = []instruction{
 	0x00: nop,
 	0x01: lxib,
 	0x03: inxb,
+	0x04: inrb,
 	0x06: mvib,
+	0x0C: inrc,
 	0x0E: mvic,
 	0x11: lxid,
 	0x13: inxd,
+	0x14: inrd,
 	0x16: mvid,
+	0x1C: inre,
 	0x1E: mvie,
 	0x1A: ldaxd,
 	0x21: lxih,
 	0x23: inxh,
+	0x24: inrh,
 	0x26: mvih,
+	0x2C: inrl,
 	0x2E: mvil,
 	0x31: lxisp,
 	0x33: inxsp,
+	0x3C: inra,
 	0x3E: mvia,
 	0x40: movbb,
 	0x41: movbc,
@@ -291,7 +298,7 @@ func add(c *Computer, reg *byte, carry bool) error {
 		flags |= cyf
 	}
 	// there was auxiliary carry if there was carry on the least significant nibble
-	if c.A&0x7+*reg&0x7 >= 0x8 {
+	if c.A&0x07+*reg&0x07 >= 0x08 {
 		flags |= acf
 	}
 
@@ -301,7 +308,7 @@ func add(c *Computer, reg *byte, carry bool) error {
 	return nil
 }
 
-// 0x88 ADC B |	A <- A + B+ CY (Z, S, P, CY, AC)
+// 0x88 ADC B |	A <- A + B + CY (Z, S, P, CY, AC)
 func adcb(c *Computer) error {
 	return add(c, &c.B, c.CY())
 }
@@ -311,27 +318,27 @@ func adcc(c *Computer) error {
 	return add(c, &c.C, c.CY())
 }
 
-// 0x8A ADC D |	A <- A + D+ CY (Z, S, P, CY, AC)
+// 0x8A ADC D |	A <- A + D + CY (Z, S, P, CY, AC)
 func adcd(c *Computer) error {
 	return add(c, &c.D, c.CY())
 }
 
-// 0x8B ADC E | A <- A + E+ CY (Z, S, P, CY, AC)
+// 0x8B ADC E | A <- A + E + CY (Z, S, P, CY, AC)
 func adce(c *Computer) error {
 	return add(c, &c.E, c.CY())
 }
 
-// 0x8C ADC E | A <- A + E+ CY (Z, S, P, CY, AC)
+// 0x8C ADC E | A <- A + E + CY (Z, S, P, CY, AC)
 func adch(c *Computer) error {
 	return add(c, &c.H, c.CY())
 }
 
-// 0x8D ADC L | A <- A + L+ CY (Z, S, P, CY, AC)
+// 0x8D ADC L | A <- A + L + CY (Z, S, P, CY, AC)
 func adcl(c *Computer) error {
 	return add(c, &c.L, c.CY())
 }
 
-// 0x8F ADC A | A <- A + A+ CY (Z, S, P, CY, AC)
+// 0x8F ADC A | A <- A + A + CY (Z, S, P, CY, AC)
 func adca(c *Computer) error {
 	return add(c, &c.A, c.CY())
 }
@@ -401,6 +408,55 @@ func inx16(c *Computer, reg *uint16) error {
 		c.PC++
 	}
 	return nil
+}
+
+func inr(c *Computer, reg *byte) error {
+	sum := *reg + 1
+
+	flags := zero(sum) | sign(sum) | parity(sum)
+	if *reg&0x07 == 0x07 && sum&0x08 == 0x08 {
+		flags |= acf
+	}
+
+	*reg = sum
+	c.Flags = flags
+	c.PC++
+	return nil
+}
+
+// 0x3C	INR A | A <- A+1 (Z, S, P, AC)
+func inra(c *Computer) error {
+	return inr(c, &c.A)
+}
+
+// 0x04	INR B | B <- B+1 (Z, S, P, AC)
+func inrb(c *Computer) error {
+	return inr(c, &c.B)
+}
+
+// 0x0C	INR C | C <- C+1 (Z, S, P, AC)
+func inrc(c *Computer) error {
+	return inr(c, &c.C)
+}
+
+// 0x14	INR D | D <- D+1 (Z, S, P, AC)
+func inrd(c *Computer) error {
+	return inr(c, &c.D)
+}
+
+// 0x1C	INR E | E <- E+1 (Z, S, P, AC)
+func inre(c *Computer) error {
+	return inr(c, &c.E)
+}
+
+// 0x24	INR H | H <- H+1 (Z, S, P, AC)
+func inrh(c *Computer) error {
+	return inr(c, &c.H)
+}
+
+// 0x2C	INR L | L <- L+1 (Z, S, P, AC)
+func inrl(c *Computer) error {
+	return inr(c, &c.L)
 }
 
 // 0x03: INX B | B <- B + 1

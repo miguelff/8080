@@ -562,6 +562,176 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"INR A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("3C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("3C"),
+			},
+			nil,
+		},
+		{
+			"INR B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0xFF,
+					},
+				},
+				mem: rom("04"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						B:  0x00,
+					},
+					alu: alu{
+						Flags: zf | pf,
+					},
+				},
+				mem: rom("04"),
+			},
+			nil,
+		},
+		{
+			"INR C",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0x07,
+					},
+				},
+				mem: rom("0C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						C:  0x08,
+					},
+					alu: alu{
+						Flags: acf,
+					},
+				},
+				mem: rom("0C"),
+			},
+			nil,
+		},
+		{
+			"INR D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0x03,
+					},
+				},
+				mem: rom("14"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						D:  0x04,
+					},
+					alu: alu{
+						Flags: none,
+					},
+				},
+				mem: rom("14"),
+			},
+			nil,
+		},
+		{
+			"INR E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0x03,
+					},
+				},
+				mem: rom("1C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						E:  0x04,
+					},
+					alu: alu{
+						Flags: none,
+					},
+				},
+				mem: rom("1C"),
+			},
+			nil,
+		},
+
+		{
+			"INR H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x03,
+					},
+				},
+				mem: rom("24"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						H:  0x04,
+					},
+					alu: alu{
+						Flags: none,
+					},
+				},
+				mem: rom("24"),
+			},
+			nil,
+		},
+
+		{
+			"INR L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0x03,
+					},
+				},
+				mem: rom("2C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						L:  0x04,
+					},
+					alu: alu{
+						Flags: none,
+					},
+				},
+				mem: rom("2C"),
+			},
+			nil,
+		},
+		{
 			"INX B",
 			&Computer{
 				cpu: cpu{
