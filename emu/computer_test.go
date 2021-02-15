@@ -2327,6 +2327,254 @@ func TestComputer_Step(t *testing.T) {
 			},
 			nil,
 		},
+		{
+			"SUB A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("97"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("97"),
+			},
+			nil,
+		},
+		{
+			"SUB B: substracting 0",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x00,
+					},
+					alu: alu{
+						A: 0x00,
+					},
+				},
+				mem: rom("90"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x00,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("90"),
+			},
+			nil,
+		},
+		{
+			"SUB B: 0x02 - 0x01",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x01,
+					},
+					alu: alu{
+						A: 0x02,
+					},
+				},
+				mem: rom("90"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						B:  0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x01,
+					},
+				},
+				mem: rom("90"),
+			},
+			nil,
+		},
+		{
+			"SUB B: 0x01 - 0x02",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x02,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("90"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						B:  0x02,
+					},
+					alu: alu{
+						Flags: sf | cyf | pf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("90"),
+			},
+			nil,
+		},
+		{
+			"SUB C",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("91"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("91"),
+			},
+			nil,
+		},
+		{
+			"SUB D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("92"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("92"),
+			},
+			nil,
+		},
+		{
+			"SUB E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("93"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("93"),
+			},
+			nil,
+		},
+		{
+			"SUB H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("94"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("94"),
+			},
+			nil,
+		},
+		{
+			"SUB L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("95"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("95"),
+			},
+			nil,
+		},
 	} {
 		t.Run(tC.desc, func(t *testing.T) {
 			gotErr := tC.init.Step()

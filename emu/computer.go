@@ -43,7 +43,7 @@ type flags byte
 
 const (
 	none flags = iota
-	zf   flags = 1 << iota
+	zf   flags = 1 << (iota - 1)
 	sf
 	pf
 	cyf
@@ -282,12 +282,19 @@ var instructionTable = []instruction{
 	0x8C: adch,
 	0x8D: adcl,
 	0x8F: adca,
+	0x90: subb,
+	0x91: subc,
+	0x92: subd,
+	0x93: sube,
+	0x94: subh,
+	0x95: subl,
+	0x97: suba,
 	0xC3: jmp,
 	0xCD: call,
 }
 
-func add(c *Computer, reg *byte, carry bool) error {
-	sum := c.A + *reg
+func add(c *Computer, v byte, carry bool) error {
+	sum := c.A + v
 	if carry {
 		sum++
 	}
@@ -298,7 +305,7 @@ func add(c *Computer, reg *byte, carry bool) error {
 		flags |= cyf
 	}
 	// there was auxiliary carry if there was carry on the least significant nibble
-	if c.A&0x07+*reg&0x07 >= 0x08 {
+	if c.A&0x07+v&0x07 >= 0x08 {
 		flags |= acf
 	}
 
@@ -310,72 +317,72 @@ func add(c *Computer, reg *byte, carry bool) error {
 
 // 0x88 ADC B |	A <- A + B + CY (Z, S, P, CY, AC)
 func adcb(c *Computer) error {
-	return add(c, &c.B, c.CY())
+	return add(c, c.B, c.CY())
 }
 
 // 0x89 ADC C |	A <- A + C + CY (Z, S, P, CY, AC)
 func adcc(c *Computer) error {
-	return add(c, &c.C, c.CY())
+	return add(c, c.C, c.CY())
 }
 
 // 0x8A ADC D |	A <- A + D + CY (Z, S, P, CY, AC)
 func adcd(c *Computer) error {
-	return add(c, &c.D, c.CY())
+	return add(c, c.D, c.CY())
 }
 
 // 0x8B ADC E | A <- A + E + CY (Z, S, P, CY, AC)
 func adce(c *Computer) error {
-	return add(c, &c.E, c.CY())
+	return add(c, c.E, c.CY())
 }
 
 // 0x8C ADC E | A <- A + E + CY (Z, S, P, CY, AC)
 func adch(c *Computer) error {
-	return add(c, &c.H, c.CY())
+	return add(c, c.H, c.CY())
 }
 
 // 0x8D ADC L | A <- A + L + CY (Z, S, P, CY, AC)
 func adcl(c *Computer) error {
-	return add(c, &c.L, c.CY())
+	return add(c, c.L, c.CY())
 }
 
 // 0x8F ADC A | A <- A + A + CY (Z, S, P, CY, AC)
 func adca(c *Computer) error {
-	return add(c, &c.A, c.CY())
+	return add(c, c.A, c.CY())
 }
 
 // 0x80 ADD B |	A <- A + B (Z, S, P, CY, AC)
 func addb(c *Computer) error {
-	return add(c, &c.B, false)
+	return add(c, c.B, false)
 }
 
-// 0x81 ADD C|	A <- A + C (Z, S, P, CY, AC)
+// 0x81 ADD C | A <- A + C (Z, S, P, CY, AC)
 func addc(c *Computer) error {
-	return add(c, &c.C, false)
+	return add(c, c.C, false)
 }
 
-// 0x82 ADD D|	A <- A + D (Z, S, P, CY, AC)
+// 0x82 ADD D | A <- A + D (Z, S, P, CY, AC)
 func addd(c *Computer) error {
-	return add(c, &c.D, false)
+	return add(c, c.D, false)
 }
 
 // 0x83 ADD E | A <- A + E (Z, S, P, CY, AC)
 func adde(c *Computer) error {
-	return add(c, &c.E, false)
+	return add(c, c.E, false)
 }
 
 // 0x84 ADD E | A <- A + E (Z, S, P, CY, AC)
 func addh(c *Computer) error {
-	return add(c, &c.H, false)
+	return add(c, c.H, false)
 }
 
 // 0x85 ADD L | A <- A + L (Z, S, P, CY, AC)
 func addl(c *Computer) error {
-	return add(c, &c.L, false)
+	return add(c, c.L, false)
 }
 
 // 0x87 ADD A | A <- A + A (Z, S, P, CY, AC)
 func adda(c *Computer) error {
-	return add(c, &c.A, false)
+	return add(c, c.A, false)
 }
 
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
@@ -983,4 +990,56 @@ func push16(c *Computer, d16 uint16) error {
 	}
 	c.SP -= 2
 	return nil
+}
+func sub(c *Computer, v byte, borrow bool) error {
+	sub := c.A + (^v + 1)
+	if borrow {
+		sub--
+	}
+
+	flags := zero(sub) | sign(sub) | parity(sub)
+	// there was borrow (cyf = 1) if the result of an substraction is higher than v
+	if sub > c.A {
+		flags |= cyf
+	}
+
+	c.A = sub
+	c.Flags = flags
+	c.PC++
+	return nil
+}
+
+// 0x97 SUB A | A <- A - A (Z, S, P, CY, AC)
+func suba(c *Computer) error {
+	return sub(c, c.A, false)
+}
+
+// 0x90 SUB B | A <- A - B (Z, S, P, CY, AC)
+func subb(c *Computer) error {
+	return sub(c, c.B, false)
+}
+
+// 0x91 SUB C | A <- A - C (Z, S, P, CY, AC)
+func subc(c *Computer) error {
+	return sub(c, c.C, false)
+}
+
+// 0x92 SUB D | A <- A - D (Z, S, P, CY, AC)
+func subd(c *Computer) error {
+	return sub(c, c.D, false)
+}
+
+// 0x93 SUB E | A <- A - E (Z, S, P, CY, AC)
+func sube(c *Computer) error {
+	return sub(c, c.E, false)
+}
+
+// 0x94 SUB E | A <- A - E (Z, S, P, CY, AC)
+func subh(c *Computer) error {
+	return sub(c, c.H, false)
+}
+
+// 0x95 SUB L | A <- A - L (Z, S, P, CY, AC)
+func subl(c *Computer) error {
+	return sub(c, c.L, false)
 }
