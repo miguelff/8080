@@ -54,14 +54,7 @@ Opcode	Instruction	size	flags	function
 0x6e	MOV L,M	1		L <- (HL)
 0x76	HLT	1		special
 0x7e	MOV A,M	1		A <- (HL)
-0x80	ADD B	1	Z, S, P, CY, AC	A <- A + B
-0x81	ADD C	1	Z, S, P, CY, AC	A <- A + C
-0x82	ADD D	1	Z, S, P, CY, AC	A <- A + D
-0x83	ADD E	1	Z, S, P, CY, AC	A <- A + E
-0x84	ADD H	1	Z, S, P, CY, AC	A <- A + H
-0x85	ADD L	1	Z, S, P, CY, AC	A <- A + L
 0x86	ADD M	1	Z, S, P, CY, AC	A <- A + (HL)
-0x87	ADD A	1	Z, S, P, CY, AC	A <- A + A
 0x88	ADC B	1	Z, S, P, CY, AC	A <- A + B + CY
 0x89	ADC C	1	Z, S, P, CY, AC	A <- A + C + CY
 0x8a	ADC D	1	Z, S, P, CY, AC	A <- A + D + CY

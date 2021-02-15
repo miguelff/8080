@@ -262,18 +262,17 @@ var instructionTable = []instruction{
 	0x7D: moval,
 	0x7F: movaa,
 	0x80: addb,
-	/*
-		0x81: addc,
-		0x82: addd,
-		0x83: adde,
-		0x84: addh,
-		0x85: addl,
-		0x87: adda,*/
+	0x81: addc,
+	0x82: addd,
+	0x83: adde,
+	0x84: addh,
+	0x85: addl,
+	0x87: adda,
 	0xC3: jmp,
 	0xCD: call,
 }
 
-func add(c *Computer, reg *byte) error {
+func add(c *Computer, reg *byte, carry bool) error {
 	sum := c.A + *reg
 	flags := zero(sum) | sign(sum) | parity(sum)
 	// there was carry if the result of an addition is lower than one of the summands
@@ -281,7 +280,7 @@ func add(c *Computer, reg *byte) error {
 		flags |= cyf
 	}
 	// there was auxiliary carry if there was carry on the least significant nibble
-	if (c.A&0b111 < 8) && (*reg&0b111 < 8) && (sum&0b1111 > 8) {
+	if c.A&0x7+*reg&0x7 >= 0x8 {
 		flags |= acf
 	}
 
@@ -293,7 +292,37 @@ func add(c *Computer, reg *byte) error {
 
 // 0x80 ADD B |	A <- A + B (Z, S, P, CY, AC)
 func addb(c *Computer) error {
-	return add(c, &c.B)
+	return add(c, &c.B, false)
+}
+
+// 0x81 ADD C|	A <- A + C (Z, S, P, CY, AC)
+func addc(c *Computer) error {
+	return add(c, &c.C, false)
+}
+
+// 0x82 ADD D|	A <- A + D (Z, S, P, CY, AC)
+func addd(c *Computer) error {
+	return add(c, &c.D, false)
+}
+
+// 0x83 ADD E | A <- A + E (Z, S, P, CY, AC)
+func adde(c *Computer) error {
+	return add(c, &c.E, false)
+}
+
+// 0x84 ADD E | A <- A + E (Z, S, P, CY, AC)
+func addh(c *Computer) error {
+	return add(c, &c.H, false)
+}
+
+// 0x85 ADD L | A <- A + L (Z, S, P, CY, AC)
+func addl(c *Computer) error {
+	return add(c, &c.L, false)
+}
+
+// 0x87 ADD A | A <- A + A (Z, S, P, CY, AC)
+func adda(c *Computer) error {
+	return add(c, &c.A, false)
 }
 
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr

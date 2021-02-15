@@ -78,6 +78,244 @@ func TestComputer_Step(t *testing.T) {
 		wantErr error
 	}{
 		{
+			"ADD A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x02,
+					},
+				},
+				mem: rom("87"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x04,
+					},
+				},
+				mem: rom("87"),
+			},
+			nil,
+		},
+		{
+			"ADD B: adding two values that sum 0x0 sets the zero and parity flags",
+			&Computer{
+				mem: rom("80"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 1,
+					},
+					alu: alu{
+						Flags: zf | pf,
+					},
+				},
+				mem: rom("80"),
+			},
+			nil,
+		},
+		{
+			"ADD B: adding 0x05 + 0x03 sets the auxiliary carry flag",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x03,
+					},
+					alu: alu{
+						A: 0x05,
+					},
+				},
+				mem: rom("80"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x03,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: acf,
+						A:     0x08,
+					},
+				},
+				mem: rom("80"),
+			},
+			nil,
+		},
+		{
+			"ADD B: adding 0xFE and 0x02 sets the carry and auxiliary carry flags",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0xFE,
+					},
+					alu: alu{
+						A: 0x03,
+					},
+				},
+				mem: rom("80"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0xFE,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: cyf | acf,
+						A:     0x01,
+					},
+				},
+				mem: rom("80"),
+			},
+			nil,
+		},
+		{
+			"ADD C: adding 0xFE and 0x01 set the parity and sign flags",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0xFE,
+					},
+					alu: alu{
+						A: 0x01,
+					},
+				},
+				mem: rom("81"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C:  0xFE,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf | pf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("81"),
+			},
+			nil,
+		},
+		{
+			"ADD D: adding 0xFf and 0x00 set the sign flag",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0xFE,
+					},
+					alu: alu{
+						A: 0x00,
+					},
+				},
+				mem: rom("82"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0xFE,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf,
+						A:     0xFE,
+					},
+				},
+				mem: rom("82"),
+			},
+			nil,
+		},
+		{
+			"ADD E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0xFE,
+					},
+					alu: alu{
+						A: 0x00,
+					},
+				},
+				mem: rom("83"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E:  0xFE,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf,
+						A:     0xFE,
+					},
+				},
+				mem: rom("83"),
+			},
+			nil,
+		},
+		{
+			"ADD H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0xFE,
+					},
+					alu: alu{
+						A: 0x00,
+					},
+				},
+				mem: rom("84"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0xFE,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf,
+						A:     0xFE,
+					},
+				},
+				mem: rom("84"),
+			},
+			nil,
+		},
+		{
+			"ADD L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0xFE,
+					},
+					alu: alu{
+						A: 0x00,
+					},
+				},
+				mem: rom("85"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L:  0xFE,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf,
+						A:     0xFE,
+					},
+				},
+				mem: rom("85"),
+			},
+			nil,
+		},
+		{
 			"CALL adr",
 			&Computer{
 				cpu: cpu{
