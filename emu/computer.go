@@ -268,12 +268,23 @@ var instructionTable = []instruction{
 	0x84: addh,
 	0x85: addl,
 	0x87: adda,
+	0x88: adcb,
+	0x89: adcc,
+	0x8A: adcd,
+	0x8B: adce,
+	0x8C: adch,
+	0x8D: adcl,
+	0x8F: adca,
 	0xC3: jmp,
 	0xCD: call,
 }
 
 func add(c *Computer, reg *byte, carry bool) error {
 	sum := c.A + *reg
+	if carry {
+		sum++
+	}
+
 	flags := zero(sum) | sign(sum) | parity(sum)
 	// there was carry if the result of an addition is lower than one of the summands
 	if sum < c.A {
@@ -288,6 +299,41 @@ func add(c *Computer, reg *byte, carry bool) error {
 	c.Flags = flags
 	c.PC++
 	return nil
+}
+
+// 0x88 ADC B |	A <- A + B+ CY (Z, S, P, CY, AC)
+func adcb(c *Computer) error {
+	return add(c, &c.B, c.CY())
+}
+
+// 0x89 ADC C |	A <- A + C + CY (Z, S, P, CY, AC)
+func adcc(c *Computer) error {
+	return add(c, &c.C, c.CY())
+}
+
+// 0x8A ADC D |	A <- A + D+ CY (Z, S, P, CY, AC)
+func adcd(c *Computer) error {
+	return add(c, &c.D, c.CY())
+}
+
+// 0x8B ADC E | A <- A + E+ CY (Z, S, P, CY, AC)
+func adce(c *Computer) error {
+	return add(c, &c.E, c.CY())
+}
+
+// 0x8C ADC E | A <- A + E+ CY (Z, S, P, CY, AC)
+func adch(c *Computer) error {
+	return add(c, &c.H, c.CY())
+}
+
+// 0x8D ADC L | A <- A + L+ CY (Z, S, P, CY, AC)
+func adcl(c *Computer) error {
+	return add(c, &c.L, c.CY())
+}
+
+// 0x8F ADC A | A <- A + A+ CY (Z, S, P, CY, AC)
+func adca(c *Computer) error {
+	return add(c, &c.A, c.CY())
 }
 
 // 0x80 ADD B |	A <- A + B (Z, S, P, CY, AC)

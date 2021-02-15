@@ -78,6 +78,230 @@ func TestComputer_Step(t *testing.T) {
 		wantErr error
 	}{
 		{
+			"ADC A: with carry",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						Flags: cyf,
+						A:     0x02,
+					},
+				},
+				mem: rom("8F"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf,
+						A:     0x05,
+					},
+				},
+				mem: rom("8F"),
+			},
+			nil,
+		},
+		{
+			"ADC A: no carry",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						Flags: none,
+						A:     0x02,
+					},
+				},
+				mem: rom("8F"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x04,
+					},
+				},
+				mem: rom("8F"),
+			},
+			nil,
+		},
+		{
+			"ADC B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x01,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x02,
+					},
+				},
+				mem: rom("88"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x01,
+						PC: 1,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x04,
+					},
+				},
+				mem: rom("88"),
+			},
+			nil,
+		},
+		{
+			"ADC C",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0xFD,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x01,
+					},
+				},
+				mem: rom("89"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C:  0xFD,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf | pf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("89"),
+			},
+			nil,
+		},
+		{
+			"ADC D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0xFD,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x00,
+					},
+				},
+				mem: rom("8A"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0xFD,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf,
+						A:     0xFE,
+					},
+				},
+				mem: rom("8A"),
+			},
+			nil,
+		},
+		{
+			"ADC E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0xFD,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x00,
+					},
+				},
+				mem: rom("8B"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E:  0xFD,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf,
+						A:     0xFE,
+					},
+				},
+				mem: rom("8B"),
+			},
+			nil,
+		},
+		{
+			"ADC H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0xFD,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x00,
+					},
+				},
+				mem: rom("8C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0xFD,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf,
+						A:     0xFE,
+					},
+				},
+				mem: rom("8C"),
+			},
+			nil,
+		},
+		{
+			"ADC L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0xFD,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x00,
+					},
+				},
+				mem: rom("8D"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L:  0xFD,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf,
+						A:     0xFE,
+					},
+				},
+				mem: rom("8D"),
+			},
+			nil,
+		},
+		{
 			"ADD A",
 			&Computer{
 				cpu: cpu{
