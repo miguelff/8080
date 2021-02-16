@@ -2328,6 +2328,230 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"SBB A: with borrow",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						Flags: cyf,
+						A:     0x01,
+					},
+				},
+				mem: rom("9F"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf | pf | cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("9F"),
+			},
+			nil,
+		},
+		{
+			"SBB A: no borrow",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						Flags: none,
+						A:     0x01,
+					},
+				},
+				mem: rom("9F"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("9F"),
+			},
+			nil,
+		},
+		{
+			"SBB B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x01,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x02,
+					},
+				},
+				mem: rom("98"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x01,
+						PC: 1,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("98"),
+			},
+			nil,
+		},
+		{
+			"SBB C",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0xFF,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x00,
+					},
+				},
+				mem: rom("99"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C:  0xFF,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("99"),
+			},
+			nil,
+		},
+		{
+			"SBB D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0xFF,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x00,
+					},
+				},
+				mem: rom("9A"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0xFF,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("9A"),
+			},
+			nil,
+		},
+		{
+			"SBB E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0xFF,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x00,
+					},
+				},
+				mem: rom("9B"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E:  0xFF,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("9B"),
+			},
+			nil,
+		},
+		{
+			"SBB H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0xFF,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x00,
+					},
+				},
+				mem: rom("9C"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0xFF,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("9C"),
+			},
+			nil,
+		},
+		{
+			"SBB L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0x02,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0x08,
+					},
+				},
+				mem: rom("9D"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L:  0x02,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf,
+						A:     0x05,
+					},
+				},
+				mem: rom("9D"),
+			},
+			nil,
+		},
+		{
 			"SUB A",
 			&Computer{
 				cpu: cpu{

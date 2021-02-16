@@ -289,15 +289,22 @@ var instructionTable = []instruction{
 	0x94: subh,
 	0x95: subl,
 	0x97: suba,
+	0x98: sbbb,
+	0x99: sbbc,
+	0x9A: sbbd,
+	0x9B: sbbe,
+	0x9C: sbbh,
+	0x9D: sbbl,
+	0x9F: sbba,
 	0xC3: jmp,
 	0xCD: call,
 }
 
-func add(c *Computer, v byte, carry bool) error {
-	sum := c.A + v
+func add(c *Computer, summand byte, carry bool) error {
 	if carry {
-		sum++
+		summand++
 	}
+	sum := c.A + summand
 
 	flags := zero(sum) | sign(sum) | parity(sum)
 	// there was carry if the result of an addition is lower than one of the summands
@@ -305,7 +312,7 @@ func add(c *Computer, v byte, carry bool) error {
 		flags |= cyf
 	}
 	// there was auxiliary carry if there was carry on the least significant nibble
-	if c.A&0x07+v&0x07 >= 0x08 {
+	if c.A&0x07+summand&0x07 >= 0x08 {
 		flags |= acf
 	}
 
@@ -991,14 +998,50 @@ func push16(c *Computer, d16 uint16) error {
 	c.SP -= 2
 	return nil
 }
-func sub(c *Computer, v byte, borrow bool) error {
-	sub := c.A + (^v + 1)
+
+// 0x9F SBB A | A <- A - A - CY (Z, S, P, CY, AC)
+func sbba(c *Computer) error {
+	return sub(c, c.A, c.CY())
+}
+
+// 0x98 SBB B | A <- A - B - CY (Z, S, P, CY, AC)
+func sbbb(c *Computer) error {
+	return sub(c, c.B, c.CY())
+}
+
+// 0x99 SBB C | A <- A - C - CY (Z, S, P, CY, AC)
+func sbbc(c *Computer) error {
+	return sub(c, c.C, c.CY())
+}
+
+// 0x9A SBB D | A <- A - D - CY (Z, S, P, CY, AC)
+func sbbd(c *Computer) error {
+	return sub(c, c.D, c.CY())
+}
+
+// 0x9B SBB E | A <- A - E - CY (Z, S, P, CY, AC)
+func sbbe(c *Computer) error {
+	return sub(c, c.E, c.CY())
+}
+
+// 0x9C SBB E | A <- A - E - CY (Z, S, P, CY, AC)
+func sbbh(c *Computer) error {
+	return sub(c, c.H, c.CY())
+}
+
+// 0x9D SBB L | A <- A - L - CY (Z, S, P, CY, AC)
+func sbbl(c *Computer) error {
+	return sub(c, c.L, c.CY())
+}
+
+func sub(c *Computer, subtrahend byte, borrow bool) error {
 	if borrow {
-		sub--
+		subtrahend++
 	}
+	sub := c.A + (^subtrahend + 1)
 
 	flags := zero(sub) | sign(sub) | parity(sub)
-	// there was borrow (cyf = 1) if the result of an substraction is higher than v
+	// there was borrow (cyf = 1) if the subtrahend is higher than the minuend
 	if sub > c.A {
 		flags |= cyf
 	}
