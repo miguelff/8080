@@ -61,33 +61,10 @@ type alu struct {
 	TACC byte
 }
 
-// The Z (Zero) flag is set when an arithmetic operation results in 0.
-func (a *alu) Z() bool {
-	return (a.Flags & zf) != 0
-}
-
-// The S (Sign) flag is set when an arithmetic operation results in a negative number (Its most significant bit is active)
-func (a *alu) S() bool {
-	return (a.Flags & sf) != 0
-}
-
-// The P (Parity) flag is set when the number of 1s in the result of an arithmetic operation is even
-func (a *alu) P() bool {
-	return (a.Flags & pf) != 0
-}
-
 // The CY (Carry) is set if the instruction resulted in a carry (from addition), or a borrow (from subtraction or a
 // comparison) out of the high-order bit. otherwise it is reset.
 func (a *alu) CY() bool {
 	return (a.Flags & cyf) != 0
-}
-
-// The AC (Auxiliary Carry) is set if the instruction caused a carry out of bit 3 and into bit 4 of the resulting value
-// otherwise it is reset. This flag is affected by single precision additions, subtractions, increments, decrements,
-// comparisons and logical operations, but is principally used with additions and increments preceding a DAA (Decimal
-// Adjust Accumulator) instruction.
-func (a *alu) AC() bool {
-	return (a.Flags & acf) != 0
 }
 
 // parity calculates the parity of the given byte, and returns a flags value with the parity flag set appropriately
