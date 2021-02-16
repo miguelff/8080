@@ -280,6 +280,13 @@ var instructionTable = []instruction{
 	0xA4: anah,
 	0xA5: anal,
 	0xA7: anaa,
+	0xA8: xraa,
+	0xA9: xrab,
+	0xAA: xrac,
+	0xAB: xrad,
+	0xAC: xrae,
+	0xAD: xrah,
+	0xAF: xral,
 	0xC3: jmp,
 	0xCD: call,
 }
@@ -381,6 +388,7 @@ func ana(c *Computer, v byte) error {
 
 	c.A = and
 	c.Flags = zero(and) | sign(and) | parity(and)
+
 	c.PC++
 	return nil
 }
@@ -1113,4 +1121,48 @@ func subh(c *Computer) error {
 // 0x95 SUB L | A <- A - L (Z, S, P, CY, AC)
 func subl(c *Computer) error {
 	return sub(c, c.L, false)
+}
+
+func xra(c *Computer, v byte) error {
+	and := c.A ^ v
+
+	c.A = and
+	c.Flags = zero(and) | sign(and) | parity(and)
+	c.PC++
+	return nil
+}
+
+// 0xA8 XRA A | A <- A XOR A (Z, S, P, CY)
+func xraa(c *Computer) error {
+	return xra(c, c.A)
+}
+
+// 0xA9 XRA B | A <- A XOR B (Z, S, P, CY)
+func xrab(c *Computer) error {
+	return xra(c, c.B)
+}
+
+// 0xAA XRA C | A <- A XOR C (Z, S, P, CY)
+func xrac(c *Computer) error {
+	return xra(c, c.C)
+}
+
+// 0xAB XRA D | A <- A XOR D (Z, S, P, CY)
+func xrad(c *Computer) error {
+	return xra(c, c.D)
+}
+
+// 0xAC XRA E | A <- A XOR E (Z, S, P, CY)
+func xrae(c *Computer) error {
+	return xra(c, c.E)
+}
+
+// 0xAD XRA H | A <- A XOR H (Z, S, P, CY)
+func xrah(c *Computer) error {
+	return xra(c, c.H)
+}
+
+// 0xAF XRA L | A <- A XOR L (Z, S, P, CY)
+func xral(c *Computer) error {
+	return xra(c, c.L)
 }

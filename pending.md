@@ -51,14 +51,7 @@ Opcode	Instruction	size	flags	function
 0x96	SUB M	1	Z, S, P, CY, AC	A <- A + (HL)
 0x9e	SBB M	1	Z, S, P, CY, AC	A <- A - (HL) - CY
 0xa6	ANA M	1	Z, S, P, CY, AC	A <- A & (HL)
-0xa8	XRA B	1	Z, S, P, CY, AC	A <- A ^ B
-0xa9	XRA C	1	Z, S, P, CY, AC	A <- A ^ C
-0xaa	XRA D	1	Z, S, P, CY, AC	A <- A ^ D
-0xab	XRA E	1	Z, S, P, CY, AC	A <- A ^ E
-0xac	XRA H	1	Z, S, P, CY, AC	A <- A ^ H
-0xad	XRA L	1	Z, S, P, CY, AC	A <- A ^ L
 0xae	XRA M	1	Z, S, P, CY, AC	A <- A ^ (HL)
-0xaf	XRA A	1	Z, S, P, CY, AC	A <- A ^ A
 0xb0	ORA B	1	Z, S, P, CY, AC	A <- A | B
 0xb1	ORA C	1	Z, S, P, CY, AC	A <- A | C
 0xb2	ORA D	1	Z, S, P, CY, AC	A <- A | D

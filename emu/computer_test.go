@@ -3004,6 +3004,204 @@ func TestComputer_Step(t *testing.T) {
 			},
 			nil,
 		},
+		{
+			"XRA A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("A8"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("A8"),
+			},
+			nil,
+		},
+
+		{
+			"XRA B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("A9"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xF5,
+					},
+				},
+				mem: rom("A9"),
+			},
+			nil,
+		},
+
+		{
+			"XRA C",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("AA"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xF5,
+					},
+				},
+				mem: rom("AA"),
+			},
+			nil,
+		},
+
+		{
+			"XRA D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("AB"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xF5,
+					},
+				},
+				mem: rom("AB"),
+			},
+			nil,
+		},
+
+		{
+			"XRA E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("AC"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xF5,
+					},
+				},
+				mem: rom("AC"),
+			},
+			nil,
+		},
+
+		{
+			"XRA H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("AD"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xF5,
+					},
+				},
+				mem: rom("AD"),
+			},
+			nil,
+		},
+
+		{
+			"XRA L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("AF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xF5,
+					},
+				},
+				mem: rom("AF"),
+			},
+			nil,
+		},
 	} {
 		t.Run(tC.desc, func(t *testing.T) {
 			gotErr := tC.init.Step()
