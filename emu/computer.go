@@ -296,6 +296,13 @@ var instructionTable = []instruction{
 	0x9C: sbbh,
 	0x9D: sbbl,
 	0x9F: sbba,
+	0xA0: anab,
+	0xA1: anac,
+	0xA2: anad,
+	0xA3: anae,
+	0xA4: anah,
+	0xA5: anal,
+	0xA7: anaa,
 	0xC3: jmp,
 	0xCD: call,
 }
@@ -390,6 +397,50 @@ func addl(c *Computer) error {
 // 0x87 ADD A | A <- A + A (Z, S, P, CY, AC)
 func adda(c *Computer) error {
 	return add(c, c.A, false)
+}
+
+func ana(c *Computer, v byte) error {
+	and := c.A & v
+
+	c.A = and
+	c.Flags = zero(and) | sign(and) | parity(and)
+	c.PC++
+	return nil
+}
+
+// 0xA7 ANA A | A <- A & A (Z, S, P, CY)
+func anaa(c *Computer) error {
+	return ana(c, c.A)
+}
+
+// 0xA0 ANA B | A <- A & B (Z, S, P, CY)
+func anab(c *Computer) error {
+	return ana(c, c.B)
+}
+
+// 0xA1 ANA C | A <- A & C (Z, S, P, CY)
+func anac(c *Computer) error {
+	return ana(c, c.C)
+}
+
+// 0xA2 ANA D | A <- A & D (Z, S, P, CY)
+func anad(c *Computer) error {
+	return ana(c, c.D)
+}
+
+// 0xA3 ANA E | A <- A & E (Z, S, P, CY)
+func anae(c *Computer) error {
+	return ana(c, c.E)
+}
+
+// 0xA4 ANA H | A <- A & H (Z, S, P, CY)
+func anah(c *Computer) error {
+	return ana(c, c.H)
+}
+
+// 0xA5 ANA L | A <- A & L (Z, S, P, CY)
+func anal(c *Computer) error {
+	return ana(c, c.L)
 }
 
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr

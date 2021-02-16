@@ -562,6 +562,211 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"ANA A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("A7"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("A7"),
+			},
+			nil,
+		},
+
+		{
+			"ANA B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x0A,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("A0"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf,
+						A:     0x0A,
+					},
+				},
+				mem: rom("A0"),
+			},
+			nil,
+		},
+
+		{
+			"ANA C",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0x0A,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("A1"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf,
+						A:     0x0A,
+					},
+				},
+				mem: rom("A1"),
+			},
+			nil,
+		},
+
+		{
+			"ANA D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0x0A,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("A2"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf,
+						A:     0x0A,
+					},
+				},
+				mem: rom("A2"),
+			},
+			nil,
+		},
+
+		{
+			"ANA E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0x0A,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("A3"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf,
+						A:     0x0A,
+					},
+				},
+				mem: rom("A3"),
+			},
+			nil,
+		},
+
+		{
+			"ANA H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x0A,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("A4"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf,
+						A:     0x0A,
+					},
+				},
+				mem: rom("A4"),
+			},
+			nil,
+		},
+
+		{
+			"ANA L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0x0A,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("A5"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf,
+						A:     0x0A,
+					},
+				},
+				mem: rom("A5"),
+			},
+			nil,
+		},
+		{
 			"INR A",
 			&Computer{
 				cpu: cpu{

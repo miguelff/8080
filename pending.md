@@ -50,14 +50,7 @@ Opcode	Instruction	size	flags	function
 0x8e	ADC M	1	Z, S, P, CY, AC	A <- A + (HL) + CY
 0x96	SUB M	1	Z, S, P, CY, AC	A <- A + (HL)
 0x9e	SBB M	1	Z, S, P, CY, AC	A <- A - (HL) - CY
-0xa0	ANA B	1	Z, S, P, CY, AC	A <- A & B
-0xa1	ANA C	1	Z, S, P, CY, AC	A <- A & C
-0xa2	ANA D	1	Z, S, P, CY, AC	A <- A & D
-0xa3	ANA E	1	Z, S, P, CY, AC	A <- A & E
-0xa4	ANA H	1	Z, S, P, CY, AC	A <- A & H
-0xa5	ANA L	1	Z, S, P, CY, AC	A <- A & L
 0xa6	ANA M	1	Z, S, P, CY, AC	A <- A & (HL)
-0xa7	ANA A	1	Z, S, P, CY, AC	A <- A & A
 0xa8	XRA B	1	Z, S, P, CY, AC	A <- A ^ B
 0xa9	XRA C	1	Z, S, P, CY, AC	A <- A ^ C
 0xaa	XRA D	1	Z, S, P, CY, AC	A <- A ^ D
