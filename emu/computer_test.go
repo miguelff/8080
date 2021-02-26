@@ -540,28 +540,6 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
-			"CALL adr",
-			&Computer{
-				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						SP: 0x07,
-					},
-				},
-				mem: rom("00 CD 0A 00 00 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
-					registers: registers{
-						SP: 0x05,
-						PC: 0x0A,
-					},
-				},
-				mem: rom("00 CD 0A 00 00 00 01 00"),
-			},
-			nil,
-		},
-		{
 			"ANA A",
 			&Computer{
 				cpu: cpu{
@@ -763,6 +741,28 @@ func TestComputer_Step(t *testing.T) {
 					},
 				},
 				mem: rom("A5"),
+			},
+			nil,
+		},
+		{
+			"CALL adr",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						SP: 0x07,
+					},
+				},
+				mem: rom("00 CD 0A 00 00 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						SP: 0x05,
+						PC: 0x0A,
+					},
+				},
+				mem: rom("00 CD 0A 00 00 00 01 00"),
 			},
 			nil,
 		},
@@ -1304,7 +1304,7 @@ func TestComputer_Step(t *testing.T) {
 			&Computer{
 				cpu: cpu{
 					registers: registers{
-						B: 0xFF,
+						C: 0xFF,
 					},
 				},
 				mem: rom("03"),
@@ -1313,8 +1313,8 @@ func TestComputer_Step(t *testing.T) {
 				cpu: cpu{
 					registers: registers{
 						PC: 0x01,
-						C:  0x01,
-						B:  0x00,
+						C:  0x00,
+						B:  0x01,
 					},
 				},
 				mem: rom("03"),
@@ -1326,7 +1326,7 @@ func TestComputer_Step(t *testing.T) {
 			&Computer{
 				cpu: cpu{
 					registers: registers{
-						D: 0xFF,
+						E: 0xFF,
 					},
 				},
 				mem: rom("13"),
@@ -1335,8 +1335,8 @@ func TestComputer_Step(t *testing.T) {
 				cpu: cpu{
 					registers: registers{
 						PC: 0x01,
-						E:  0x01,
-						D:  0x00,
+						E:  0x00,
+						D:  0x01,
 					},
 				},
 				mem: rom("13"),
@@ -3316,6 +3316,35 @@ func TestComputer_Step(t *testing.T) {
 					},
 				},
 				mem: rom("9D"),
+			},
+			nil,
+		},
+		{
+			"STAX B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x00,
+						C: 0x10,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x00,
+						C:  0x10,
+						PC: 0x01,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
 			},
 			nil,
 		},

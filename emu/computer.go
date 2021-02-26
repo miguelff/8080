@@ -38,7 +38,15 @@ type registers struct {
 	PC uint16
 }
 
-// flags encapsulate
+// flags encode, per bit and from the least significant bit, the following semantics:
+//
+// zero (zf): whether the result of an operation was zero (all bits of the operation result are zero)
+// sign (sf): whether the number if negative if interpreted as signed (most significant bit of the operation result is 1)
+// parity (pf): whether the amount of ones in the result of an operation is even
+// carry (cyf): whether an addition exceeded the maximum number, or there was borrow in a substraction.
+// auxiliary carry (acf): like carry but applied to the least significant 4 bits of the number.
+//
+// the remaining three most significant bits are ignored.
 type flags byte
 
 const (
@@ -531,7 +539,7 @@ func cmpa(c *Computer) error {
 	return sub(c, c.A, false)
 }
 
-func dad8(c *Computer, lsb, msb byte) error {
+func dad8(c *Computer, msb, lsb byte) error {
 	reg := uint16(msb)<<8 + uint16(lsb)
 	return dad16(c, reg)
 }
@@ -559,17 +567,17 @@ func dad16(c *Computer, d16 uint16) error {
 
 // 0x09	DAD B (CY) | HL = HL + BC
 func dadb(c *Computer) error {
-	return dad8(c, c.C, c.B)
+	return dad8(c, c.B, c.C)
 }
 
 // 0x19	DAD D (CY) | HL = HL + DE
 func dadd(c *Computer) error {
-	return dad8(c, c.E, c.D)
+	return dad8(c, c.D, c.E)
 }
 
 // 0x29	DAD H (CY) | HL = HL + HL
 func dadh(c *Computer) error {
-	return dad8(c, c.L, c.H)
+	return dad8(c, c.H, c.L)
 }
 
 // 0x39	DAD B (CY) | HL = HL + SP
@@ -577,9 +585,9 @@ func dadsp(c *Computer) error {
 	return dad16(c, c.SP)
 }
 
-func inx(c *Computer, lsreg, msreg *byte) error {
+func inx(c *Computer, msreg, lsreg *byte) error {
 	incr := (uint16(*msreg)<<8 + uint16(*lsreg)) + 1
-	*msreg = byte((incr >> 8) & 0xFF)
+	*msreg = byte(incr >> 8)
 	*lsreg = byte(incr & 0xFF)
 	c.PC++
 	return nil
@@ -644,13 +652,13 @@ func inrl(c *Computer) error {
 	return inr(c, &c.L)
 }
 
-// 0x03: INX B | B <- B + 1
+// 0x03: INX BC | BC <- BC + 1
 // Increments B. No condition flags are affected
 func inxb(c *Computer) error {
 	return inx(c, &c.B, &c.C)
 }
 
-// 0x13: INX D | D <- D + 1
+// 0x13: INX DE | DE <- DE + 1
 // Increments D. No condition flags are affected
 func inxd(c *Computer) error {
 	return inx(c, &c.D, &c.E)
@@ -659,7 +667,7 @@ func inxd(c *Computer) error {
 // 0x23: INX H | H <- H + 1
 // Increments H. No condition flags are affected
 func inxh(c *Computer) error {
-	return inx(c, &c.L, &c.H)
+	return inx(c, &c.H, &c.L)
 }
 
 // 0x33: INX SP | SP <- SP + 1
@@ -689,7 +697,7 @@ func ldaxd(c *Computer) error {
 }
 
 // Moves the two bytes that come after the instruction code, to lsreg and msreg.
-func lxi(c *Computer, lsreg, msreg *byte) error {
+func lxi(c *Computer, msreg, lsreg *byte) error {
 	lsb, err := c.read8(c.PC + 1)
 	if err != nil {
 		return err
@@ -721,19 +729,19 @@ func lxi16(c *Computer, reg *uint16) error {
 // 0x01: LXI B | D16. B <- byte 3, C <- byte 2
 // Loads double word in registers B and C.
 func lxib(c *Computer) error {
-	return lxi(c, &c.C, &c.B)
+	return lxi(c, &c.B, &c.C)
 }
 
 // 0x11: LXI D | D16. D <- byte 3, E <- byte 2
 // Loads double word in registers D and E.
 func lxid(c *Computer) error {
-	return lxi(c, &c.E, &c.D)
+	return lxi(c, &c.D, &c.E)
 }
 
 // 0x21: LXI H, D161 | H <- byte 3, L <- byte 2
 // Loads double word in the register pair HL
 func lxih(c *Computer) error {
-	return lxi(c, &c.L, &c.H)
+	return lxi(c, &c.H, &c.L)
 }
 
 // 0x31: LXI SP, D16 | SP.hi <- byte 3, SP.lo <- byte 2

@@ -5,7 +5,7 @@ Opcode	Instruction	size	flags	function
 0x0a	LDAX B	1		A <- (BC)
 0x0b	DCX B	1		BC = BC-1
 0x0d	DCR C	1	Z, S, P, AC	C <-C-1
-0x0f	RRC	1	CY	A = A >> 1; bit 7 = prev bit 0; CY = prev bit 0	
+0x0f	RRC	1	CY	A = A >> 1; bit 7 = prev bit 0; CY = prev bit 0
 0x12	STAX D	1		(DE) <- A
 0x15	DCR D	1	Z, S, P, AC	D <- D-1
 0x17	RAL	1	CY	A = A << 1; bit 0 = prev CY; CY = prev bit 7
@@ -43,14 +43,7 @@ Opcode	Instruction	size	flags	function
 0xa6	ANA M	1	Z, S, P, CY, AC	A <- A & (HL)
 0xae	XRA M	1	Z, S, P, CY, AC	A <- A ^ (HL)
 0xb6	ORA M	1	Z, S, P, CY, AC	A <- A | (HL
-0xb8	CMP B	1	Z, S, P, CY, AC	A - B
-0xb9	CMP C	1	Z, S, P, CY, AC	A - C
-0xba	CMP D	1	Z, S, P, CY, AC	A - D
-0xbb	CMP E	1	Z, S, P, CY, AC	A - E
-0xbc	CMP H	1	Z, S, P, CY, AC	A - H
-0xbd	CMP L	1	Z, S, P, CY, AC	A - L
 0xbe	CMP M	1	Z, S, P, CY, AC	A - (HL)
-0xbf	CMP A	1	Z, S, P, CY, AC	A - A
 0xc0	RNZ	1		if NZ, RET
 0xc1	POP B	1		C <- (sp); B <- (sp+1); sp <- sp+2
 0xc2	JNZ adr	3		if NZ, PC <- adr
