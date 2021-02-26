@@ -1,12 +1,10 @@
 Opcode	Instruction	size	flags	function
-0x02	STAX B	1		(BC) <- A
 0x05	DCR B	1	Z, S, P, AC	B <- B-1
 0x07	RLC	1	CY	A = A << 1; bit 0 = prev bit 7; CY = prev bit 7
 0x0a	LDAX B	1		A <- (BC)
 0x0b	DCX B	1		BC = BC-1
 0x0d	DCR C	1	Z, S, P, AC	C <-C-1
 0x0f	RRC	1	CY	A = A >> 1; bit 7 = prev bit 0; CY = prev bit 0
-0x12	STAX D	1		(DE) <- A
 0x15	DCR D	1	Z, S, P, AC	D <- D-1
 0x17	RAL	1	CY	A = A << 1; bit 0 = prev CY; CY = prev bit 7
 0x1b	DCX D	1		DE = DE-1

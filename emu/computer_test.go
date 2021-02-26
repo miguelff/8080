@@ -3349,6 +3349,35 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"STAX D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0x00,
+						E: 0x10,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0x00,
+						E:  0x10,
+						PC: 0x01,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
+			},
+			nil,
+		},
+		{
 			"SUB A",
 			&Computer{
 				cpu: cpu{

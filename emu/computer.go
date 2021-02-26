@@ -203,6 +203,7 @@ type instruction func(*Computer) error
 var instructionTable = []instruction{
 	0x00: nop,
 	0x01: lxib,
+	0x02: staxb,
 	0x03: inxb,
 	0x04: inrb,
 	0x06: mvib,
@@ -210,6 +211,7 @@ var instructionTable = []instruction{
 	0x0C: inrc,
 	0x0E: mvic,
 	0x11: lxid,
+	0x12: staxd,
 	0x13: inxd,
 	0x14: inrd,
 	0x16: mvid,
@@ -1259,6 +1261,23 @@ func sbbh(c *Computer) error {
 // 0x9D SBB L | A <- A - L - CY (Z, S, P, CY, AC)
 func sbbl(c *Computer) error {
 	return sub(c, c.L, c.CY())
+}
+
+func stax(c *Computer, msb, lsb byte) error {
+	addr := uint16(msb)<<8 + uint16(lsb)
+	err := c.write8(addr, c.A)
+	c.PC++
+	return err
+}
+
+// 0x02 STAX B | (BC) <- A
+func staxb(c *Computer) error {
+	return stax(c, c.B, c.C)
+}
+
+// 0x12 STAX D | (DE) <- A
+func staxd(c *Computer) error {
+	return stax(c, c.D, c.E)
 }
 
 func sub(c *Computer, subtrahend byte, borrow bool) error {
