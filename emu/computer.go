@@ -208,6 +208,7 @@ var instructionTable = []instruction{
 	0x04: inrb,
 	0x06: mvib,
 	0x09: dadb,
+	0x0A: ldaxb,
 	0x0C: inrc,
 	0x0E: mvic,
 	0x11: lxid,
@@ -655,25 +656,21 @@ func inrl(c *Computer) error {
 }
 
 // 0x03: INX BC | BC <- BC + 1
-// Increments B. No condition flags are affected
 func inxb(c *Computer) error {
 	return inx(c, &c.B, &c.C)
 }
 
 // 0x13: INX DE | DE <- DE + 1
-// Increments D. No condition flags are affected
 func inxd(c *Computer) error {
 	return inx(c, &c.D, &c.E)
 }
 
 // 0x23: INX H | H <- H + 1
-// Increments H. No condition flags are affected
 func inxh(c *Computer) error {
 	return inx(c, &c.H, &c.L)
 }
 
 // 0x33: INX SP | SP <- SP + 1
-// Increments SP. No condition flags are affected
 func inxsp(c *Computer) error {
 	return inx16(c, &c.SP)
 }
@@ -684,21 +681,29 @@ func jmp(c *Computer) error {
 	return lxi16(c, &c.PC)
 }
 
-// 0x1A: LDAX D | A <- (DE)
-// Loads into the Accumulator record the value pointed by the address denoted by the DE register group.
-func ldaxd(c *Computer) error {
-	addr := uint16(c.D)<<8 + uint16(c.E)
-	b, err := c.read8(addr)
+func ldax(c *Computer, msb, lsb byte) error {
+	addr := uint16(msb)<<8 + uint16(lsb)
+	v, err := c.read8(addr)
 	if err != nil {
 		return err
 	}
 
-	c.A = b
+	c.A = v
 	c.PC++
 	return nil
 }
 
-// Moves the two bytes that come after the instruction code, to lsreg and msreg.
+// 0x0A: LDAX B | A <- (BC)
+func ldaxb(c *Computer) error {
+	return ldax(c, c.B, c.C)
+}
+
+// 0x1A: LDAX D | A <- (DE)
+func ldaxd(c *Computer) error {
+	return ldax(c, c.D, c.E)
+}
+
+// Moves the two bytes that come after the instruction code, to the pair msreg, lsreg.
 func lxi(c *Computer, msreg, lsreg *byte) error {
 	lsb, err := c.read8(c.PC + 1)
 	if err != nil {

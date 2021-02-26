@@ -1402,6 +1402,32 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"LDAX B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x00,
+						C: 0x02,
+					},
+				},
+				mem: rom("0a 00 ff"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						B:  0x00,
+						C:  0x02,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("0a 00 ff"),
+			},
+			nil,
+		},
+		{
 			"LDAX D",
 			&Computer{
 				cpu: cpu{
