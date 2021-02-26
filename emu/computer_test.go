@@ -2533,6 +2533,206 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"ORA A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B7"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B7"),
+			},
+			nil,
+		},
+
+		{
+			"ORA B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x0A,
+					},
+					alu: alu{
+						Flags: cyf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B0"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B0"),
+			},
+			nil,
+		},
+
+		{
+			"ORA C",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("B1"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B1"),
+			},
+			nil,
+		},
+
+		{
+			"ORA D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("B2"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B2"),
+			},
+			nil,
+		},
+
+		{
+			"ORA E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("B3"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B3"),
+			},
+			nil,
+		},
+
+		{
+			"ORA H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("B4"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B4"),
+			},
+			nil,
+		},
+
+		{
+			"ORA L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0x0A,
+					},
+					alu: alu{
+						A: 0xFF,
+					},
+				},
+				mem: rom("B5"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L:  0x0A,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B5"),
+			},
+			nil,
+		},
+		{
 			"SBB A: with borrow",
 			&Computer{
 				cpu: cpu{

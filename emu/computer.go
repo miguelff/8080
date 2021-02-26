@@ -61,7 +61,7 @@ type alu struct {
 	TACC byte
 }
 
-// The CY (Carry) is set if the instruction resulted in a carry (from addition), or a borrow (from subtraction or a
+// The CY (Carry) is set if the instruction resulted in a carry (from addition), ora a borrow (from subtraction ora a
 // comparison) out of the high-order bit. otherwise it is reset.
 func (a *alu) CY() bool {
 	return (a.Flags & cyf) != 0
@@ -280,6 +280,13 @@ var instructionTable = []instruction{
 	0xA4: anah,
 	0xA5: anal,
 	0xA7: anaa,
+	0xB0: orab,
+	0xB1: orac,
+	0xB2: orad,
+	0xB3: orae,
+	0xB4: orah,
+	0xB5: oral,
+	0xB7: oraa,
 	0xA8: xraa,
 	0xA9: xrab,
 	0xAA: xrac,
@@ -291,6 +298,10 @@ var instructionTable = []instruction{
 	0xCD: call,
 }
 
+// If carry is not set, the content of register r is added to the content of the accumulator.
+// The result is placed in the accumulator.
+// If carry is set, the content of register r and an extra bit are added to the content
+// of the accumulator. The result is placed in the accumulator.
 func add(c *Computer, summand byte, carry bool) error {
 	if carry {
 		summand++
@@ -383,11 +394,13 @@ func adda(c *Computer) error {
 	return add(c, c.A, false)
 }
 
+// The content of register r is logically anded with the content of the accumulator.
+// The result is placed in the accumulator. The CY flag is cleared.
 func ana(c *Computer, v byte) error {
 	and := c.A & v
 
 	c.A = and
-	c.Flags = zero(and) | sign(and) | parity(and)
+	c.Flags = zero(and) | sign(and) | parity(and) | (c.Flags & acf)
 
 	c.PC++
 	return nil
@@ -460,10 +473,12 @@ func inx16(c *Computer, reg *uint16) error {
 	return nil
 }
 
+// The content of register r is incremented by one.
+// Note: All condition flags except CY are affected.
 func inr(c *Computer, reg *byte) error {
 	sum := *reg + 1
 
-	flags := zero(sum) | sign(sum) | parity(sum)
+	flags := zero(sum) | sign(sum) | parity(sum) | (c.Flags & cyf)
 	if *reg&0x07 == 0x07 && sum&0x08 == 0x08 {
 		flags |= acf
 	}
@@ -553,6 +568,7 @@ func ldaxd(c *Computer) error {
 	return nil
 }
 
+// Moves the two bytes that come after the instruction code, to lsreg and msreg.
 func lxi(c *Computer, lsreg, msreg *byte) error {
 	lsb, err := c.read8(c.PC + 1)
 	if err != nil {
@@ -1016,6 +1032,53 @@ func mvil(c *Computer) error {
 func nop(c *Computer) error {
 	c.PC++
 	return nil
+}
+
+// The content of register r is inclusive-OR'd with the content of the accumulator.
+// The result is placed in the accumulator. The CY and AC flags are cleared.
+func ora(c *Computer, v byte) error {
+	and := c.A | v
+
+	c.A = and
+	c.Flags = zero(and) | sign(and) | parity(and)
+
+	c.PC++
+	return nil
+}
+
+// 0xb7	ORA A	(Z, S, P, CY, AC) | A <- A | A
+func oraa(c *Computer) error {
+	return ora(c, c.A)
+}
+
+// 0xb0	ORA B	(Z, S, P, CY, AC) | A <- A | B
+func orab(c *Computer) error {
+	return ora(c, c.B)
+}
+
+// 0xb1	ORA C	(Z, S, P, CY, AC) | A <- A | C
+func orac(c *Computer) error {
+	return ora(c, c.C)
+}
+
+// 0xb2	ORA D	(Z, S, P, CY, AC) | A <- A | D
+func orad(c *Computer) error {
+	return ora(c, c.D)
+}
+
+// 0xb3	ORA E	(Z, S, P, CY, AC) | A <- A | E
+func orae(c *Computer) error {
+	return ora(c, c.E)
+}
+
+// 0xb4	ORA H	(Z, S, P, CY, AC) | A <- A | H
+func orah(c *Computer) error {
+	return ora(c, c.H)
+}
+
+// 0xb5	ORA L	(Z, S, P, CY, AC) | A <- A | L
+func oral(c *Computer) error {
+	return ora(c, c.L)
 }
 
 func push16(c *Computer, d16 uint16) error {
