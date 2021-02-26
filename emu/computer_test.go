@@ -25,7 +25,7 @@ func TestParity(t *testing.T) {
 			none,
 		},
 	} {
-		if got := parity(tC.b); got != tC.want {
+		if got := parity8(tC.b); got != tC.want {
 			t.Errorf("got %b, want %b", got, tC.want)
 		}
 	}
@@ -44,7 +44,7 @@ func TestSign(t *testing.T) {
 			none,
 		},
 	} {
-		if got := sign(tC.b); got != tC.want {
+		if got := sign8(tC.b); got != tC.want {
 			t.Errorf("got %b, want %b", got, tC.want)
 		}
 	}
@@ -64,7 +64,7 @@ func TestZero(t *testing.T) {
 			zf,
 		},
 	} {
-		if got := zero(tC.b); got != tC.want {
+		if got := zero8(tC.b); got != tC.want {
 			t.Errorf("got %b, want %b", got, tC.want)
 		}
 	}
@@ -326,7 +326,7 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
-			"ADD B: adding two values that sum 0x0 sets the zero and parity flags",
+			"ADD B: adding two values that sum 0x0 sets the zero8 and parity8 flags",
 			&Computer{
 				mem: rom("80"),
 			},
@@ -400,7 +400,7 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
-			"ADD C: adding 0xFE and 0x01 set the parity and sign flags",
+			"ADD C: adding 0xFE and 0x01 set the parity8 and sign8 flags",
 			&Computer{
 				cpu: cpu{
 					registers: registers{
@@ -428,7 +428,7 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
-			"ADD D: adding 0xFf and 0x00 set the sign flag",
+			"ADD D: adding 0xFf and 0x00 set the sign8 flag",
 			&Computer{
 				cpu: cpu{
 					registers: registers{
@@ -791,7 +791,7 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
-			"CMP B: generates CYF",
+			"CMP B: generates carry",
 			&Computer{
 				cpu: cpu{
 					registers: registers{
@@ -982,6 +982,150 @@ func TestComputer_Step(t *testing.T) {
 					},
 				},
 				mem: rom("BD"),
+			},
+			nil,
+		},
+		{
+			"DAD B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x01,
+						C: 0x01,
+						H: 0x01,
+						L: 0x01,
+					},
+				},
+				mem: rom("09"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x01,
+						C:  0x01,
+						H:  0x02,
+						L:  0x02,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+					},
+				},
+				mem: rom("09"),
+			},
+			nil,
+		},
+		{
+			"DAD B: generates carry",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0xFF,
+						C: 0xFE,
+						H: 0x00,
+						L: 0x03,
+					},
+				},
+				mem: rom("09"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0xFF,
+						C:  0xFE,
+						H:  0x00,
+						L:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: cyf,
+					},
+				},
+				mem: rom("09"),
+			},
+			nil,
+		},
+		{
+			"DAD D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0x01,
+						E: 0xFF,
+						H: 0x01,
+						L: 0x01,
+					},
+				},
+				mem: rom("19"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0x01,
+						E:  0xFF,
+						H:  0x03,
+						L:  0x00,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+					},
+				},
+				mem: rom("19"),
+			},
+			nil,
+		},
+		{
+			"DAD H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x01,
+						L: 0x01,
+					},
+				},
+				mem: rom("29"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0x02,
+						L:  0x02,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+					},
+				},
+				mem: rom("29"),
+			},
+			nil,
+		},
+		{
+			"DAD SP",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0x01,
+						L:  0x03,
+						SP: 0x0FFF,
+					},
+				},
+				mem: rom("39"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0x11,
+						L:  0x02,
+						SP: 0x0FFF,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+					},
+				},
+				mem: rom("39"),
 			},
 			nil,
 		},

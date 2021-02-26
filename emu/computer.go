@@ -50,7 +50,7 @@ const (
 	acf
 )
 
-// alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity, carry, and auxiliary carry), and special registers
+// alu (arithmetic-logic unit) contains 5 flags (zero8, sign8, parity8, carry, and auxiliary carry), and special registers
 // that belong to the ALU and not the register array: Register (A), a temporary register (TMP) and a temporary
 // accumulator register (TACC).
 type alu struct {
@@ -67,8 +67,8 @@ func (a *alu) CY() bool {
 	return (a.Flags & cyf) != 0
 }
 
-// parity calculates the parity of the given byte, and returns a flags value with the parity flag set appropriately
-func parity(b byte) flags {
+// parity8 calculates the parity of the given byte, and returns a flags value with the parity8 flag set appropriately
+func parity8(b byte) flags {
 	i := b ^ (b >> 1)
 	i = i ^ (i >> 2)
 	i = i ^ (i >> 4)
@@ -78,17 +78,45 @@ func parity(b byte) flags {
 	return 0
 }
 
-// sign calculates the parity of the given byte, and returns a flags value with the sign flag set appropriately
-func sign(b byte) flags {
+// sign8 calculates the sign of the given byte, and returns a flags value with the sign8 flag set appropriately
+func sign8(b byte) flags {
 	if b&0x80 == 0x80 {
 		return sf
 	}
 	return none
 }
 
-// zero calculates the zero flag of the given byte, and returns a flags value with the sign flag set appropriately
-func zero(b byte) flags {
-	if b == 0x00 {
+// zero8 calculates the zero flag of the given byte, and returns a flags value with the sign8 flag set appropriately
+func zero8(b byte) flags {
+	if b == 0x0 {
+		return zf
+	}
+	return none
+}
+
+// parity16 calculates the parity8 of the given uint16, and returns a flags value with the parity8 flag set appropriately
+func parity16(b uint16) flags {
+	i := b ^ (b >> 1)
+	i = i ^ (i >> 2)
+	i = i ^ (i >> 4)
+	i = i ^ (i >> 8)
+	if i&1 == 0 {
+		return pf
+	}
+	return 0
+}
+
+// sign16 calculates the parity8 of the given uint16, and returns a flags value with the sign8 flag set appropriately
+func sign16(b uint16) flags {
+	if b&0x8000 == 0x8000 {
+		return sf
+	}
+	return none
+}
+
+// zero16 calculates the zero8 flag of the given uint16, and returns a flags value with the sign8 flag set appropriately
+func zero16(b uint16) flags {
+	if b == 0x0 {
 		return zf
 	}
 	return none
@@ -170,12 +198,14 @@ var instructionTable = []instruction{
 	0x03: inxb,
 	0x04: inrb,
 	0x06: mvib,
+	0x09: dadb,
 	0x0C: inrc,
 	0x0E: mvic,
 	0x11: lxid,
 	0x13: inxd,
 	0x14: inrd,
 	0x16: mvid,
+	0x19: dadd,
 	0x1C: inre,
 	0x1E: mvie,
 	0x1A: ldaxd,
@@ -183,10 +213,12 @@ var instructionTable = []instruction{
 	0x23: inxh,
 	0x24: inrh,
 	0x26: mvih,
+	0x29: dadh,
 	0x2C: inrl,
 	0x2E: mvil,
 	0x31: lxisp,
 	0x33: inxsp,
+	0x39: dadsp,
 	0x3C: inra,
 	0x3E: mvia,
 	0x40: movbb,
@@ -309,19 +341,19 @@ var instructionTable = []instruction{
 // The result is placed in the accumulator.
 // If carry is set, the content of register r and an extra bit are added to the content
 // of the accumulator. The result is placed in the accumulator.
-func add(c *Computer, summand byte, carry bool) error {
+func add(c *Computer, v byte, carry bool) error {
 	if carry {
-		summand++
+		v++
 	}
-	sum := c.A + summand
+	sum := c.A + v
 
-	flags := zero(sum) | sign(sum) | parity(sum)
+	flags := zero8(sum) | sign8(sum) | parity8(sum)
 	// there was carry if the result of an addition is lower than one of the summands
 	if sum < c.A {
 		flags |= cyf
 	}
 	// there was auxiliary carry if there was carry on the least significant nibble
-	if c.A&0x07+summand&0x07 >= 0x08 {
+	if c.A&0x07+v&0x07 >= 0x08 {
 		flags |= acf
 	}
 
@@ -407,7 +439,7 @@ func ana(c *Computer, v byte) error {
 	and := c.A & v
 
 	c.A = and
-	c.Flags = zero(and) | sign(and) | parity(and) | (c.Flags & acf)
+	c.Flags = zero8(and) | sign8(and) | parity8(and) | (c.Flags & acf)
 
 	c.PC++
 	return nil
@@ -499,6 +531,52 @@ func cmpa(c *Computer) error {
 	return sub(c, c.A, false)
 }
 
+func dad8(c *Computer, lsb, msb byte) error {
+	reg := uint16(msb)<<8 + uint16(lsb)
+	return dad16(c, reg)
+}
+
+// (From the manual) The content of the register pair rp is added to the content of the
+// register pair Hand L. The result is placed in the register pair Hand L.
+// Note: Only the CY flag is affected.
+func dad16(c *Computer, d16 uint16) error {
+	s := uint16(c.H)<<8 + uint16(c.L)
+	sum := s + d16
+
+	c.H = byte(sum >> 8)
+	c.L = byte(sum & 0x00FF)
+
+	// affect only the carry flag
+	if sum < s {
+		c.Flags |= cyf
+	} else {
+		c.Flags &= 0xFF ^ cyf
+	}
+
+	c.PC++
+	return nil
+}
+
+// 0x09	DAD B (CY) | HL = HL + BC
+func dadb(c *Computer) error {
+	return dad8(c, c.C, c.B)
+}
+
+// 0x19	DAD D (CY) | HL = HL + DE
+func dadd(c *Computer) error {
+	return dad8(c, c.E, c.D)
+}
+
+// 0x29	DAD H (CY) | HL = HL + HL
+func dadh(c *Computer) error {
+	return dad8(c, c.L, c.H)
+}
+
+// 0x39	DAD B (CY) | HL = HL + SP
+func dadsp(c *Computer) error {
+	return dad16(c, c.SP)
+}
+
 func inx(c *Computer, lsreg, msreg *byte) error {
 	incr := (uint16(*msreg)<<8 + uint16(*lsreg)) + 1
 	*msreg = byte((incr >> 8) & 0xFF)
@@ -520,7 +598,7 @@ func inx16(c *Computer, reg *uint16) error {
 func inr(c *Computer, reg *byte) error {
 	sum := *reg + 1
 
-	flags := zero(sum) | sign(sum) | parity(sum) | (c.Flags & cyf)
+	flags := zero8(sum) | sign8(sum) | parity8(sum) | (c.Flags & cyf)
 	if *reg&0x07 == 0x07 && sum&0x08 == 0x08 {
 		flags |= acf
 	}
@@ -1082,7 +1160,7 @@ func ora(c *Computer, v byte) error {
 	and := c.A | v
 
 	c.A = and
-	c.Flags = zero(and) | sign(and) | parity(and)
+	c.Flags = zero8(and) | sign8(and) | parity8(and)
 
 	c.PC++
 	return nil
@@ -1181,7 +1259,7 @@ func sub(c *Computer, subtrahend byte, borrow bool) error {
 	}
 	sub := c.A + (^subtrahend + 1)
 
-	flags := zero(sub) | sign(sub) | parity(sub)
+	flags := zero8(sub) | sign8(sub) | parity8(sub)
 	// there was borrow (cyf = 1) if the subtrahend is higher than the minuend
 	if sub > c.A {
 		flags |= cyf
@@ -1232,7 +1310,7 @@ func xra(c *Computer, v byte) error {
 	and := c.A ^ v
 
 	c.A = and
-	c.Flags = zero(and) | sign(and) | parity(and)
+	c.Flags = zero8(and) | sign8(and) | parity8(and)
 	c.PC++
 	return nil
 }
