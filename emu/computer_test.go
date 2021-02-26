@@ -767,6 +767,225 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"CMP A",
+			&Computer{
+				cpu: cpu{
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("BF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: zf | pf,
+						A:     0x00,
+					},
+				},
+				mem: rom("BF"),
+			},
+			nil,
+		},
+		{
+			"CMP B: generates CYF",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x31,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("B8"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x31,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: cyf | pf | sf,
+						A:     0xFF,
+					},
+				},
+				mem: rom("B8"),
+			},
+			nil,
+		}, {
+			"CMP B",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("B8"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						B:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("B8"),
+			},
+			nil,
+		},
+		{
+			"CMP C",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("B9"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						C:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("B9"),
+			},
+			nil,
+		},
+		{
+			"CMP D",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("BA"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						D:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("BA"),
+			},
+			nil,
+		},
+		{
+			"CMP E",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("BB"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						E:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("BB"),
+			},
+			nil,
+		},
+		{
+			"CMP H",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("BC"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("BC"),
+			},
+			nil,
+		},
+		{
+			"CMP L",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L: 0x01,
+					},
+					alu: alu{
+						A: 0x30,
+					},
+				},
+				mem: rom("BD"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						L:  0x01,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: none,
+						A:     0x2F,
+					},
+				},
+				mem: rom("BD"),
+			},
+			nil,
+		},
+		{
 			"INR A",
 			&Computer{
 				cpu: cpu{

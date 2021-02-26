@@ -280,13 +280,6 @@ var instructionTable = []instruction{
 	0xA4: anah,
 	0xA5: anal,
 	0xA7: anaa,
-	0xB0: orab,
-	0xB1: orac,
-	0xB2: orad,
-	0xB3: orae,
-	0xB4: orah,
-	0xB5: oral,
-	0xB7: oraa,
 	0xA8: xraa,
 	0xA9: xrab,
 	0xAA: xrac,
@@ -294,6 +287,20 @@ var instructionTable = []instruction{
 	0xAC: xrae,
 	0xAD: xrah,
 	0xAF: xral,
+	0xB0: orab,
+	0xB1: orac,
+	0xB2: orad,
+	0xB3: orae,
+	0xB4: orah,
+	0xB5: oral,
+	0xB7: oraa,
+	0xB8: cmpb,
+	0xB9: cmpc,
+	0xBA: cmpd,
+	0xBB: cmpe,
+	0xBC: cmph,
+	0xBD: cmpl,
+	0xBF: cmpa,
 	0xC3: jmp,
 	0xCD: call,
 }
@@ -455,6 +462,41 @@ func call(c *Computer) error {
 	}
 
 	return nil
+}
+
+// 0xB8	CMP X	(Z, S, P, CY, AC) | A - B
+func cmpb(c *Computer) error {
+	return sub(c, c.B, false)
+}
+
+// 0xB9	CMP X	(Z, S, P, CY, AC) | A - C
+func cmpc(c *Computer) error {
+	return sub(c, c.C, false)
+}
+
+// 0xBA	CMP X	(Z, S, P, CY, AC) | A - D
+func cmpd(c *Computer) error {
+	return sub(c, c.D, false)
+}
+
+// 0xBB	CMP X	(Z, S, P, CY, AC) | A - E
+func cmpe(c *Computer) error {
+	return sub(c, c.E, false)
+}
+
+// 0xBC	CMP X	(Z, S, P, CY, AC) | A - H
+func cmph(c *Computer) error {
+	return sub(c, c.H, false)
+}
+
+// 0xBD	CMP X	(Z, S, P, CY, AC) | A - L
+func cmpl(c *Computer) error {
+	return sub(c, c.L, false)
+}
+
+// 0xBF	CMP X	(Z, S, P, CY, AC) | A - A
+func cmpa(c *Computer) error {
+	return sub(c, c.A, false)
 }
 
 func inx(c *Computer, lsreg, msreg *byte) error {
