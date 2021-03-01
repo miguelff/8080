@@ -197,6 +197,16 @@ func (c *Computer) write8(addr uint16, d8 byte) error {
 	return nil
 }
 
+func (c *Computer) read8Indirect() (byte, error) {
+	addr := uint16(c.H)<<8 + uint16(c.L)
+	return c.read8(addr)
+}
+
+func (c *Computer) write8Indirect(v byte) error {
+	addr := uint16(c.H)<<8 + uint16(c.L)
+	return c.write8(addr, v)
+}
+
 type instruction func(*Computer) error
 
 var instructionTable = []instruction{
@@ -308,6 +318,7 @@ var instructionTable = []instruction{
 	0x8B: adce,
 	0x8C: adch,
 	0x8D: adcl,
+	0x8E: adcm,
 	0x8F: adca,
 	0x90: subb,
 	0x91: subc,
@@ -411,6 +422,15 @@ func adcl(c *Computer) error {
 	return add(c, c.L, c.CY())
 }
 
+// 0x8E ADC M | A <- A + (HL) + CY (Z, S, P, CY, AC)
+func adcm(c *Computer) error {
+	v, err := c.read8Indirect()
+	if err != nil {
+		return err
+	}
+	return add(c, v, c.CY())
+}
+
 // 0x8F ADC A | A <- A + A + CY (Z, S, P, CY, AC)
 func adca(c *Computer) error {
 	return add(c, c.A, c.CY())
@@ -448,8 +468,7 @@ func addl(c *Computer) error {
 
 // 0x86 ADD M | A <- A + (HL) (Z, S, P, CY, AC)
 func addm(c *Computer) error {
-	addr := uint16(c.H)<<8 + uint16(c.L)
-	v, err := c.read8(addr)
+	v, err := c.read8Indirect()
 	if err != nil {
 		return err
 	}
@@ -948,8 +967,7 @@ func moveh(c *Computer) error {
 }
 
 func movfromm(c *Computer, reg *byte) error {
-	addr := uint16(c.H)<<8 + uint16(c.L)
-	v, err := c.read8(addr)
+	v, err := c.read8Indirect()
 	if err != nil {
 		return err
 	}
@@ -1068,9 +1086,8 @@ func movll(c *Computer) error {
 	return nop(c)
 }
 
-func movtom(c *Computer, r byte) error {
-	addr := uint16(c.H)<<8 + uint16(c.L)
-	err := c.write8(addr, r)
+func movtom(c *Computer, v byte) error {
+	err := c.write8Indirect(v)
 	if err != nil {
 		return err
 	}

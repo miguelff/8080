@@ -302,6 +302,37 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
+			"ADC M",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+					},
+					alu: alu{
+						A: 0x01,
+						Flags: cyf,
+					},
+				},
+				mem: ram("8E 00 FD"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+						PC: 0x01,
+					},
+					alu: alu{
+						Flags: sf | pf,
+						A:     0xFF,
+					},
+				},
+				mem: ram("8E 00 FD"),
+			},
+			nil,
+		},
+		{
 			"ADD A",
 			&Computer{
 				cpu: cpu{
