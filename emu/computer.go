@@ -25,7 +25,6 @@ func (e ComputerError) Error() string {
 // program counter (PC)
 //
 // 8 bit registers come in pairs (B-C, D-E, H-L) and some opcodes operate on the pair itself, for instance LXI B, D16
-// loads two bytes in registers B (most significant byte) and C (least significant byte)
 type registers struct {
 	B byte
 	C byte
@@ -238,6 +237,7 @@ var instructionTable = []instruction{
 	0x43: movbe,
 	0x44: movbh,
 	0x45: movbl,
+	0x46: movfrommb,
 	0x47: movba,
 	0x48: movcb,
 	0x49: movcc,
@@ -245,6 +245,7 @@ var instructionTable = []instruction{
 	0x4B: movce,
 	0x4C: movch,
 	0x4D: movcl,
+	0x4E: movfrommc,
 	0x4F: movca,
 	0x50: movdb,
 	0x51: movdc,
@@ -252,6 +253,7 @@ var instructionTable = []instruction{
 	0x53: movde,
 	0x54: movdh,
 	0x55: movdl,
+	0x56: movfrommd,
 	0x57: movda,
 	0x58: moveb,
 	0x59: movec,
@@ -259,6 +261,7 @@ var instructionTable = []instruction{
 	0x5B: movee,
 	0x5C: moveh,
 	0x5D: movel,
+	0x5E: movfromme,
 	0x5F: movea,
 	0x60: movhb,
 	0x61: movhc,
@@ -266,6 +269,7 @@ var instructionTable = []instruction{
 	0x63: movhe,
 	0x64: movhh,
 	0x65: movhl,
+	0x66: movfrommh,
 	0x67: movha,
 	0x68: movlb,
 	0x69: movlc,
@@ -273,20 +277,22 @@ var instructionTable = []instruction{
 	0x6B: movle,
 	0x6C: movlh,
 	0x6D: movll,
+	0x6E: movfromml,
 	0x6F: movla,
-	0x70: movmb,
-	0x71: movmc,
-	0x72: movmd,
-	0x73: movme,
-	0x74: movmh,
-	0x75: movml,
-	0x77: movma,
+	0x70: movtomb,
+	0x71: movtomc,
+	0x72: movtomd,
+	0x73: movtome,
+	0x74: movtomh,
+	0x75: movtoml,
+	0x77: movtoma,
 	0x78: movab,
 	0x79: movac,
 	0x7A: movad,
 	0x7B: movae,
 	0x7C: movah,
 	0x7D: moval,
+	0x7E: movfromma,
 	0x7F: movaa,
 	0x80: addb,
 	0x81: addc,
@@ -734,19 +740,16 @@ func lxi16(c *Computer, reg *uint16) error {
 }
 
 // 0x01: LXI B | D16. B <- byte 3, C <- byte 2
-// Loads double word in registers B and C.
 func lxib(c *Computer) error {
 	return lxi(c, &c.B, &c.C)
 }
 
 // 0x11: LXI D | D16. D <- byte 3, E <- byte 2
-// Loads double word in registers D and E.
 func lxid(c *Computer) error {
 	return lxi(c, &c.D, &c.E)
 }
 
 // 0x21: LXI H, D161 | H <- byte 3, L <- byte 2
-// Loads double word in the register pair HL
 func lxih(c *Computer) error {
 	return lxi(c, &c.H, &c.L)
 }
@@ -764,300 +767,297 @@ func mov(c *Computer, dstreg, srcreg *byte) error {
 }
 
 // 0x7F: MOV A, A | A <- A
-// Copies contents from record A to A
 func movaa(c *Computer) error {
 	return nop(c)
 }
 
 // 0x78: MOV A, B | A <- B
-// Copies contents from record B to A
 func movab(c *Computer) error {
 	return mov(c, &c.A, &c.B)
 }
 
 // 0x79: MOV A, C | A <- C
-// Copies contents from record C to A
 func movac(c *Computer) error {
 	return mov(c, &c.A, &c.C)
 }
 
 // 0x7A: MOV A, D | A <- D
-// Copies contents from record D to A
 func movad(c *Computer) error {
 	return mov(c, &c.A, &c.D)
 }
 
 // 0x7B: MOV A, E | A <- E
-// Copies contents from record E to A
 func movae(c *Computer) error {
 	return mov(c, &c.A, &c.E)
 }
 
 // 0x7C: MOV A, H | A <- H
-// Copies contents from record H to A
 func movah(c *Computer) error {
 	return mov(c, &c.A, &c.H)
 }
 
 // 0x7D: MOV A, L | A <- L
-// Copies contents from record L to A
 func moval(c *Computer) error {
 	return mov(c, &c.A, &c.L)
 }
 
 // 0x47: MOV B, A | B <- A
-// Copies contents from record A to B
 func movba(c *Computer) error {
 	return mov(c, &c.B, &c.A)
 }
 
 // 0x40: MOV B, B | B <- B
-// Copies contents from record B to B
 func movbb(c *Computer) error {
 	return nop(c)
 }
 
 // 0x41: MOV B, C | B <- C
-// Copies contents from record C to B
 func movbc(c *Computer) error {
 	return mov(c, &c.B, &c.C)
 }
 
 // 0x42: MOV B, D | B <- D
-// Copies contents from record D to B
 func movbd(c *Computer) error {
 	return mov(c, &c.B, &c.D)
 }
 
 // 0x43: MOV B, E | B <- E
-// Copies contents from record E to B
 func movbe(c *Computer) error {
 	return mov(c, &c.B, &c.E)
 }
 
 // 0x44: MOV B, H | B <- H
-// Copies contents from record H to B
 func movbh(c *Computer) error {
 	return mov(c, &c.B, &c.H)
 }
 
 // 0x45: MOV B, L | B <- L
-// Copies contents from record L to B
 func movbl(c *Computer) error {
 	return mov(c, &c.B, &c.L)
 }
 
 // 0x4F: MOV C, A | C <- A
-// Copies contents from record A to C
 func movca(c *Computer) error {
 	return mov(c, &c.C, &c.A)
 }
 
 // 0x48: MOV C, B | C <- B
-// Copies contents from record B to C
 func movcb(c *Computer) error {
 	return mov(c, &c.C, &c.B)
 }
 
 // 0x49: MOV C, C | C <- C
-// Copies contents from record C to C
 func movcc(c *Computer) error {
 	return nop(c)
 }
 
 // 0x4A: MOV C, D | C <- D
-// Copies contents from record D to C
 func movcd(c *Computer) error {
 	return mov(c, &c.C, &c.D)
 }
 
 // 0x4B: MOV C, E | C <- E
-// Copies contents from record E to C
 func movce(c *Computer) error {
 	return mov(c, &c.C, &c.E)
 }
 
 // 0x4C: MOV C, H | C <- H
-// Copies contents from record H to C
 func movch(c *Computer) error {
 	return mov(c, &c.C, &c.H)
 }
 
 // 0x4D: MOV C, L | C <- L
-// Copies contents from record L to C
 func movcl(c *Computer) error {
 	return mov(c, &c.C, &c.L)
 }
 
 // 0x57: MOV D, A | D <- A
-// Copies contents from record A to D
 func movda(c *Computer) error {
 	return mov(c, &c.D, &c.A)
 }
 
 // 0x50: MOV D, B | D <- B
-// Copies contents from record B to D
 func movdb(c *Computer) error {
 	return mov(c, &c.D, &c.B)
 }
 
 // 0x51: MOV D, C | D <- C
-// Copies contents from record C to D
 func movdc(c *Computer) error {
 	return mov(c, &c.D, &c.C)
 }
 
 // 0x52: MOV D, D | D <- D
-// Copies contents from record D to D
 func movdd(c *Computer) error {
 	return nop(c)
 }
 
 // 0x53: MOV D, E | D <- E
-// Copies contents from record E to D
 func movde(c *Computer) error {
 	return mov(c, &c.D, &c.E)
 }
 
 // 0x54: MOV D, H | D <- H
-// Copies contents from record H to D
 func movdh(c *Computer) error {
 	return mov(c, &c.D, &c.H)
 }
 
 // 0x55: MOV D, L | D <- L
-// Copies contents from record L to D
 func movdl(c *Computer) error {
 	return mov(c, &c.D, &c.L)
 }
 
 // 0x5F: MOV E, A | E <- A
-// Copies contents from record A to E
 func movea(c *Computer) error {
 	return mov(c, &c.E, &c.A)
 }
 
 // 0x58: MOV E, B | E <- B
-// Copies contents from record B to E
 func moveb(c *Computer) error {
 	return mov(c, &c.E, &c.B)
 }
 
 // 0x59: MOV E, C | E <- C
-// Copies contents from record C to E
 func movec(c *Computer) error {
 	return mov(c, &c.E, &c.C)
 }
 
 // 0x5A: MOV E, D | E <- D
-// Copies contents from record D to E
 func moved(c *Computer) error {
 	return mov(c, &c.E, &c.D)
 }
 
 // 0x5B: MOV E, E | E <- E
-// Copies contents from record E to E
 func movee(c *Computer) error {
 	return nop(c)
 }
 
 // 0x5C: MOV E, H | E <- H
-// Copies contents from record H to E
 func moveh(c *Computer) error {
 	return mov(c, &c.E, &c.H)
 }
 
+func movfromm(c *Computer, reg *byte) error {
+	addr := uint16(c.H)<<8 + uint16(c.L)
+	v, err := c.read8(addr)
+	if err != nil {
+		return err
+	}
+	*reg = v
+	c.PC++
+	return nil
+}
+
+// 0x46	MOV B,M | B <- (HL)
+func movfrommb(c *Computer) error {
+	return movfromm(c, &c.B)
+}
+
+// 0x4E	MOV C,M | C <- (HL)
+func movfrommc(c *Computer) error {
+	return movfromm(c, &c.C)
+}
+
+// 0x56	MOV D,M | D <- (HL)
+func movfrommd(c *Computer) error {
+	return movfromm(c, &c.D)
+}
+
+// 0x5E	MOV E,M | E <- (HL)
+func movfromme(c *Computer) error {
+	return movfromm(c, &c.E)
+}
+
+// 0x66	MOV H,M | H <- (HL)
+func movfrommh(c *Computer) error {
+	return movfromm(c, &c.H)
+}
+
+// 0x6E	MOV L,M | L <- (HL)
+func movfromml(c *Computer) error {
+	return movfromm(c, &c.L)
+}
+
+// 0x7E	MOV A,M | A <- (HL)
+func movfromma(c *Computer) error {
+	return movfromm(c, &c.A)
+}
+
 // 0x5D: MOV E, L | E <- L
-// Copies contents from record L to E
 func movel(c *Computer) error {
 	return mov(c, &c.E, &c.L)
 }
 
 // 0x67: MOV H, A | H <- A
-// Copies contents from record A to H
 func movha(c *Computer) error {
 	return mov(c, &c.H, &c.A)
 }
 
 // 0x60: MOV H, B | H <- B
-// Copies contents from record B to H
 func movhb(c *Computer) error {
 	return mov(c, &c.H, &c.B)
 }
 
 // 0x61: MOV H, C | H <- C
-// Copies contents from record C to H
 func movhc(c *Computer) error {
 	return mov(c, &c.H, &c.C)
 }
 
 // 0x62: MOV H, D | H <- D
-// Copies contents from record D to H
 func movhd(c *Computer) error {
 	return mov(c, &c.H, &c.D)
 }
 
 // 0x63: MOV H, E | H <- E
-// Copies contents from record E to H
 func movhe(c *Computer) error {
 	return mov(c, &c.H, &c.E)
 }
 
 // 0x64: MOV H, H | H <- H
-// Copies contents from record H to H
 func movhh(c *Computer) error {
 	return nop(c)
 }
 
 // 0x65: MOV H, L | H <- L
-// Copies contents from record L to H
 func movhl(c *Computer) error {
 	return mov(c, &c.H, &c.L)
 }
 
 // 0x6F: MOV L, A | L <- A
-// Copies contents from record A to L
 func movla(c *Computer) error {
 	return mov(c, &c.L, &c.A)
 }
 
 // 0x68: MOV L, B | L <- B
-// Copies contents from record B to L
 func movlb(c *Computer) error {
 	return mov(c, &c.L, &c.B)
 }
 
 // 0x69: MOV L, C | L <- C
-// Copies contents from record C to L
 func movlc(c *Computer) error {
 	return mov(c, &c.L, &c.C)
 }
 
 // 0x6A: MOV L, D | L <- D
-// Copies contents from record D to L
 func movld(c *Computer) error {
 	return mov(c, &c.L, &c.D)
 }
 
 // 0x6B: MOV L, E | L <- E
-// Copies contents from record E to L
 func movle(c *Computer) error {
 	return mov(c, &c.L, &c.E)
 }
 
 // 0x6C: MOV L, H | L <- H
-// Copies contents from record H to L
 func movlh(c *Computer) error {
 	return mov(c, &c.L, &c.H)
 }
 
 // 0x6D: MOV L, L | L <- L
-// Copies contents from record L to L
 func movll(c *Computer) error {
 	return nop(c)
 }
 
-func movm(c *Computer, r byte) error {
+func movtom(c *Computer, r byte) error {
 	addr := uint16(c.H)<<8 + uint16(c.L)
 	err := c.write8(addr, r)
 	if err != nil {
@@ -1067,46 +1067,39 @@ func movm(c *Computer, r byte) error {
 	return nil
 }
 
-// 0x77: MOV M,A. | (HL) <- A
-// Writes A to the address pointed by the register pair HL.
-func movma(c *Computer) error {
-	return movm(c, c.A)
+// 0x77: MOV M,A | (HL) <- A
+func movtoma(c *Computer) error {
+	return movtom(c, c.A)
 }
 
-// 0x77: MOV M,A. | (HL) <- B
-// Writes B to the address pointed by the register pair HL.
-func movmb(c *Computer) error {
-	return movm(c, c.B)
+// 0x77: MOV M,B | (HL) <- B
+func movtomb(c *Computer) error {
+	return movtom(c, c.B)
 }
 
-// 0x77: MOV M,A. | (HL) <- C
-// Writes C to the address pointed by the register pair HL.
-func movmc(c *Computer) error {
-	return movm(c, c.C)
+// 0x77: MOV M,C | (HL) <- C
+func movtomc(c *Computer) error {
+	return movtom(c, c.C)
 }
 
-// 0x77: MOV M,A. | (HL) <- D
-// Writes D to the address pointed by the register pair HL.
-func movmd(c *Computer) error {
-	return movm(c, c.D)
+// 0x77: MOV M,D | (HL) <- D
+func movtomd(c *Computer) error {
+	return movtom(c, c.D)
 }
 
-// 0x77: MOV M,A. | (HL) <- E
-// Writes E to the address pointed by the register pair HL.
-func movme(c *Computer) error {
-	return movm(c, c.E)
+// 0x77: MOV M,E | (HL) <- E
+func movtome(c *Computer) error {
+	return movtom(c, c.E)
 }
 
-// 0x77: MOV M,A. | (HL) <- H
-// Writes H to the address pointed by the register pair HL.
-func movmh(c *Computer) error {
-	return movm(c, c.H)
+// 0x77: MOV M,H | (HL) <- H
+func movtomh(c *Computer) error {
+	return movtom(c, c.H)
 }
 
-// 0x77: MOV M,A. | (HL) <- L
-// Writes L to the address pointed by the register pair HL.
-func movml(c *Computer) error {
-	return movm(c, c.L)
+// 0x77: MOV M,L | (HL) <- L
+func movtoml(c *Computer) error {
+	return movtom(c, c.L)
 }
 
 func mvi(c *Computer, reg *byte) error {
@@ -1121,43 +1114,36 @@ func mvi(c *Computer, reg *byte) error {
 }
 
 // 0x3E: MVI A, D8 | A <- byte 2
-// Loads word into A register
 func mvia(c *Computer) error {
 	return mvi(c, &c.A)
 }
 
 // 0x06: MVI B, D8 | B <- byte 2
-// Loads word into B register
 func mvib(c *Computer) error {
 	return mvi(c, &c.B)
 }
 
 // 0x0E: MVI C, D8 | C <- byte 2
-// Loads word into C register
 func mvic(c *Computer) error {
 	return mvi(c, &c.C)
 }
 
 // 0x16: MVI D, D8 | D <- byte 2
-// Loads word into D register
 func mvid(c *Computer) error {
 	return mvi(c, &c.D)
 }
 
 // 0x1E: MVI E, D8 | E <- byte 2
-// Loads word into E register
 func mvie(c *Computer) error {
 	return mvi(c, &c.E)
 }
 
 // 0x26: MVI H, D8 | H <- byte 2
-// Loads word into H register
 func mvih(c *Computer) error {
 	return mvi(c, &c.H)
 }
 
 // 0x2E: MVI L, D8 | L <- byte 2
-// Loads word into L register
 func mvil(c *Computer) error {
 	return mvi(c, &c.L)
 }
@@ -1181,37 +1167,37 @@ func ora(c *Computer, v byte) error {
 	return nil
 }
 
-// 0xb7	ORA A	(Z, S, P, CY, AC) | A <- A | A
+// 0xb7	ORA A (Z, S, P, CY, AC) | A <- A | A
 func oraa(c *Computer) error {
 	return ora(c, c.A)
 }
 
-// 0xb0	ORA B	(Z, S, P, CY, AC) | A <- A | B
+// 0xb0	ORA B (Z, S, P, CY, AC) | A <- A | B
 func orab(c *Computer) error {
 	return ora(c, c.B)
 }
 
-// 0xb1	ORA C	(Z, S, P, CY, AC) | A <- A | C
+// 0xb1	ORA C (Z, S, P, CY, AC) | A <- A | C
 func orac(c *Computer) error {
 	return ora(c, c.C)
 }
 
-// 0xb2	ORA D	(Z, S, P, CY, AC) | A <- A | D
+// 0xb2	ORA D (Z, S, P, CY, AC) | A <- A | D
 func orad(c *Computer) error {
 	return ora(c, c.D)
 }
 
-// 0xb3	ORA E	(Z, S, P, CY, AC) | A <- A | E
+// 0xb3	ORA E (Z, S, P, CY, AC) | A <- A | E
 func orae(c *Computer) error {
 	return ora(c, c.E)
 }
 
-// 0xb4	ORA H	(Z, S, P, CY, AC) | A <- A | H
+// 0xb4	ORA H (Z, S, P, CY, AC) | A <- A | H
 func orah(c *Computer) error {
 	return ora(c, c.H)
 }
 
-// 0xb5	ORA L	(Z, S, P, CY, AC) | A <- A | L
+// 0xb5	ORA L (Z, S, P, CY, AC) | A <- A | L
 func oral(c *Computer) error {
 	return ora(c, c.L)
 }

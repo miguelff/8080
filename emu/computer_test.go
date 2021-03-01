@@ -7,8 +7,8 @@ import (
 	"github.com/miguelff/8080/encoding"
 )
 
-func rom(rom string) memory {
-	return encoding.HexToBin(rom)
+func ram(bytes string) memory {
+	return encoding.HexToBin(bytes)
 }
 
 func TestParity(t *testing.T) {
@@ -86,7 +86,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x02,
 					},
 				},
-				mem: rom("8F"),
+				mem: ram("8F"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -98,7 +98,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x05,
 					},
 				},
-				mem: rom("8F"),
+				mem: ram("8F"),
 			},
 			nil,
 		},
@@ -111,7 +111,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x02,
 					},
 				},
-				mem: rom("8F"),
+				mem: ram("8F"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -123,7 +123,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x04,
 					},
 				},
-				mem: rom("8F"),
+				mem: ram("8F"),
 			},
 			nil,
 		},
@@ -139,7 +139,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x02,
 					},
 				},
-				mem: rom("88"),
+				mem: ram("88"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -152,7 +152,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x04,
 					},
 				},
-				mem: rom("88"),
+				mem: ram("88"),
 			},
 			nil,
 		},
@@ -168,7 +168,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x01,
 					},
 				},
-				mem: rom("89"),
+				mem: ram("89"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -181,7 +181,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("89"),
+				mem: ram("89"),
 			},
 			nil,
 		},
@@ -197,7 +197,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("8A"),
+				mem: ram("8A"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -210,7 +210,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFE,
 					},
 				},
-				mem: rom("8A"),
+				mem: ram("8A"),
 			},
 			nil,
 		},
@@ -226,7 +226,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("8B"),
+				mem: ram("8B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -239,7 +239,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFE,
 					},
 				},
-				mem: rom("8B"),
+				mem: ram("8B"),
 			},
 			nil,
 		},
@@ -255,7 +255,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("8C"),
+				mem: ram("8C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -268,7 +268,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFE,
 					},
 				},
-				mem: rom("8C"),
+				mem: ram("8C"),
 			},
 			nil,
 		},
@@ -284,7 +284,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("8D"),
+				mem: ram("8D"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -297,7 +297,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFE,
 					},
 				},
-				mem: rom("8D"),
+				mem: ram("8D"),
 			},
 			nil,
 		},
@@ -309,7 +309,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x02,
 					},
 				},
-				mem: rom("87"),
+				mem: ram("87"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -321,14 +321,14 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x04,
 					},
 				},
-				mem: rom("87"),
+				mem: ram("87"),
 			},
 			nil,
 		},
 		{
 			"ADD B: adding two values that sum 0x0 sets the zero8 and parity8 flags",
 			&Computer{
-				mem: rom("80"),
+				mem: ram("80"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -339,7 +339,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: zf | pf,
 					},
 				},
-				mem: rom("80"),
+				mem: ram("80"),
 			},
 			nil,
 		},
@@ -354,7 +354,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x05,
 					},
 				},
-				mem: rom("80"),
+				mem: ram("80"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -367,7 +367,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x08,
 					},
 				},
-				mem: rom("80"),
+				mem: ram("80"),
 			},
 			nil,
 		},
@@ -382,7 +382,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x03,
 					},
 				},
-				mem: rom("80"),
+				mem: ram("80"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -395,7 +395,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x01,
 					},
 				},
-				mem: rom("80"),
+				mem: ram("80"),
 			},
 			nil,
 		},
@@ -410,7 +410,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("81"),
+				mem: ram("81"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -423,7 +423,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("81"),
+				mem: ram("81"),
 			},
 			nil,
 		},
@@ -438,7 +438,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x00,
 					},
 				},
-				mem: rom("82"),
+				mem: ram("82"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -451,7 +451,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFE,
 					},
 				},
-				mem: rom("82"),
+				mem: ram("82"),
 			},
 			nil,
 		},
@@ -466,7 +466,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x00,
 					},
 				},
-				mem: rom("83"),
+				mem: ram("83"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -479,7 +479,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFE,
 					},
 				},
-				mem: rom("83"),
+				mem: ram("83"),
 			},
 			nil,
 		},
@@ -494,7 +494,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x00,
 					},
 				},
-				mem: rom("84"),
+				mem: ram("84"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -507,7 +507,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFE,
 					},
 				},
-				mem: rom("84"),
+				mem: ram("84"),
 			},
 			nil,
 		},
@@ -522,7 +522,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x00,
 					},
 				},
-				mem: rom("85"),
+				mem: ram("85"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -535,7 +535,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFE,
 					},
 				},
-				mem: rom("85"),
+				mem: ram("85"),
 			},
 			nil,
 		},
@@ -548,7 +548,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("A7"),
+				mem: ram("A7"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -560,7 +560,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("A7"),
+				mem: ram("A7"),
 			},
 			nil,
 		},
@@ -577,7 +577,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("A0"),
+				mem: ram("A0"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -590,7 +590,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x0A,
 					},
 				},
-				mem: rom("A0"),
+				mem: ram("A0"),
 			},
 			nil,
 		},
@@ -607,7 +607,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("A1"),
+				mem: ram("A1"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -620,7 +620,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x0A,
 					},
 				},
-				mem: rom("A1"),
+				mem: ram("A1"),
 			},
 			nil,
 		},
@@ -637,7 +637,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("A2"),
+				mem: ram("A2"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -650,7 +650,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x0A,
 					},
 				},
-				mem: rom("A2"),
+				mem: ram("A2"),
 			},
 			nil,
 		},
@@ -667,7 +667,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("A3"),
+				mem: ram("A3"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -680,7 +680,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x0A,
 					},
 				},
-				mem: rom("A3"),
+				mem: ram("A3"),
 			},
 			nil,
 		},
@@ -697,7 +697,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("A4"),
+				mem: ram("A4"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -710,7 +710,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x0A,
 					},
 				},
-				mem: rom("A4"),
+				mem: ram("A4"),
 			},
 			nil,
 		},
@@ -727,7 +727,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("A5"),
+				mem: ram("A5"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -740,7 +740,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x0A,
 					},
 				},
-				mem: rom("A5"),
+				mem: ram("A5"),
 			},
 			nil,
 		},
@@ -753,7 +753,7 @@ func TestComputer_Step(t *testing.T) {
 						SP: 0x07,
 					},
 				},
-				mem: rom("00 CD 0A 00 00 00 00 00"),
+				mem: ram("00 CD 0A 00 00 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -762,7 +762,7 @@ func TestComputer_Step(t *testing.T) {
 						PC: 0x0A,
 					},
 				},
-				mem: rom("00 CD 0A 00 00 00 01 00"),
+				mem: ram("00 CD 0A 00 00 00 01 00"),
 			},
 			nil,
 		},
@@ -774,7 +774,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("BF"),
+				mem: ram("BF"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -786,7 +786,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("BF"),
+				mem: ram("BF"),
 			},
 			nil,
 		},
@@ -801,7 +801,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("B8"),
+				mem: ram("B8"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -814,7 +814,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B8"),
+				mem: ram("B8"),
 			},
 			nil,
 		}, {
@@ -828,7 +828,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("B8"),
+				mem: ram("B8"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -841,7 +841,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("B8"),
+				mem: ram("B8"),
 			},
 			nil,
 		},
@@ -856,7 +856,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("B9"),
+				mem: ram("B9"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -869,7 +869,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("B9"),
+				mem: ram("B9"),
 			},
 			nil,
 		},
@@ -884,7 +884,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("BA"),
+				mem: ram("BA"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -897,7 +897,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("BA"),
+				mem: ram("BA"),
 			},
 			nil,
 		},
@@ -912,7 +912,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("BB"),
+				mem: ram("BB"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -925,7 +925,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("BB"),
+				mem: ram("BB"),
 			},
 			nil,
 		},
@@ -940,7 +940,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("BC"),
+				mem: ram("BC"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -953,7 +953,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("BC"),
+				mem: ram("BC"),
 			},
 			nil,
 		},
@@ -968,7 +968,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("BD"),
+				mem: ram("BD"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -981,7 +981,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("BD"),
+				mem: ram("BD"),
 			},
 			nil,
 		},
@@ -996,7 +996,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("09"),
+				mem: ram("09"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1011,7 +1011,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: none,
 					},
 				},
-				mem: rom("09"),
+				mem: ram("09"),
 			},
 			nil,
 		},
@@ -1026,7 +1026,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x03,
 					},
 				},
-				mem: rom("09"),
+				mem: ram("09"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1041,7 +1041,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: cyf,
 					},
 				},
-				mem: rom("09"),
+				mem: ram("09"),
 			},
 			nil,
 		},
@@ -1056,7 +1056,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("19"),
+				mem: ram("19"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1071,7 +1071,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: none,
 					},
 				},
-				mem: rom("19"),
+				mem: ram("19"),
 			},
 			nil,
 		},
@@ -1084,7 +1084,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("29"),
+				mem: ram("29"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1097,7 +1097,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: none,
 					},
 				},
-				mem: rom("29"),
+				mem: ram("29"),
 			},
 			nil,
 		},
@@ -1111,7 +1111,7 @@ func TestComputer_Step(t *testing.T) {
 						SP: 0x0FFF,
 					},
 				},
-				mem: rom("39"),
+				mem: ram("39"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1125,7 +1125,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: none,
 					},
 				},
-				mem: rom("39"),
+				mem: ram("39"),
 			},
 			nil,
 		},
@@ -1137,7 +1137,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("3C"),
+				mem: ram("3C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1149,7 +1149,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("3C"),
+				mem: ram("3C"),
 			},
 			nil,
 		},
@@ -1161,7 +1161,7 @@ func TestComputer_Step(t *testing.T) {
 						B: 0xFF,
 					},
 				},
-				mem: rom("04"),
+				mem: ram("04"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1173,7 +1173,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: zf | pf,
 					},
 				},
-				mem: rom("04"),
+				mem: ram("04"),
 			},
 			nil,
 		},
@@ -1185,7 +1185,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x07,
 					},
 				},
-				mem: rom("0C"),
+				mem: ram("0C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1197,7 +1197,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: acf,
 					},
 				},
-				mem: rom("0C"),
+				mem: ram("0C"),
 			},
 			nil,
 		},
@@ -1209,7 +1209,7 @@ func TestComputer_Step(t *testing.T) {
 						D: 0x03,
 					},
 				},
-				mem: rom("14"),
+				mem: ram("14"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1221,7 +1221,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: none,
 					},
 				},
-				mem: rom("14"),
+				mem: ram("14"),
 			},
 			nil,
 		},
@@ -1233,7 +1233,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x03,
 					},
 				},
-				mem: rom("1C"),
+				mem: ram("1C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1245,7 +1245,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: none,
 					},
 				},
-				mem: rom("1C"),
+				mem: ram("1C"),
 			},
 			nil,
 		},
@@ -1258,7 +1258,7 @@ func TestComputer_Step(t *testing.T) {
 						H: 0x03,
 					},
 				},
-				mem: rom("24"),
+				mem: ram("24"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1270,7 +1270,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: none,
 					},
 				},
-				mem: rom("24"),
+				mem: ram("24"),
 			},
 			nil,
 		},
@@ -1283,7 +1283,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x03,
 					},
 				},
-				mem: rom("2C"),
+				mem: ram("2C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1295,7 +1295,7 @@ func TestComputer_Step(t *testing.T) {
 						Flags: none,
 					},
 				},
-				mem: rom("2C"),
+				mem: ram("2C"),
 			},
 			nil,
 		},
@@ -1307,7 +1307,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0xFF,
 					},
 				},
-				mem: rom("03"),
+				mem: ram("03"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1317,7 +1317,7 @@ func TestComputer_Step(t *testing.T) {
 						B:  0x01,
 					},
 				},
-				mem: rom("03"),
+				mem: ram("03"),
 			},
 			nil,
 		},
@@ -1329,7 +1329,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0xFF,
 					},
 				},
-				mem: rom("13"),
+				mem: ram("13"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1339,7 +1339,7 @@ func TestComputer_Step(t *testing.T) {
 						D:  0x01,
 					},
 				},
-				mem: rom("13"),
+				mem: ram("13"),
 			},
 			nil,
 		},
@@ -1351,7 +1351,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0xFF,
 					},
 				},
-				mem: rom("23"),
+				mem: ram("23"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1361,7 +1361,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x00,
 					},
 				},
-				mem: rom("23"),
+				mem: ram("23"),
 			},
 			nil,
 		},
@@ -1373,7 +1373,7 @@ func TestComputer_Step(t *testing.T) {
 						SP: 0x0F,
 					},
 				},
-				mem: rom("33"),
+				mem: ram("33"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1382,14 +1382,14 @@ func TestComputer_Step(t *testing.T) {
 						SP: 0x10,
 					},
 				},
-				mem: rom("33"),
+				mem: ram("33"),
 			},
 			nil,
 		},
 		{
 			"JMP adr",
 			&Computer{
-				mem: rom("C3 0A 00"),
+				mem: ram("C3 0A 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1397,7 +1397,7 @@ func TestComputer_Step(t *testing.T) {
 						PC: 0x0A,
 					},
 				},
-				mem: rom("C3 0A 00"),
+				mem: ram("C3 0A 00"),
 			},
 			nil,
 		},
@@ -1410,7 +1410,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x02,
 					},
 				},
-				mem: rom("0a 00 ff"),
+				mem: ram("0a 00 ff"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1423,7 +1423,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("0a 00 ff"),
+				mem: ram("0a 00 ff"),
 			},
 			nil,
 		},
@@ -1436,7 +1436,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x02,
 					},
 				},
-				mem: rom("1a 00 ff"),
+				mem: ram("1a 00 ff"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1449,14 +1449,14 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("1a 00 ff"),
+				mem: ram("1a 00 ff"),
 			},
 			nil,
 		},
 		{
 			"LXI B, D16",
 			&Computer{
-				mem: rom("01 0B 01"),
+				mem: ram("01 0B 01"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1466,14 +1466,14 @@ func TestComputer_Step(t *testing.T) {
 						C:  0x0B,
 					},
 				},
-				mem: rom("01 0B 01"),
+				mem: ram("01 0B 01"),
 			},
 			nil,
 		},
 		{
 			"LXI D, D16",
 			&Computer{
-				mem: rom("11 0B 01"),
+				mem: ram("11 0B 01"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1483,14 +1483,14 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x0B,
 					},
 				},
-				mem: rom("11 0B 01"),
+				mem: ram("11 0B 01"),
 			},
 			nil,
 		},
 		{
 			"LXI H, D16",
 			&Computer{
-				mem: rom("21 0B 01"),
+				mem: ram("21 0B 01"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1500,14 +1500,14 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x0B,
 					},
 				},
-				mem: rom("21 0B 01"),
+				mem: ram("21 0B 01"),
 			},
 			nil,
 		},
 		{
 			"LXI SP, D16",
 			&Computer{
-				mem: rom("31 0B 01"),
+				mem: ram("31 0B 01"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1516,7 +1516,7 @@ func TestComputer_Step(t *testing.T) {
 						SP: 0x010B,
 					},
 				},
-				mem: rom("31 0B 01"),
+				mem: ram("31 0B 01"),
 			},
 			nil,
 		},
@@ -1528,7 +1528,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("7F"),
+				mem: ram("7F"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1539,7 +1539,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("7F"),
+				mem: ram("7F"),
 			},
 			nil,
 		},
@@ -1551,7 +1551,7 @@ func TestComputer_Step(t *testing.T) {
 						B: 0x01,
 					},
 				},
-				mem: rom("78"),
+				mem: ram("78"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1563,7 +1563,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("78"),
+				mem: ram("78"),
 			},
 			nil,
 		},
@@ -1575,7 +1575,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x01,
 					},
 				},
-				mem: rom("79"),
+				mem: ram("79"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1587,7 +1587,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("79"),
+				mem: ram("79"),
 			},
 			nil,
 		},
@@ -1599,7 +1599,7 @@ func TestComputer_Step(t *testing.T) {
 						D: 0x01,
 					},
 				},
-				mem: rom("7A"),
+				mem: ram("7A"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1611,7 +1611,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("7A"),
+				mem: ram("7A"),
 			},
 			nil,
 		},
@@ -1623,7 +1623,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x01,
 					},
 				},
-				mem: rom("7B"),
+				mem: ram("7B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1635,7 +1635,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("7B"),
+				mem: ram("7B"),
 			},
 			nil,
 		},
@@ -1647,7 +1647,7 @@ func TestComputer_Step(t *testing.T) {
 						H: 0x01,
 					},
 				},
-				mem: rom("7C"),
+				mem: ram("7C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1659,7 +1659,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("7C"),
+				mem: ram("7C"),
 			},
 			nil,
 		},
@@ -1671,7 +1671,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("7D"),
+				mem: ram("7D"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1683,7 +1683,33 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("7D"),
+				mem: ram("7D"),
+			},
+			nil,
+		},
+		{
+			"MOV A, M",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+					},
+				},
+				mem: ram("7E 00 FF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						H:  0x00,
+						L:  0x02,
+					},
+					alu: alu {
+						A: 0xFF,
+					},
+				},
+				mem: ram("7E 00 FF"),
 			},
 			nil,
 		},
@@ -1695,7 +1721,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("47"),
+				mem: ram("47"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1707,7 +1733,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("47"),
+				mem: ram("47"),
 			},
 			nil,
 		},
@@ -1719,7 +1745,7 @@ func TestComputer_Step(t *testing.T) {
 						B: 0x01,
 					},
 				},
-				mem: rom("40"),
+				mem: ram("40"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1728,7 +1754,7 @@ func TestComputer_Step(t *testing.T) {
 						B:  0x01,
 					},
 				},
-				mem: rom("40"),
+				mem: ram("40"),
 			},
 			nil,
 		},
@@ -1740,7 +1766,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x01,
 					},
 				},
-				mem: rom("41"),
+				mem: ram("41"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1750,7 +1776,7 @@ func TestComputer_Step(t *testing.T) {
 						C:  0x01,
 					},
 				},
-				mem: rom("41"),
+				mem: ram("41"),
 			},
 			nil,
 		},
@@ -1762,7 +1788,7 @@ func TestComputer_Step(t *testing.T) {
 						D: 0x01,
 					},
 				},
-				mem: rom("42"),
+				mem: ram("42"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1772,7 +1798,7 @@ func TestComputer_Step(t *testing.T) {
 						D:  0x01,
 					},
 				},
-				mem: rom("42"),
+				mem: ram("42"),
 			},
 			nil,
 		},
@@ -1784,7 +1810,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x01,
 					},
 				},
-				mem: rom("43"),
+				mem: ram("43"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1794,7 +1820,7 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x01,
 					},
 				},
-				mem: rom("43"),
+				mem: ram("43"),
 			},
 			nil,
 		},
@@ -1806,7 +1832,7 @@ func TestComputer_Step(t *testing.T) {
 						H: 0x01,
 					},
 				},
-				mem: rom("44"),
+				mem: ram("44"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1816,7 +1842,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("44"),
+				mem: ram("44"),
 			},
 			nil,
 		},
@@ -1828,7 +1854,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("45"),
+				mem: ram("45"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1838,7 +1864,31 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("45"),
+				mem: ram("45"),
+			},
+			nil,
+		},
+		{
+			"MOV B, M",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+					},
+				},
+				mem: ram("46 00 FF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						B:  0xFF,
+						H:  0x00,
+						L:  0x02,
+					},
+				},
+				mem: ram("46 00 FF"),
 			},
 			nil,
 		},
@@ -1850,7 +1900,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("4F"),
+				mem: ram("4F"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1862,7 +1912,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("4F"),
+				mem: ram("4F"),
 			},
 			nil,
 		},
@@ -1874,7 +1924,7 @@ func TestComputer_Step(t *testing.T) {
 						B: 0x01,
 					},
 				},
-				mem: rom("48"),
+				mem: ram("48"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1884,7 +1934,7 @@ func TestComputer_Step(t *testing.T) {
 						B:  0x01,
 					},
 				},
-				mem: rom("48"),
+				mem: ram("48"),
 			},
 			nil,
 		},
@@ -1896,7 +1946,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x01,
 					},
 				},
-				mem: rom("49"),
+				mem: ram("49"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1905,7 +1955,7 @@ func TestComputer_Step(t *testing.T) {
 						C:  0x01,
 					},
 				},
-				mem: rom("49"),
+				mem: ram("49"),
 			},
 			nil,
 		},
@@ -1917,7 +1967,7 @@ func TestComputer_Step(t *testing.T) {
 						D: 0x01,
 					},
 				},
-				mem: rom("4A"),
+				mem: ram("4A"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1927,7 +1977,7 @@ func TestComputer_Step(t *testing.T) {
 						D:  0x01,
 					},
 				},
-				mem: rom("4A"),
+				mem: ram("4A"),
 			},
 			nil,
 		},
@@ -1939,7 +1989,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x01,
 					},
 				},
-				mem: rom("4B"),
+				mem: ram("4B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1949,7 +1999,7 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x01,
 					},
 				},
-				mem: rom("4B"),
+				mem: ram("4B"),
 			},
 			nil,
 		},
@@ -1961,7 +2011,7 @@ func TestComputer_Step(t *testing.T) {
 						H: 0x01,
 					},
 				},
-				mem: rom("4C"),
+				mem: ram("4C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1971,7 +2021,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("4C"),
+				mem: ram("4C"),
 			},
 			nil,
 		},
@@ -1983,7 +2033,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("4D"),
+				mem: ram("4D"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -1993,7 +2043,31 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("4D"),
+				mem: ram("4D"),
+			},
+			nil,
+		},
+		{
+			"MOV C, M",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+					},
+				},
+				mem: ram("4E 00 FF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						C:  0xFF,
+						H:  0x00,
+						L:  0x02,
+					},
+				},
+				mem: ram("4E 00 FF"),
 			},
 			nil,
 		},
@@ -2005,7 +2079,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("57"),
+				mem: ram("57"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2017,7 +2091,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("57"),
+				mem: ram("57"),
 			},
 			nil,
 		},
@@ -2029,7 +2103,7 @@ func TestComputer_Step(t *testing.T) {
 						B: 0x01,
 					},
 				},
-				mem: rom("50"),
+				mem: ram("50"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2039,7 +2113,7 @@ func TestComputer_Step(t *testing.T) {
 						D:  0x01,
 					},
 				},
-				mem: rom("50"),
+				mem: ram("50"),
 			},
 			nil,
 		},
@@ -2051,7 +2125,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x01,
 					},
 				},
-				mem: rom("51"),
+				mem: ram("51"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2061,7 +2135,7 @@ func TestComputer_Step(t *testing.T) {
 						D:  0x01,
 					},
 				},
-				mem: rom("51"),
+				mem: ram("51"),
 			},
 			nil,
 		},
@@ -2073,7 +2147,7 @@ func TestComputer_Step(t *testing.T) {
 						D: 0x01,
 					},
 				},
-				mem: rom("52"),
+				mem: ram("52"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2082,7 +2156,7 @@ func TestComputer_Step(t *testing.T) {
 						D:  0x01,
 					},
 				},
-				mem: rom("52"),
+				mem: ram("52"),
 			},
 			nil,
 		},
@@ -2094,7 +2168,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x01,
 					},
 				},
-				mem: rom("53"),
+				mem: ram("53"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2104,7 +2178,7 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x01,
 					},
 				},
-				mem: rom("53"),
+				mem: ram("53"),
 			},
 			nil,
 		},
@@ -2116,7 +2190,7 @@ func TestComputer_Step(t *testing.T) {
 						H: 0x01,
 					},
 				},
-				mem: rom("54"),
+				mem: ram("54"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2126,7 +2200,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("54"),
+				mem: ram("54"),
 			},
 			nil,
 		},
@@ -2138,7 +2212,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("55"),
+				mem: ram("55"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2148,7 +2222,31 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("55"),
+				mem: ram("55"),
+			},
+			nil,
+		},
+		{
+			"MOV D, M",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+					},
+				},
+				mem: ram("56 00 FF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						D:  0xFF,
+						H:  0x00,
+						L:  0x02,
+					},
+				},
+				mem: ram("56 00 FF"),
 			},
 			nil,
 		},
@@ -2160,7 +2258,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("5F"),
+				mem: ram("5F"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2172,7 +2270,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("5F"),
+				mem: ram("5F"),
 			},
 			nil,
 		},
@@ -2184,7 +2282,7 @@ func TestComputer_Step(t *testing.T) {
 						B: 0x01,
 					},
 				},
-				mem: rom("58"),
+				mem: ram("58"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2194,7 +2292,7 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x01,
 					},
 				},
-				mem: rom("58"),
+				mem: ram("58"),
 			},
 			nil,
 		},
@@ -2206,7 +2304,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x01,
 					},
 				},
-				mem: rom("59"),
+				mem: ram("59"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2216,7 +2314,7 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x01,
 					},
 				},
-				mem: rom("59"),
+				mem: ram("59"),
 			},
 			nil,
 		},
@@ -2228,7 +2326,7 @@ func TestComputer_Step(t *testing.T) {
 						D: 0x01,
 					},
 				},
-				mem: rom("5A"),
+				mem: ram("5A"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2238,7 +2336,7 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x01,
 					},
 				},
-				mem: rom("5A"),
+				mem: ram("5A"),
 			},
 			nil,
 		},
@@ -2250,7 +2348,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x01,
 					},
 				},
-				mem: rom("5B"),
+				mem: ram("5B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2259,7 +2357,7 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x01,
 					},
 				},
-				mem: rom("5B"),
+				mem: ram("5B"),
 			},
 			nil,
 		},
@@ -2271,7 +2369,7 @@ func TestComputer_Step(t *testing.T) {
 						H: 0x01,
 					},
 				},
-				mem: rom("5C"),
+				mem: ram("5C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2281,7 +2379,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("5C"),
+				mem: ram("5C"),
 			},
 			nil,
 		},
@@ -2293,7 +2391,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("5D"),
+				mem: ram("5D"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2303,7 +2401,31 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("5D"),
+				mem: ram("5D"),
+			},
+			nil,
+		},
+		{
+			"MOV E, M",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+					},
+				},
+				mem: ram("5E 00 FF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						E:  0xFF,
+						H:  0x00,
+						L:  0x02,
+					},
+				},
+				mem: ram("5E 00 FF"),
 			},
 			nil,
 		},
@@ -2315,7 +2437,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("67"),
+				mem: ram("67"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2327,7 +2449,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("67"),
+				mem: ram("67"),
 			},
 			nil,
 		},
@@ -2339,7 +2461,7 @@ func TestComputer_Step(t *testing.T) {
 						B: 0x01,
 					},
 				},
-				mem: rom("60"),
+				mem: ram("60"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2349,7 +2471,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("60"),
+				mem: ram("60"),
 			},
 			nil,
 		},
@@ -2361,7 +2483,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x01,
 					},
 				},
-				mem: rom("61"),
+				mem: ram("61"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2371,7 +2493,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("61"),
+				mem: ram("61"),
 			},
 			nil,
 		},
@@ -2383,7 +2505,7 @@ func TestComputer_Step(t *testing.T) {
 						D: 0x01,
 					},
 				},
-				mem: rom("62"),
+				mem: ram("62"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2393,7 +2515,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("62"),
+				mem: ram("62"),
 			},
 			nil,
 		},
@@ -2405,7 +2527,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x01,
 					},
 				},
-				mem: rom("63"),
+				mem: ram("63"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2415,7 +2537,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("63"),
+				mem: ram("63"),
 			},
 			nil,
 		},
@@ -2427,7 +2549,7 @@ func TestComputer_Step(t *testing.T) {
 						H: 0x01,
 					},
 				},
-				mem: rom("64"),
+				mem: ram("64"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2436,7 +2558,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("64"),
+				mem: ram("64"),
 			},
 			nil,
 		},
@@ -2448,7 +2570,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("65"),
+				mem: ram("65"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2458,7 +2580,30 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("65"),
+				mem: ram("65"),
+			},
+			nil,
+		},
+		{
+			"MOV H, M",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+					},
+				},
+				mem: ram("66 00 FF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						H:  0xFF,
+						L:  0x02,
+					},
+				},
+				mem: ram("66 00 FF"),
 			},
 			nil,
 		},
@@ -2470,7 +2615,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("6F"),
+				mem: ram("6F"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2482,7 +2627,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("6F"),
+				mem: ram("6F"),
 			},
 			nil,
 		},
@@ -2494,7 +2639,7 @@ func TestComputer_Step(t *testing.T) {
 						B: 0x01,
 					},
 				},
-				mem: rom("68"),
+				mem: ram("68"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2504,7 +2649,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("68"),
+				mem: ram("68"),
 			},
 			nil,
 		},
@@ -2516,7 +2661,7 @@ func TestComputer_Step(t *testing.T) {
 						C: 0x01,
 					},
 				},
-				mem: rom("69"),
+				mem: ram("69"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2526,7 +2671,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("69"),
+				mem: ram("69"),
 			},
 			nil,
 		},
@@ -2538,7 +2683,7 @@ func TestComputer_Step(t *testing.T) {
 						D: 0x01,
 					},
 				},
-				mem: rom("6A"),
+				mem: ram("6A"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2548,7 +2693,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("6A"),
+				mem: ram("6A"),
 			},
 			nil,
 		},
@@ -2560,7 +2705,7 @@ func TestComputer_Step(t *testing.T) {
 						E: 0x01,
 					},
 				},
-				mem: rom("6B"),
+				mem: ram("6B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2570,7 +2715,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("6B"),
+				mem: ram("6B"),
 			},
 			nil,
 		},
@@ -2582,7 +2727,7 @@ func TestComputer_Step(t *testing.T) {
 						H: 0x01,
 					},
 				},
-				mem: rom("6C"),
+				mem: ram("6C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2592,7 +2737,7 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x01,
 					},
 				},
-				mem: rom("6C"),
+				mem: ram("6C"),
 			},
 			nil,
 		},
@@ -2604,7 +2749,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x01,
 					},
 				},
-				mem: rom("6D"),
+				mem: ram("6D"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2613,7 +2758,30 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x01,
 					},
 				},
-				mem: rom("6D"),
+				mem: ram("6D"),
+			},
+			nil,
+		},
+		{
+			"MOV L, M",
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						H: 0x00,
+						L: 0x02,
+					},
+				},
+				mem: ram("6E 00 FF"),
+			},
+			&Computer{
+				cpu: cpu{
+					registers: registers{
+						PC: 0x01,
+						H:  0x00,
+						L:  0xFF,
+					},
+				},
+				mem: ram("6E 00 FF"),
 			},
 			nil,
 		},
@@ -2629,7 +2797,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xff,
 					},
 				},
-				mem: rom("77 00 00 00"),
+				mem: ram("77 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2642,7 +2810,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xff,
 					},
 				},
-				mem: rom("77 00 00 FF"),
+				mem: ram("77 00 00 FF"),
 			},
 			nil,
 		},
@@ -2656,7 +2824,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x03,
 					},
 				},
-				mem: rom("70 00 00 00"),
+				mem: ram("70 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2667,7 +2835,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x03,
 					},
 				},
-				mem: rom("70 00 00 FF"),
+				mem: ram("70 00 00 FF"),
 			},
 			nil,
 		},
@@ -2681,7 +2849,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x03,
 					},
 				},
-				mem: rom("71 00 00 00"),
+				mem: ram("71 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2692,7 +2860,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x03,
 					},
 				},
-				mem: rom("71 00 00 FF"),
+				mem: ram("71 00 00 FF"),
 			},
 			nil,
 		},
@@ -2706,7 +2874,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x03,
 					},
 				},
-				mem: rom("72 00 00 00"),
+				mem: ram("72 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2717,7 +2885,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x03,
 					},
 				},
-				mem: rom("72 00 00 FF"),
+				mem: ram("72 00 00 FF"),
 			},
 			nil,
 		},
@@ -2731,7 +2899,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x03,
 					},
 				},
-				mem: rom("73 00 00 00"),
+				mem: ram("73 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2742,7 +2910,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x03,
 					},
 				},
-				mem: rom("73 00 00 FF"),
+				mem: ram("73 00 00 FF"),
 			},
 			nil,
 		},
@@ -2755,7 +2923,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x03,
 					},
 				},
-				mem: rom("74 00 00 00"),
+				mem: ram("74 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2765,7 +2933,7 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x03,
 					},
 				},
-				mem: rom("74 00 00 00"),
+				mem: ram("74 00 00 00"),
 			},
 			nil,
 		},
@@ -2778,7 +2946,7 @@ func TestComputer_Step(t *testing.T) {
 						L: 0x03,
 					},
 				},
-				mem: rom("75 00 00 00"),
+				mem: ram("75 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2788,14 +2956,14 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x03,
 					},
 				},
-				mem: rom("75 00 00 03"),
+				mem: ram("75 00 00 03"),
 			},
 			nil,
 		},
 		{
 			"MVI A, D8",
 			&Computer{
-				mem: rom("3E 0B"),
+				mem: ram("3E 0B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2806,14 +2974,14 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x0B,
 					},
 				},
-				mem: rom("3E 0B"),
+				mem: ram("3E 0B"),
 			},
 			nil,
 		},
 		{
 			"MVI B, D8",
 			&Computer{
-				mem: rom("06 0B"),
+				mem: ram("06 0B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2822,14 +2990,14 @@ func TestComputer_Step(t *testing.T) {
 						B:  0x0B,
 					},
 				},
-				mem: rom("06 0B"),
+				mem: ram("06 0B"),
 			},
 			nil,
 		},
 		{
 			"MVI C, D8",
 			&Computer{
-				mem: rom("0E 0B"),
+				mem: ram("0E 0B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2838,14 +3006,14 @@ func TestComputer_Step(t *testing.T) {
 						C:  0x0B,
 					},
 				},
-				mem: rom("0E 0B"),
+				mem: ram("0E 0B"),
 			},
 			nil,
 		},
 		{
 			"MVI D, D8",
 			&Computer{
-				mem: rom("16 0B"),
+				mem: ram("16 0B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2854,14 +3022,14 @@ func TestComputer_Step(t *testing.T) {
 						D:  0x0B,
 					},
 				},
-				mem: rom("16 0B"),
+				mem: ram("16 0B"),
 			},
 			nil,
 		},
 		{
 			"MVI E, D8",
 			&Computer{
-				mem: rom("1E 0B"),
+				mem: ram("1E 0B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2870,14 +3038,14 @@ func TestComputer_Step(t *testing.T) {
 						E:  0x0B,
 					},
 				},
-				mem: rom("1E 0B"),
+				mem: ram("1E 0B"),
 			},
 			nil,
 		},
 		{
 			"MVI H, D8",
 			&Computer{
-				mem: rom("26 0B"),
+				mem: ram("26 0B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2886,14 +3054,14 @@ func TestComputer_Step(t *testing.T) {
 						H:  0x0B,
 					},
 				},
-				mem: rom("26 0B"),
+				mem: ram("26 0B"),
 			},
 			nil,
 		},
 		{
 			"MVI L, D8",
 			&Computer{
-				mem: rom("2E 0B"),
+				mem: ram("2E 0B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2902,14 +3070,14 @@ func TestComputer_Step(t *testing.T) {
 						L:  0x0B,
 					},
 				},
-				mem: rom("2E 0B"),
+				mem: ram("2E 0B"),
 			},
 			nil,
 		},
 		{
 			"NOP",
 			&Computer{
-				mem: rom("00"),
+				mem: ram("00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2917,7 +3085,7 @@ func TestComputer_Step(t *testing.T) {
 						PC: 0x01,
 					},
 				},
-				mem: rom("00"),
+				mem: ram("00"),
 			},
 			nil,
 		},
@@ -2930,7 +3098,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B7"),
+				mem: ram("B7"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2942,7 +3110,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B7"),
+				mem: ram("B7"),
 			},
 			nil,
 		},
@@ -2959,7 +3127,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B0"),
+				mem: ram("B0"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -2972,7 +3140,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B0"),
+				mem: ram("B0"),
 			},
 			nil,
 		},
@@ -2988,7 +3156,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("B1"),
+				mem: ram("B1"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3001,7 +3169,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B1"),
+				mem: ram("B1"),
 			},
 			nil,
 		},
@@ -3017,7 +3185,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("B2"),
+				mem: ram("B2"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3030,7 +3198,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B2"),
+				mem: ram("B2"),
 			},
 			nil,
 		},
@@ -3046,7 +3214,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("B3"),
+				mem: ram("B3"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3059,7 +3227,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B3"),
+				mem: ram("B3"),
 			},
 			nil,
 		},
@@ -3075,7 +3243,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("B4"),
+				mem: ram("B4"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3088,7 +3256,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B4"),
+				mem: ram("B4"),
 			},
 			nil,
 		},
@@ -3104,7 +3272,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("B5"),
+				mem: ram("B5"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3117,7 +3285,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("B5"),
+				mem: ram("B5"),
 			},
 			nil,
 		},
@@ -3130,7 +3298,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x01,
 					},
 				},
-				mem: rom("9F"),
+				mem: ram("9F"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3142,7 +3310,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("9F"),
+				mem: ram("9F"),
 			},
 			nil,
 		},
@@ -3155,7 +3323,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x01,
 					},
 				},
-				mem: rom("9F"),
+				mem: ram("9F"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3167,7 +3335,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("9F"),
+				mem: ram("9F"),
 			},
 			nil,
 		},
@@ -3183,7 +3351,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x02,
 					},
 				},
-				mem: rom("98"),
+				mem: ram("98"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3196,7 +3364,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("98"),
+				mem: ram("98"),
 			},
 			nil,
 		},
@@ -3212,7 +3380,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("99"),
+				mem: ram("99"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3225,7 +3393,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("99"),
+				mem: ram("99"),
 			},
 			nil,
 		},
@@ -3241,7 +3409,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("9A"),
+				mem: ram("9A"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3254,7 +3422,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("9A"),
+				mem: ram("9A"),
 			},
 			nil,
 		},
@@ -3270,7 +3438,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("9B"),
+				mem: ram("9B"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3283,7 +3451,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("9B"),
+				mem: ram("9B"),
 			},
 			nil,
 		},
@@ -3299,7 +3467,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("9C"),
+				mem: ram("9C"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3312,7 +3480,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("9C"),
+				mem: ram("9C"),
 			},
 			nil,
 		},
@@ -3328,7 +3496,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x08,
 					},
 				},
-				mem: rom("9D"),
+				mem: ram("9D"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3341,7 +3509,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x05,
 					},
 				},
-				mem: rom("9D"),
+				mem: ram("9D"),
 			},
 			nil,
 		},
@@ -3357,7 +3525,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
+				mem: ram("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3370,7 +3538,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
+				mem: ram("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
 			},
 			nil,
 		},
@@ -3386,7 +3554,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
+				mem: ram("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3399,7 +3567,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
+				mem: ram("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
 			},
 			nil,
 		},
@@ -3411,7 +3579,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("97"),
+				mem: ram("97"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3423,7 +3591,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("97"),
+				mem: ram("97"),
 			},
 			nil,
 		},
@@ -3438,7 +3606,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x00,
 					},
 				},
-				mem: rom("90"),
+				mem: ram("90"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3451,7 +3619,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("90"),
+				mem: ram("90"),
 			},
 			nil,
 		},
@@ -3466,7 +3634,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x02,
 					},
 				},
-				mem: rom("90"),
+				mem: ram("90"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3479,7 +3647,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x01,
 					},
 				},
-				mem: rom("90"),
+				mem: ram("90"),
 			},
 			nil,
 		},
@@ -3494,7 +3662,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x01,
 					},
 				},
-				mem: rom("90"),
+				mem: ram("90"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3507,7 +3675,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xFF,
 					},
 				},
-				mem: rom("90"),
+				mem: ram("90"),
 			},
 			nil,
 		},
@@ -3522,7 +3690,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("91"),
+				mem: ram("91"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3535,7 +3703,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("91"),
+				mem: ram("91"),
 			},
 			nil,
 		},
@@ -3550,7 +3718,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("92"),
+				mem: ram("92"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3563,7 +3731,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("92"),
+				mem: ram("92"),
 			},
 			nil,
 		},
@@ -3578,7 +3746,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("93"),
+				mem: ram("93"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3591,7 +3759,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("93"),
+				mem: ram("93"),
 			},
 			nil,
 		},
@@ -3606,7 +3774,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("94"),
+				mem: ram("94"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3619,7 +3787,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("94"),
+				mem: ram("94"),
 			},
 			nil,
 		},
@@ -3634,7 +3802,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0x30,
 					},
 				},
-				mem: rom("95"),
+				mem: ram("95"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3647,7 +3815,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x2F,
 					},
 				},
-				mem: rom("95"),
+				mem: ram("95"),
 			},
 			nil,
 		},
@@ -3659,7 +3827,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("A8"),
+				mem: ram("A8"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3671,7 +3839,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0x00,
 					},
 				},
-				mem: rom("A8"),
+				mem: ram("A8"),
 			},
 			nil,
 		},
@@ -3687,7 +3855,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("A9"),
+				mem: ram("A9"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3700,7 +3868,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xF5,
 					},
 				},
-				mem: rom("A9"),
+				mem: ram("A9"),
 			},
 			nil,
 		},
@@ -3716,7 +3884,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("AA"),
+				mem: ram("AA"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3729,7 +3897,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xF5,
 					},
 				},
-				mem: rom("AA"),
+				mem: ram("AA"),
 			},
 			nil,
 		},
@@ -3745,7 +3913,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("AB"),
+				mem: ram("AB"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3758,7 +3926,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xF5,
 					},
 				},
-				mem: rom("AB"),
+				mem: ram("AB"),
 			},
 			nil,
 		},
@@ -3774,7 +3942,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("AC"),
+				mem: ram("AC"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3787,7 +3955,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xF5,
 					},
 				},
-				mem: rom("AC"),
+				mem: ram("AC"),
 			},
 			nil,
 		},
@@ -3803,7 +3971,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("AD"),
+				mem: ram("AD"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3816,7 +3984,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xF5,
 					},
 				},
-				mem: rom("AD"),
+				mem: ram("AD"),
 			},
 			nil,
 		},
@@ -3832,7 +4000,7 @@ func TestComputer_Step(t *testing.T) {
 						A: 0xFF,
 					},
 				},
-				mem: rom("AF"),
+				mem: ram("AF"),
 			},
 			&Computer{
 				cpu: cpu{
@@ -3845,7 +4013,7 @@ func TestComputer_Step(t *testing.T) {
 						A:     0xF5,
 					},
 				},
-				mem: rom("AF"),
+				mem: ram("AF"),
 			},
 			nil,
 		},
