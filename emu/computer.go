@@ -300,6 +300,7 @@ var instructionTable = []instruction{
 	0x83: adde,
 	0x84: addh,
 	0x85: addl,
+	0x86: addm,
 	0x87: adda,
 	0x88: adcb,
 	0x89: adcc,
@@ -445,6 +446,16 @@ func addl(c *Computer) error {
 	return add(c, c.L, false)
 }
 
+// 0x86 ADD M | A <- A + (HL) (Z, S, P, CY, AC)
+func addm(c *Computer) error {
+	addr := uint16(c.H)<<8 + uint16(c.L)
+	v, err := c.read8(addr)
+	if err != nil {
+		return err
+	}
+	return add(c, v, false)
+}
+
 // 0x87 ADD A | A <- A + A (Z, S, P, CY, AC)
 func adda(c *Computer) error {
 	return add(c, c.A, false)
@@ -513,37 +524,37 @@ func call(c *Computer) error {
 	return nil
 }
 
-// 0xB8	CMP X	(Z, S, P, CY, AC) | A - B
+// 0xB8	CMP B | A - B (Z, S, P, CY, AC)
 func cmpb(c *Computer) error {
 	return sub(c, c.B, false)
 }
 
-// 0xB9	CMP X	(Z, S, P, CY, AC) | A - C
+// 0xB9 CMP C | A - C (Z, S, P, CY, AC)
 func cmpc(c *Computer) error {
 	return sub(c, c.C, false)
 }
 
-// 0xBA	CMP X	(Z, S, P, CY, AC) | A - D
+// 0xBA CMP D | A - D (Z, S, P, CY, AC)
 func cmpd(c *Computer) error {
 	return sub(c, c.D, false)
 }
 
-// 0xBB	CMP X	(Z, S, P, CY, AC) | A - E
+//0xBB CMP E | A - E (Z, S, P, CY, AC)
 func cmpe(c *Computer) error {
 	return sub(c, c.E, false)
 }
 
-// 0xBC	CMP X	(Z, S, P, CY, AC) | A - H
+// 0xBC	CMP H | A - H (Z, S, P, CY, AC)
 func cmph(c *Computer) error {
 	return sub(c, c.H, false)
 }
 
-// 0xBD	CMP X	(Z, S, P, CY, AC) | A - L
+// 0xBD	CMP L | A - L (Z, S, P, CY, AC)
 func cmpl(c *Computer) error {
 	return sub(c, c.L, false)
 }
 
-// 0xBF	CMP X	(Z, S, P, CY, AC) | A - A
+// 0xBF	CMP A | A - A (Z, S, P, CY, AC)
 func cmpa(c *Computer) error {
 	return sub(c, c.A, false)
 }
@@ -574,22 +585,22 @@ func dad16(c *Computer, d16 uint16) error {
 	return nil
 }
 
-// 0x09	DAD B (CY) | HL = HL + BC
+// 0x09	DAD B | HL = HL + BC (CY)
 func dadb(c *Computer) error {
 	return dad8(c, c.B, c.C)
 }
 
-// 0x19	DAD D (CY) | HL = HL + DE
+// 0x19	DAD D | HL = HL + DE (CY)
 func dadd(c *Computer) error {
 	return dad8(c, c.D, c.E)
 }
 
-// 0x29	DAD H (CY) | HL = HL + HL
+// 0x29	DAD H | HL = HL + HL (CY)
 func dadh(c *Computer) error {
 	return dad8(c, c.H, c.L)
 }
 
-// 0x39	DAD B (CY) | HL = HL + SP
+// 0x39	DAD B | HL = HL + SP (CY)
 func dadsp(c *Computer) error {
 	return dad16(c, c.SP)
 }

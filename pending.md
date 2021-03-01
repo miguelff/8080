@@ -25,17 +25,11 @@ Opcode	Instruction	size	flags	function
 0x3b	DCX SP	1		SP = SP-1
 0x3d	DCR A	1	Z, S, P, AC	A <- A-1
 0x3f	CMC	1	CY	CY=!CY
-0x46	MOV B,M	1		B <- (HL)
-0x4e	MOV C,M	1		C <- (HL)
-0x56	MOV D,M	1		D <- (HL)
-0x5e	MOV E,M	1		E <- (HL)
-0x66	MOV H,M	1		H <- (HL)
-0x6e	MOV L,M	1		L <- (HL)
 0x76	HLT	1		special
 0x7e	MOV A,M	1		A <- (HL)
 0x86	ADD M	1	Z, S, P, CY, AC	A <- A + (HL)
 0x8e	ADC M	1	Z, S, P, CY, AC	A <- A + (HL) + CY
-0x96	SUB M	1	Z, S, P, CY, AC	A <- A + (HL)
+0x96	SUB M	1	Z, S, P, CY, AC	A <- A - (HL)
 0x9e	SBB M	1	Z, S, P, CY, AC	A <- A - (HL) - CY
 0xa6	ANA M	1	Z, S, P, CY, AC	A <- A & (HL)
 0xae	XRA M	1	Z, S, P, CY, AC	A <- A ^ (HL)
