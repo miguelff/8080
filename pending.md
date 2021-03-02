@@ -26,7 +26,6 @@ Opcode	Instruction	size	flags	function
 0x3d	DCR A	1	Z, S, P, AC	A <- A-1
 0x3f	CMC	1	CY	CY=!CY
 0x76	HLT	1		special
-0x7e	MOV A,M	1		A <- (HL)
 0x96	SUB M	1	Z, S, P, CY, AC	A <- A - (HL)
 0x9e	SBB M	1	Z, S, P, CY, AC	A <- A - (HL) - CY
 0xa6	ANA M	1	Z, S, P, CY, AC	A <- A & (HL)
