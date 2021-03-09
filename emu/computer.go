@@ -21,58 +21,33 @@ func (e ComputerError) Error() string {
 	return string(e)
 }
 
-// registers contains 8 registers: 6 8-bit registers  (B-L); and two 16-bit registers: the stack pointer (SP) and
-// program counter (PC)
+// flags hold the settings of the five condition bits, i.e., Carry, Zero, Sign, Parity, and Auxiliary Carry.
+// The format of this byte is, according to the 8080 assembly programming manual:
 //
-// 8 bit registers come in pairs (B-C, D-E, H-L) and some opcodes operate on the pair itself, for instance LXI B, D16
-type registers struct {
-	B byte
-	C byte
-	D byte
-	E byte
-	H byte
-	L byte
-
-	SP uint16
-	PC uint16
-}
-
-// flags encode, per bit and from the least significant bit, the following semantics:
+//	| | | |A| | | | |
+//	|S|Z|0|C|0|P|1|C|
 //
-// zero (zf): whether the result of an operation was zero (all bits of the operation result are zero)
-// sign (sf): whether the number if negative if interpreted as signed (most significant bit of the operation result is 1)
-// parity (pf): whether the amount of ones in the result of an operation is even
-// carry (cyf): whether an addition exceeded the maximum number, or there was borrow in a substraction.
-// auxiliary carry (acf): like carry but applied to the least significant 4 bits of the number.
-//
-// the remaining three most significant bits are ignored.
+// S  State of Sign bit: the number if negative if interpreted as signed (most significant bit of the operation result is 1)
+// Z  State of Zero bit: the result of an operation was zero (all bits of the operation result are zero)
+// 0  always 0 (ignored)
+// AC State of auxiliary Carry bit: like carry but applied to the least significant 4 bits of the number.
+// 0  always 0 (ignored)
+// P  State of Parity bit: the amount of ones in the result of an operation is even
+// 1  always 1 (ignored)
+// C  State of Carry bit: an addition exceeded the maximum number, or there was borrow in a substraction.
 type flags byte
 
 const (
 	none flags = iota
-	zf   flags = 1 << (iota - 1)
-	sf
+	cf   flags = 1 << (iota - 1)
+	_
 	pf
-	cyf
+	_
 	acf
+	_
+	zf
+	sf
 )
-
-// alu (arithmetic-logic unit) contains 5 flags (zero8, sign8, parity8, carry, and auxiliary carry), and special registers
-// that belong to the ALU and not the register array: Register (A), a temporary register (TMP) and a temporary
-// accumulator register (TACC).
-type alu struct {
-	Flags flags
-
-	A    byte
-	TMP  byte
-	TACC byte
-}
-
-// The CY (Carry) is set if the instruction resulted in a carry (from addition), ora a borrow (from subtraction ora a
-// comparison) out of the high-order bit. otherwise it is reset.
-func (a *alu) CY() bool {
-	return (a.Flags & cyf) != 0
-}
 
 // parity8 calculates the parity of the given byte, and returns a flags value with the parity8 flag set appropriately
 func parity8(b byte) flags {
@@ -85,7 +60,7 @@ func parity8(b byte) flags {
 	return 0
 }
 
-// sign8 calculates the sign of the given byte, and returns a flags value with the sign8 flag set appropriately
+// sign8 calculates the sign of the given byte, and returns a flags value with the sign flag set appropriately
 func sign8(b byte) flags {
 	if b&0x80 == 0x80 {
 		return sf
@@ -93,7 +68,7 @@ func sign8(b byte) flags {
 	return none
 }
 
-// zero8 calculates the zero flag of the given byte, and returns a flags value with the sign8 flag set appropriately
+// zero8 calculates the zero flag of the given byte, and returns a flags value with the sign flag set appropriately
 func zero8(b byte) flags {
 	if b == 0x0 {
 		return zf
@@ -101,38 +76,41 @@ func zero8(b byte) flags {
 	return none
 }
 
-// parity16 calculates the parity8 of the given uint16, and returns a flags value with the parity8 flag set appropriately
-func parity16(b uint16) flags {
-	i := b ^ (b >> 1)
-	i = i ^ (i >> 2)
-	i = i ^ (i >> 4)
-	i = i ^ (i >> 8)
-	if i&1 == 0 {
-		return pf
-	}
-	return 0
-}
-
-// sign16 calculates the parity8 of the given uint16, and returns a flags value with the sign8 flag set appropriately
-func sign16(b uint16) flags {
-	if b&0x8000 == 0x8000 {
-		return sf
-	}
-	return none
-}
-
-// zero16 calculates the zero8 flag of the given uint16, and returns a flags value with the sign8 flag set appropriately
-func zero16(b uint16) flags {
-	if b == 0x0 {
-		return zf
-	}
-	return none
-}
-
-// cpu is the central processing unit comprised of the  registers and alu
+// cpu is the central processing unit comprised of the registers and arithmetic-logic unit (ALU).
+//
+// For simplicity, we inline the structs of the alu and the registers bank in this struct.
+//
+// The 8080 processor has 8 registers in its registry bank:
+//  * six 8-bit registers  (B-L). -there's another general purpose registry (A), but the hardware for it belongs to the
+// ALU, more on that below-
+//  * two 16-bit registers: the stack pointer (SP) and program counter (PC)
+//
+// the 8 bit registers come in pairs (B-C, D-E, H-L) and some opcodes operate on the pair itself, for instance LXI B, D16.
+//
+// The alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity, carry, and auxiliary carry), and special
+// registers that belong to the ALU and not the register array: The accumulator registry (A) is used to store the result
+// of several arithmetic operations. While logically most opcodes treat the A registry as a general purpose one, this
+// resides in the ALU.
 type cpu struct {
-	registers
-	alu
+	A byte
+	B byte
+	C byte
+	D byte
+	E byte
+	H byte
+	L byte
+
+	SP uint16
+	PC uint16
+
+	// ALU components
+	Flags flags
+}
+
+// The CY (Carry) is set if the instruction resulted in a carry (from addition), ora a borrow (from subtraction ora a
+// comparison) out of the high-order bit. otherwise it is reset.
+func (a *cpu) CY() bool {
+	return (a.Flags & cf) != 0
 }
 
 // Memory represents the computer memory
@@ -211,6 +189,7 @@ type instruction func(*Computer) error
 
 var instructionTable = []instruction{
 	0x00: nop,
+	0x05: dcrb,
 	0x01: lxib,
 	0x02: staxb,
 	0x03: inxb,
@@ -219,27 +198,33 @@ var instructionTable = []instruction{
 	0x09: dadb,
 	0x0A: ldaxb,
 	0x0C: inrc,
+	0x0D: dcrc,
 	0x0E: mvic,
 	0x11: lxid,
 	0x12: staxd,
 	0x13: inxd,
 	0x14: inrd,
+	0x15: dcrd,
 	0x16: mvid,
 	0x19: dadd,
 	0x1C: inre,
+	0x1D: dcre,
 	0x1E: mvie,
 	0x1A: ldaxd,
+	0x20: dcrh,
 	0x21: lxih,
 	0x23: inxh,
 	0x24: inrh,
 	0x26: mvih,
 	0x29: dadh,
 	0x2C: inrl,
+	0x2D: dcrl,
 	0x2E: mvil,
 	0x31: lxisp,
 	0x33: inxsp,
 	0x39: dadsp,
 	0x3C: inra,
+	0x3D: dcra,
 	0x3E: mvia,
 	0x40: movbb,
 	0x41: movbc,
@@ -366,32 +351,6 @@ var instructionTable = []instruction{
 	0xCD: call,
 }
 
-// If carry is not set, the content of register r is added to the content of the accumulator.
-// The result is placed in the accumulator.
-// If carry is set, the content of register r and an extra bit are added to the content
-// of the accumulator. The result is placed in the accumulator.
-func add(c *Computer, v byte, carry bool) error {
-	if carry {
-		v++
-	}
-	sum := c.A + v
-
-	flags := zero8(sum) | sign8(sum) | parity8(sum)
-	// there was carry if the result of an addition is lower than one of the summands
-	if sum < c.A {
-		flags |= cyf
-	}
-	// there was auxiliary carry if there was carry on the least significant nibble
-	if c.A&0x07+v&0x07 >= 0x08 {
-		flags |= acf
-	}
-
-	c.A = sum
-	c.Flags = flags
-	c.PC++
-	return nil
-}
-
 // 0x88 ADC B |	A <- A + B + CY (Z, S, P, CY, AC)
 func adcb(c *Computer) error {
 	return add(c, c.B, c.CY())
@@ -434,6 +393,32 @@ func adcm(c *Computer) error {
 // 0x8F ADC A | A <- A + A + CY (Z, S, P, CY, AC)
 func adca(c *Computer) error {
 	return add(c, c.A, c.CY())
+}
+
+// If carry is not set, the content of register r is added to the content of the accumulator.
+// The result is placed in the accumulator.
+// If carry is set, the content of register r and an extra bit are added to the content
+// of the accumulator. The result is placed in the accumulator.
+func add(c *Computer, v byte, carry bool) error {
+	if carry {
+		v++
+	}
+	sum := c.A + v
+
+	flags := zero8(sum) | sign8(sum) | parity8(sum)
+	// there was carry if the result of an addition is lower than one of the summands
+	if sum < c.A {
+		flags |= cf
+	}
+	// there was auxiliary carry if there was carry between bit 3 and bit 4 of the resulting value.
+	if c.A&0x0F+v&0x0F >= 0x10 {
+		flags |= acf
+	}
+
+	c.A = sum
+	c.Flags = flags
+	c.PC++
+	return nil
 }
 
 // 0x80 ADD B |	A <- A + B (Z, S, P, CY, AC)
@@ -595,9 +580,9 @@ func dad16(c *Computer, d16 uint16) error {
 
 	// affect only the carry flag
 	if sum < s {
-		c.Flags |= cyf
+		c.Flags |= cf
 	} else {
-		c.Flags &= 0xFF ^ cyf
+		c.Flags &= 0xFF ^ cf
 	}
 
 	c.PC++
@@ -624,29 +609,70 @@ func dadsp(c *Computer) error {
 	return dad16(c, c.SP)
 }
 
-func inx(c *Computer, msreg, lsreg *byte) error {
-	incr := (uint16(*msreg)<<8 + uint16(*lsreg)) + 1
-	*msreg = byte(incr >> 8)
-	*lsreg = byte(incr & 0xFF)
+// The content of register reg is decremented by one.
+// Note: All condition flags except CY are affected.
+func dcr(c *Computer, reg *byte) error {
+	sum := *reg - 1
+
+	flags := zero8(sum) | sign8(sum) | parity8(sum) | (c.Flags & cf)
+
+	// simplifying *reg&0x0F + v&0x0F >= 0x10. As v is two's complement of 1, which is 0xFF
+	// the expression is equal to *reg&0x0F + 0xFF&0x0F >= 0x10; which is equal to
+	// *reg&0x0F + 0x0F >= 0x10, which is equal to the expression below.
+	if *reg&0x0F >= 0x01 {
+		flags |= acf
+	}
+
+	*reg = sum
+	c.Flags = flags
 	c.PC++
 	return nil
 }
 
-func inx16(c *Computer, reg *uint16) error {
-	*reg++
-	if reg != &c.PC {
-		c.PC++
-	}
-	return nil
+// 0x3D	DCR A | A <- A -1 (Z, S, P, AC)
+func dcra(c *Computer) error {
+	return dcr(c, &c.A)
 }
 
-// The content of register r is incremented by one.
+// 0x05	DCR B | B <- B -1 (Z, S, P, AC)
+func dcrb(c *Computer) error {
+	return dcr(c, &c.B)
+}
+
+// 0x0D	DCR C | C <- C -1 (Z, S, P, AC)
+func dcrc(c *Computer) error {
+	return dcr(c, &c.C)
+}
+
+// 0x15	DCR D | D <- D -1 (Z, S, P, AC)
+func dcrd(c *Computer) error {
+	return dcr(c, &c.D)
+}
+
+// 0x1D	DCR E | E <- E -1 (Z, S, P, AC)
+func dcre(c *Computer) error {
+	return dcr(c, &c.E)
+}
+
+// 0x20	DCR H | H <- H -1 (Z, S, P, AC)
+func dcrh(c *Computer) error {
+	return dcr(c, &c.H)
+}
+
+// 0x2D	DCR L | L <- L -1 (Z, S, P, AC)
+func dcrl(c *Computer) error {
+	return dcr(c, &c.L)
+}
+
+// The content of register reg is incremented by one.
 // Note: All condition flags except CY are affected.
 func inr(c *Computer, reg *byte) error {
 	sum := *reg + 1
 
-	flags := zero8(sum) | sign8(sum) | parity8(sum) | (c.Flags & cyf)
-	if *reg&0x07 == 0x07 && sum&0x08 == 0x08 {
+	flags := zero8(sum) | sign8(sum) | parity8(sum) | (c.Flags & cf)
+
+	// there was auxiliary carry if there was carry between bit 3 and bit 4 of the resulting value.
+	if sum&0x10 == 0x10 {
 		flags |= acf
 	}
 
@@ -689,6 +715,22 @@ func inrh(c *Computer) error {
 // 0x2C	INR L | L <- L+1 (Z, S, P, AC)
 func inrl(c *Computer) error {
 	return inr(c, &c.L)
+}
+
+func inx(c *Computer, msreg, lsreg *byte) error {
+	incr := (uint16(*msreg)<<8 + uint16(*lsreg)) + 1
+	*msreg = byte(incr >> 8)
+	*lsreg = byte(incr & 0xFF)
+	c.PC++
+	return nil
+}
+
+func inx16(c *Computer, reg *uint16) error {
+	*reg++
+	if reg != &c.PC {
+		c.PC++
+	}
+	return nil
 }
 
 // 0x03: INX BC | BC <- BC + 1
@@ -1299,16 +1341,22 @@ func staxd(c *Computer) error {
 	return stax(c, c.D, c.E)
 }
 
-func sub(c *Computer, subtrahend byte, borrow bool) error {
+func sub(c *Computer, v byte, borrow bool) error {
 	if borrow {
-		subtrahend++
+		v++
 	}
-	sub := c.A + (^subtrahend + 1)
+	sub := c.A + (^v + 1)
 
 	flags := zero8(sub) | sign8(sub) | parity8(sub)
-	// there was borrow (cyf = 1) if the subtrahend is higher than the minuend
+	// there was borrow (cf = 1) if v is higher than the minuend
 	if sub > c.A {
-		flags |= cyf
+		flags |= cf
+	}
+	// there was auxiliary carry if there was carry between bit 3 and bit 4 of the resulting value
+	// it seems counterintuitive, that the behavior is the same of additions, but check this stackexchange
+	// answer: https://retrocomputing.stackexchange.com/a/12560
+	if c.A&0x0F+v&0x0F >= 0x10 {
+		flags |= acf
 	}
 
 	c.A = sub

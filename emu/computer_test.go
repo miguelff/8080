@@ -10,7 +10,6 @@ import (
 func ram(bytes string) memory {
 	return encoding.HexToBin(bytes)
 }
-
 func TestParity(t *testing.T) {
 	for _, tC := range []struct {
 		b    byte
@@ -49,7 +48,6 @@ func TestSign(t *testing.T) {
 		}
 	}
 }
-
 func TestZero(t *testing.T) {
 	for _, tC := range []struct {
 		b    byte
@@ -69,7 +67,6 @@ func TestZero(t *testing.T) {
 		}
 	}
 }
-
 func TestComputer_Step(t *testing.T) {
 	for _, tC := range []struct {
 		desc    string
@@ -81,22 +78,16 @@ func TestComputer_Step(t *testing.T) {
 			"ADC A: with carry",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						Flags: cyf,
-						A:     0x02,
-					},
+					A:     0x02,
+					Flags: cf,
 				},
 				mem: ram("8F"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf,
-						A:     0x05,
-					},
+					A:     0x05,
+					PC:    0x01,
+					Flags: pf,
 				},
 				mem: ram("8F"),
 			},
@@ -106,22 +97,16 @@ func TestComputer_Step(t *testing.T) {
 			"ADC A: no carry",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						Flags: none,
-						A:     0x02,
-					},
+					A:     0x02,
+					Flags: none,
 				},
 				mem: ram("8F"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x04,
-					},
+					A:     0x04,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("8F"),
 			},
@@ -131,26 +116,18 @@ func TestComputer_Step(t *testing.T) {
 			"ADC B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x02,
-					},
+					A:     0x02,
+					B:     0x01,
+					Flags: cf,
 				},
 				mem: ram("88"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x01,
-						PC: 1,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x04,
-					},
+					A:     0x04,
+					B:     0x01,
+					PC:    1,
+					Flags: none,
 				},
 				mem: ram("88"),
 			},
@@ -160,26 +137,18 @@ func TestComputer_Step(t *testing.T) {
 			"ADC C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0xFD,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x01,
-					},
+					A:     0x01,
+					C:     0xFD,
+					Flags: cf,
 				},
 				mem: ram("89"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C:  0xFD,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf | pf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					C:     0xFD,
+					PC:    0x01,
+					Flags: sf | pf,
 				},
 				mem: ram("89"),
 			},
@@ -189,26 +158,18 @@ func TestComputer_Step(t *testing.T) {
 			"ADC D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0xFD,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x00,
-					},
+					A:     0x00,
+					D:     0xFD,
+					Flags: cf,
 				},
 				mem: ram("8A"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0xFD,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf,
-						A:     0xFE,
-					},
+					A:     0xFE,
+					D:     0xFD,
+					PC:    0x01,
+					Flags: sf,
 				},
 				mem: ram("8A"),
 			},
@@ -218,26 +179,18 @@ func TestComputer_Step(t *testing.T) {
 			"ADC E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0xFD,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x00,
-					},
+					A:     0x00,
+					E:     0xFD,
+					Flags: cf,
 				},
 				mem: ram("8B"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E:  0xFD,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf,
-						A:     0xFE,
-					},
+					A:     0xFE,
+					E:     0xFD,
+					PC:    0x01,
+					Flags: sf,
 				},
 				mem: ram("8B"),
 			},
@@ -247,26 +200,18 @@ func TestComputer_Step(t *testing.T) {
 			"ADC H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0xFD,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x00,
-					},
+					A:     0x00,
+					H:     0xFD,
+					Flags: cf,
 				},
 				mem: ram("8C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0xFD,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf,
-						A:     0xFE,
-					},
+					A:     0xFE,
+					H:     0xFD,
+					PC:    0x01,
+					Flags: sf,
 				},
 				mem: ram("8C"),
 			},
@@ -276,26 +221,18 @@ func TestComputer_Step(t *testing.T) {
 			"ADC L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0xFD,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x00,
-					},
+					A:     0x00,
+					L:     0xFD,
+					Flags: cf,
 				},
 				mem: ram("8D"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L:  0xFD,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf,
-						A:     0xFE,
-					},
+					A:     0xFE,
+					L:     0xFD,
+					PC:    0x01,
+					Flags: sf,
 				},
 				mem: ram("8D"),
 			},
@@ -305,28 +242,20 @@ func TestComputer_Step(t *testing.T) {
 			"ADC M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
-					alu: alu{
-						A: 0x01,
-						Flags: cyf,
-					},
+					A:     0x01,
+					H:     0x00,
+					L:     0x02,
+					Flags: cf,
 				},
 				mem: ram("8E 00 FD"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf | pf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					H:     0x00,
+					L:     0x02,
+					PC:    0x01,
+					Flags: sf | pf,
 				},
 				mem: ram("8E 00 FD"),
 			},
@@ -336,21 +265,15 @@ func TestComputer_Step(t *testing.T) {
 			"ADD A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x02,
-					},
+					A: 0x02,
 				},
 				mem: ram("87"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x04,
-					},
+					A:     0x04,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("87"),
 			},
@@ -363,40 +286,28 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 1,
-					},
-					alu: alu{
-						Flags: zf | pf,
-					},
+					PC:    1,
+					Flags: zf | pf,
 				},
 				mem: ram("80"),
 			},
 			nil,
 		},
 		{
-			"ADD B: adding 0x05 + 0x03 sets the auxiliary carry flag",
+			"ADD B: adding 0x09 + 0x07 sets the auxiliary carry flag",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x03,
-					},
-					alu: alu{
-						A: 0x05,
-					},
+					A: 0x09,
+					B: 0x07,
 				},
 				mem: ram("80"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x03,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: acf,
-						A:     0x08,
-					},
+					A:     0x10,
+					B:     0x07,
+					PC:    0x01,
+					Flags: acf,
 				},
 				mem: ram("80"),
 			},
@@ -406,25 +317,17 @@ func TestComputer_Step(t *testing.T) {
 			"ADD B: adding 0xFE and 0x02 sets the carry and auxiliary carry flags",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0xFE,
-					},
-					alu: alu{
-						A: 0x03,
-					},
+					A: 0x03,
+					B: 0xFE,
 				},
 				mem: ram("80"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0xFE,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: cyf | acf,
-						A:     0x01,
-					},
+					A:     0x01,
+					B:     0xFE,
+					PC:    0x01,
+					Flags: cf | acf,
 				},
 				mem: ram("80"),
 			},
@@ -434,25 +337,17 @@ func TestComputer_Step(t *testing.T) {
 			"ADD C: adding 0xFE and 0x01 set the parity8 and sign8 flags",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0xFE,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
+					C: 0xFE,
 				},
 				mem: ram("81"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C:  0xFE,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf | pf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					C:     0xFE,
+					PC:    0x01,
+					Flags: sf | pf,
 				},
 				mem: ram("81"),
 			},
@@ -462,25 +357,17 @@ func TestComputer_Step(t *testing.T) {
 			"ADD D: adding 0xFf and 0x00 set the sign8 flag",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0xFE,
-					},
-					alu: alu{
-						A: 0x00,
-					},
+					A: 0x00,
+					D: 0xFE,
 				},
 				mem: ram("82"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0xFE,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf,
-						A:     0xFE,
-					},
+					A:     0xFE,
+					D:     0xFE,
+					PC:    0x01,
+					Flags: sf,
 				},
 				mem: ram("82"),
 			},
@@ -490,25 +377,17 @@ func TestComputer_Step(t *testing.T) {
 			"ADD E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0xFE,
-					},
-					alu: alu{
-						A: 0x00,
-					},
+					A: 0x00,
+					E: 0xFE,
 				},
 				mem: ram("83"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E:  0xFE,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf,
-						A:     0xFE,
-					},
+					A:     0xFE,
+					E:     0xFE,
+					PC:    0x01,
+					Flags: sf,
 				},
 				mem: ram("83"),
 			},
@@ -518,25 +397,17 @@ func TestComputer_Step(t *testing.T) {
 			"ADD H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0xFE,
-					},
-					alu: alu{
-						A: 0x00,
-					},
+					A: 0x00,
+					H: 0xFE,
 				},
 				mem: ram("84"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0xFE,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf,
-						A:     0xFE,
-					},
+					A:     0xFE,
+					H:     0xFE,
+					PC:    0x01,
+					Flags: sf,
 				},
 				mem: ram("84"),
 			},
@@ -546,25 +417,17 @@ func TestComputer_Step(t *testing.T) {
 			"ADD L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0xFE,
-					},
-					alu: alu{
-						A: 0x00,
-					},
+					A: 0x00,
+					L: 0xFE,
 				},
 				mem: ram("85"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L:  0xFE,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf,
-						A:     0xFE,
-					},
+					A:     0xFE,
+					L:     0xFE,
+					PC:    0x01,
+					Flags: sf,
 				},
 				mem: ram("85"),
 			},
@@ -574,27 +437,19 @@ func TestComputer_Step(t *testing.T) {
 			"ADD M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
+					H: 0x00,
+					L: 0x02,
 				},
 				mem: ram("86 00 FE"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf | pf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					H:     0x00,
+					L:     0x02,
+					PC:    0x01,
+					Flags: sf | pf,
 				},
 				mem: ram("86 00 FE"),
 			},
@@ -604,202 +459,142 @@ func TestComputer_Step(t *testing.T) {
 			"ANA A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					Flags: cf,
 				},
 				mem: ram("A7"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("A7"),
 			},
 			nil,
 		},
-
 		{
 			"ANA B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x0A,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					B:     0x0A,
+					Flags: cf,
 				},
 				mem: ram("A0"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf,
-						A:     0x0A,
-					},
+					A:     0x0A,
+					B:     0x0A,
+					PC:    0x01,
+					Flags: pf,
 				},
 				mem: ram("A0"),
 			},
 			nil,
 		},
-
 		{
 			"ANA C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x0A,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					C:     0x0A,
+					Flags: cf,
 				},
 				mem: ram("A1"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf,
-						A:     0x0A,
-					},
+					A:     0x0A,
+					C:     0x0A,
+					PC:    0x01,
+					Flags: pf,
 				},
 				mem: ram("A1"),
 			},
 			nil,
 		},
-
 		{
 			"ANA D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x0A,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					D:     0x0A,
+					Flags: cf,
 				},
 				mem: ram("A2"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf,
-						A:     0x0A,
-					},
+					A:     0x0A,
+					D:     0x0A,
+					PC:    0x01,
+					Flags: pf,
 				},
 				mem: ram("A2"),
 			},
 			nil,
 		},
-
 		{
 			"ANA E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x0A,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					E:     0x0A,
+					Flags: cf,
 				},
 				mem: ram("A3"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf,
-						A:     0x0A,
-					},
+					A:     0x0A,
+					E:     0x0A,
+					PC:    0x01,
+					Flags: pf,
 				},
 				mem: ram("A3"),
 			},
 			nil,
 		},
-
 		{
 			"ANA H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x0A,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					H:     0x0A,
+					Flags: cf,
 				},
 				mem: ram("A4"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf,
-						A:     0x0A,
-					},
+					A:     0x0A,
+					H:     0x0A,
+					PC:    0x01,
+					Flags: pf,
 				},
 				mem: ram("A4"),
 			},
 			nil,
 		},
-
 		{
 			"ANA L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x0A,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					L:     0x0A,
+					Flags: cf,
 				},
 				mem: ram("A5"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf,
-						A:     0x0A,
-					},
+					A:     0x0A,
+					L:     0x0A,
+					PC:    0x01,
+					Flags: pf,
 				},
 				mem: ram("A5"),
 			},
@@ -809,19 +604,15 @@ func TestComputer_Step(t *testing.T) {
 			"CALL adr",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						SP: 0x07,
-					},
+					PC: 0x01,
+					SP: 0x07,
 				},
 				mem: ram("00 CD 0A 00 00 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						SP: 0x05,
-						PC: 0x0A,
-					},
+					PC: 0x0A,
+					SP: 0x05,
 				},
 				mem: ram("00 CD 0A 00 00 00 01 00"),
 			},
@@ -831,21 +622,15 @@ func TestComputer_Step(t *testing.T) {
 			"CMP A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
 				},
 				mem: ram("BF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("BF"),
 			},
@@ -855,25 +640,17 @@ func TestComputer_Step(t *testing.T) {
 			"CMP B: generates carry",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x31,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					B: 0x31,
 				},
 				mem: ram("B8"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x31,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: cyf | pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					B:     0x31,
+					PC:    0x01,
+					Flags: cf | pf | sf,
 				},
 				mem: ram("B8"),
 			},
@@ -882,25 +659,17 @@ func TestComputer_Step(t *testing.T) {
 			"CMP B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					B: 0x01,
 				},
 				mem: ram("B8"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					B:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("B8"),
 			},
@@ -910,25 +679,17 @@ func TestComputer_Step(t *testing.T) {
 			"CMP C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					C: 0x01,
 				},
 				mem: ram("B9"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					C:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("B9"),
 			},
@@ -938,25 +699,17 @@ func TestComputer_Step(t *testing.T) {
 			"CMP D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					D: 0x01,
 				},
 				mem: ram("BA"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					D:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("BA"),
 			},
@@ -966,25 +719,17 @@ func TestComputer_Step(t *testing.T) {
 			"CMP E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					E: 0x01,
 				},
 				mem: ram("BB"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					E:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("BB"),
 			},
@@ -994,25 +739,17 @@ func TestComputer_Step(t *testing.T) {
 			"CMP H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					H: 0x01,
 				},
 				mem: ram("BC"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					H:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("BC"),
 			},
@@ -1022,25 +759,17 @@ func TestComputer_Step(t *testing.T) {
 			"CMP L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					L: 0x01,
 				},
 				mem: ram("BD"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					L:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("BD"),
 			},
@@ -1050,27 +779,21 @@ func TestComputer_Step(t *testing.T) {
 			"DAD B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-						C: 0x01,
-						H: 0x01,
-						L: 0x01,
-					},
+					B: 0x01,
+					C: 0x01,
+					H: 0x01,
+					L: 0x01,
 				},
 				mem: ram("09"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x01,
-						C:  0x01,
-						H:  0x02,
-						L:  0x02,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-					},
+					B:     0x01,
+					C:     0x01,
+					H:     0x02,
+					L:     0x02,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("09"),
 			},
@@ -1080,27 +803,21 @@ func TestComputer_Step(t *testing.T) {
 			"DAD B: generates carry",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0xFF,
-						C: 0xFE,
-						H: 0x00,
-						L: 0x03,
-					},
+					B: 0xFF,
+					C: 0xFE,
+					H: 0x00,
+					L: 0x03,
 				},
 				mem: ram("09"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0xFF,
-						C:  0xFE,
-						H:  0x00,
-						L:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: cyf,
-					},
+					B:     0xFF,
+					C:     0xFE,
+					H:     0x00,
+					L:     0x01,
+					PC:    0x01,
+					Flags: cf,
 				},
 				mem: ram("09"),
 			},
@@ -1110,27 +827,21 @@ func TestComputer_Step(t *testing.T) {
 			"DAD D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-						E: 0xFF,
-						H: 0x01,
-						L: 0x01,
-					},
+					D: 0x01,
+					E: 0xFF,
+					H: 0x01,
+					L: 0x01,
 				},
 				mem: ram("19"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0x01,
-						E:  0xFF,
-						H:  0x03,
-						L:  0x00,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-					},
+					D:     0x01,
+					E:     0xFF,
+					H:     0x03,
+					L:     0x00,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("19"),
 			},
@@ -1140,23 +851,17 @@ func TestComputer_Step(t *testing.T) {
 			"DAD H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-						L: 0x01,
-					},
+					H: 0x01,
+					L: 0x01,
 				},
 				mem: ram("29"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0x02,
-						L:  0x02,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-					},
+					H:     0x02,
+					L:     0x02,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("29"),
 			},
@@ -1166,27 +871,202 @@ func TestComputer_Step(t *testing.T) {
 			"DAD SP",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0x01,
-						L:  0x03,
-						SP: 0x0FFF,
-					},
+					H:  0x01,
+					L:  0x03,
+					SP: 0x0FFF,
 				},
 				mem: ram("39"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0x11,
-						L:  0x02,
-						SP: 0x0FFF,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-					},
+					H:     0x11,
+					L:     0x02,
+					SP:    0x0FFF,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("39"),
+			},
+			nil,
+		},
+		{
+			"DCR A",
+			&Computer{
+				cpu: cpu{
+					A: 0x02,
+				},
+				mem: ram("3D"),
+			},
+			&Computer{
+				cpu: cpu{
+					A:     0x01,
+					PC:    0x01,
+					Flags: acf,
+				},
+				mem: ram("3D"),
+			},
+			nil,
+		},
+		{
+			"DCR B",
+			&Computer{
+				cpu: cpu{
+					B: 0x02,
+				},
+				mem: ram("05"),
+			},
+			&Computer{
+				cpu: cpu{
+					B:     0x01,
+					PC:    0x01,
+					Flags: acf,
+				},
+				mem: ram("05"),
+			},
+			nil,
+		},
+		{
+			"DCR B: Carry not set when there's borrow",
+			&Computer{
+				cpu: cpu{
+					B: 0x00,
+				},
+				mem: ram("05"),
+			},
+			&Computer{
+				cpu: cpu{
+					B:     0xff,
+					PC:    0x01,
+					Flags: sf | pf,
+				},
+				mem: ram("05"),
+			},
+			nil,
+		},
+		{
+			"DCR B: Carry not modified when there was existing carry",
+			&Computer{
+				cpu: cpu{
+					B:     0x00,
+					Flags: cf,
+				},
+				mem: ram("05"),
+			},
+			&Computer{
+				cpu: cpu{
+					B:     0xff,
+					PC:    0x01,
+					Flags: sf | pf | cf,
+				},
+				mem: ram("05"),
+			},
+			nil,
+		},
+		{
+			"DCR B: Generates auxiliary carry when there's carry in the lower nibble",
+			&Computer{
+				cpu: cpu{
+					B: 0x1D,
+				},
+				mem: ram("05"),
+			},
+			&Computer{
+				cpu: cpu{
+					B:     0x1C,
+					PC:    0x01,
+					Flags: acf,
+				},
+				mem: ram("05"),
+			},
+			nil,
+		},
+		{
+			"DCR C",
+			&Computer{
+				cpu: cpu{
+					C: 0x02,
+				},
+				mem: ram("0D"),
+			},
+			&Computer{
+				cpu: cpu{
+					C:     0x01,
+					PC:    0x01,
+					Flags: acf,
+				},
+				mem: ram("0D"),
+			},
+			nil,
+		},
+		{
+			"DCR D",
+			&Computer{
+				cpu: cpu{
+					D: 0x02,
+				},
+				mem: ram("15"),
+			},
+			&Computer{
+				cpu: cpu{
+					D:     0x01,
+					PC:    0x01,
+					Flags: acf,
+				},
+				mem: ram("15"),
+			},
+			nil,
+		},
+		{
+			"DCR E",
+			&Computer{
+				cpu: cpu{
+					E: 0x02,
+				},
+				mem: ram("1D"),
+			},
+			&Computer{
+				cpu: cpu{
+					E:     0x01,
+					PC:    0x01,
+					Flags: acf,
+				},
+				mem: ram("1D"),
+			},
+			nil,
+		},
+		{
+			"DCR H",
+			&Computer{
+				cpu: cpu{
+					H: 0x02,
+				},
+				mem: ram("20"),
+			},
+			&Computer{
+				cpu: cpu{
+					H:     0x01,
+					PC:    0x01,
+					Flags: acf,
+				},
+				mem: ram("20"),
+			},
+			nil,
+		},
+		{
+			"DCR L",
+			&Computer{
+				cpu: cpu{
+					L: 0x02,
+				},
+				mem: ram("2D"),
+			},
+			&Computer{
+				cpu: cpu{
+					L:     0x01,
+					PC:    0x01,
+					Flags: acf,
+				},
+				mem: ram("2D"),
 			},
 			nil,
 		},
@@ -1194,21 +1074,15 @@ func TestComputer_Step(t *testing.T) {
 			"INR A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
 				},
 				mem: ram("3C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("3C"),
 			},
@@ -1218,21 +1092,33 @@ func TestComputer_Step(t *testing.T) {
 			"INR B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0xFF,
-					},
+					B: 0xFF,
 				},
 				mem: ram("04"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x00,
-					},
-					alu: alu{
-						Flags: zf | pf,
-					},
+					B:     0x00,
+					PC:    0x01,
+					Flags: zf | pf,
+				},
+				mem: ram("04"),
+			},
+			nil,
+		},
+		{
+			"INR B: generates auxiliary carry",
+			&Computer{
+				cpu: cpu{
+					B: 0x0F,
+				},
+				mem: ram("04"),
+			},
+			&Computer{
+				cpu: cpu{
+					B:     0x10,
+					PC:    0x01,
+					Flags: acf,
 				},
 				mem: ram("04"),
 			},
@@ -1242,21 +1128,15 @@ func TestComputer_Step(t *testing.T) {
 			"INR C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x07,
-					},
+					C: 0x0f,
 				},
 				mem: ram("0C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x08,
-					},
-					alu: alu{
-						Flags: acf,
-					},
+					C:     0x10,
+					PC:    0x01,
+					Flags: acf,
 				},
 				mem: ram("0C"),
 			},
@@ -1266,21 +1146,15 @@ func TestComputer_Step(t *testing.T) {
 			"INR D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x03,
-					},
+					D: 0x03,
 				},
 				mem: ram("14"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x04,
-					},
-					alu: alu{
-						Flags: none,
-					},
+					D:     0x04,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("14"),
 			},
@@ -1290,71 +1164,51 @@ func TestComputer_Step(t *testing.T) {
 			"INR E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x03,
-					},
+					E: 0x03,
 				},
 				mem: ram("1C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x04,
-					},
-					alu: alu{
-						Flags: none,
-					},
+					E:     0x04,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("1C"),
 			},
 			nil,
 		},
-
 		{
 			"INR H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x03,
-					},
+					H: 0x03,
 				},
 				mem: ram("24"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x04,
-					},
-					alu: alu{
-						Flags: none,
-					},
+					H:     0x04,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("24"),
 			},
 			nil,
 		},
-
 		{
 			"INR L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x03,
-					},
+					L: 0x03,
 				},
 				mem: ram("2C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						L:  0x04,
-					},
-					alu: alu{
-						Flags: none,
-					},
+					L:     0x04,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("2C"),
 			},
@@ -1364,19 +1218,15 @@ func TestComputer_Step(t *testing.T) {
 			"INX B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0xFF,
-					},
+					C: 0xFF,
 				},
 				mem: ram("03"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x00,
-						B:  0x01,
-					},
+					B:  0x01,
+					C:  0x00,
+					PC: 0x01,
 				},
 				mem: ram("03"),
 			},
@@ -1386,19 +1236,15 @@ func TestComputer_Step(t *testing.T) {
 			"INX D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0xFF,
-					},
+					E: 0xFF,
 				},
 				mem: ram("13"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x00,
-						D:  0x01,
-					},
+					D:  0x01,
+					E:  0x00,
+					PC: 0x01,
 				},
 				mem: ram("13"),
 			},
@@ -1408,19 +1254,15 @@ func TestComputer_Step(t *testing.T) {
 			"INX H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0xFF,
-					},
+					L: 0xFF,
 				},
 				mem: ram("23"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x01,
-						L:  0x00,
-					},
+					H:  0x01,
+					L:  0x00,
+					PC: 0x01,
 				},
 				mem: ram("23"),
 			},
@@ -1430,18 +1272,14 @@ func TestComputer_Step(t *testing.T) {
 			"INX SP",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						SP: 0x0F,
-					},
+					SP: 0x0F,
 				},
 				mem: ram("33"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						SP: 0x10,
-					},
+					PC: 0x01,
+					SP: 0x10,
 				},
 				mem: ram("33"),
 			},
@@ -1454,9 +1292,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x0A,
-					},
+					PC: 0x0A,
 				},
 				mem: ram("C3 0A 00"),
 			},
@@ -1466,23 +1302,17 @@ func TestComputer_Step(t *testing.T) {
 			"LDAX B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x00,
-						C: 0x02,
-					},
+					B: 0x00,
+					C: 0x02,
 				},
 				mem: ram("0a 00 ff"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x00,
-						C:  0x02,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A:  0xFF,
+					B:  0x00,
+					C:  0x02,
+					PC: 0x01,
 				},
 				mem: ram("0a 00 ff"),
 			},
@@ -1492,23 +1322,17 @@ func TestComputer_Step(t *testing.T) {
 			"LDAX D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x00,
-						E: 0x02,
-					},
+					D: 0x00,
+					E: 0x02,
 				},
 				mem: ram("1a 00 ff"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x00,
-						E:  0x02,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A:  0xFF,
+					D:  0x00,
+					E:  0x02,
+					PC: 0x01,
 				},
 				mem: ram("1a 00 ff"),
 			},
@@ -1521,11 +1345,9 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x03,
-						B:  0x01,
-						C:  0x0B,
-					},
+					B:  0x01,
+					C:  0x0B,
+					PC: 0x03,
 				},
 				mem: ram("01 0B 01"),
 			},
@@ -1538,11 +1360,9 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x03,
-						D:  0x01,
-						E:  0x0B,
-					},
+					D:  0x01,
+					E:  0x0B,
+					PC: 0x03,
 				},
 				mem: ram("11 0B 01"),
 			},
@@ -1555,11 +1375,9 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x03,
-						H:  0x01,
-						L:  0x0B,
-					},
+					H:  0x01,
+					L:  0x0B,
+					PC: 0x03,
 				},
 				mem: ram("21 0B 01"),
 			},
@@ -1572,10 +1390,8 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x03,
-						SP: 0x010B,
-					},
+					PC: 0x03,
+					SP: 0x010B,
 				},
 				mem: ram("31 0B 01"),
 			},
@@ -1585,20 +1401,14 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
 				},
 				mem: ram("7F"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("7F"),
 			},
@@ -1608,21 +1418,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
+					B: 0x01,
 				},
 				mem: ram("78"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					B:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("78"),
 			},
@@ -1632,21 +1436,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
+					C: 0x01,
 				},
 				mem: ram("79"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					C:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("79"),
 			},
@@ -1656,21 +1454,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
+					D: 0x01,
 				},
 				mem: ram("7A"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					D:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("7A"),
 			},
@@ -1680,21 +1472,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
+					E: 0x01,
 				},
 				mem: ram("7B"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					E:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("7B"),
 			},
@@ -1704,21 +1490,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
+					H: 0x01,
 				},
 				mem: ram("7C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("7C"),
 			},
@@ -1728,21 +1508,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
+					L: 0x01,
 				},
 				mem: ram("7D"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						L:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("7D"),
 			},
@@ -1752,23 +1526,17 @@ func TestComputer_Step(t *testing.T) {
 			"MOV A, M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
+					H: 0x00,
+					L: 0x02,
 				},
 				mem: ram("7E 00 FF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x00,
-						L:  0x02,
-					},
-					alu: alu {
-						A: 0xFF,
-					},
+					A:  0xFF,
+					H:  0x00,
+					L:  0x02,
+					PC: 0x01,
 				},
 				mem: ram("7E 00 FF"),
 			},
@@ -1778,21 +1546,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
 				},
 				mem: ram("47"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					B:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("47"),
 			},
@@ -1802,18 +1564,14 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
+					B: 0x01,
 				},
 				mem: ram("40"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-					},
+					B:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("40"),
 			},
@@ -1823,19 +1581,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
+					C: 0x01,
 				},
 				mem: ram("41"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						C:  0x01,
-					},
+					B:  0x01,
+					C:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("41"),
 			},
@@ -1845,19 +1599,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
+					D: 0x01,
 				},
 				mem: ram("42"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						D:  0x01,
-					},
+					B:  0x01,
+					D:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("42"),
 			},
@@ -1867,19 +1617,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
+					E: 0x01,
 				},
 				mem: ram("43"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						E:  0x01,
-					},
+					B:  0x01,
+					E:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("43"),
 			},
@@ -1889,19 +1635,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
+					H: 0x01,
 				},
 				mem: ram("44"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						H:  0x01,
-					},
+					B:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("44"),
 			},
@@ -1911,19 +1653,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
+					L: 0x01,
 				},
 				mem: ram("45"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						L:  0x01,
-					},
+					B:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("45"),
 			},
@@ -1933,21 +1671,17 @@ func TestComputer_Step(t *testing.T) {
 			"MOV B, M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
+					H: 0x00,
+					L: 0x02,
 				},
 				mem: ram("46 00 FF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0xFF,
-						H:  0x00,
-						L:  0x02,
-					},
+					B:  0xFF,
+					H:  0x00,
+					L:  0x02,
+					PC: 0x01,
 				},
 				mem: ram("46 00 FF"),
 			},
@@ -1957,21 +1691,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
 				},
 				mem: ram("4F"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					C:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("4F"),
 			},
@@ -1981,19 +1709,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
+					B: 0x01,
 				},
 				mem: ram("48"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						B:  0x01,
-					},
+					B:  0x01,
+					C:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("48"),
 			},
@@ -2003,18 +1727,14 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
+					C: 0x01,
 				},
 				mem: ram("49"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-					},
+					C:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("49"),
 			},
@@ -2024,19 +1744,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
+					D: 0x01,
 				},
 				mem: ram("4A"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						D:  0x01,
-					},
+					C:  0x01,
+					D:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("4A"),
 			},
@@ -2046,19 +1762,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
+					E: 0x01,
 				},
 				mem: ram("4B"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						E:  0x01,
-					},
+					C:  0x01,
+					E:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("4B"),
 			},
@@ -2068,19 +1780,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
+					H: 0x01,
 				},
 				mem: ram("4C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						H:  0x01,
-					},
+					C:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("4C"),
 			},
@@ -2090,19 +1798,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
+					L: 0x01,
 				},
 				mem: ram("4D"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						L:  0x01,
-					},
+					C:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("4D"),
 			},
@@ -2112,21 +1816,17 @@ func TestComputer_Step(t *testing.T) {
 			"MOV C, M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
+					H: 0x00,
+					L: 0x02,
 				},
 				mem: ram("4E 00 FF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0xFF,
-						H:  0x00,
-						L:  0x02,
-					},
+					C:  0xFF,
+					H:  0x00,
+					L:  0x02,
+					PC: 0x01,
 				},
 				mem: ram("4E 00 FF"),
 			},
@@ -2136,21 +1836,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
 				},
 				mem: ram("57"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					D:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("57"),
 			},
@@ -2160,19 +1854,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
+					B: 0x01,
 				},
 				mem: ram("50"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						D:  0x01,
-					},
+					B:  0x01,
+					D:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("50"),
 			},
@@ -2182,19 +1872,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
+					C: 0x01,
 				},
 				mem: ram("51"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						D:  0x01,
-					},
+					C:  0x01,
+					D:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("51"),
 			},
@@ -2204,18 +1890,14 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
+					D: 0x01,
 				},
 				mem: ram("52"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-					},
+					D:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("52"),
 			},
@@ -2225,19 +1907,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
+					E: 0x01,
 				},
 				mem: ram("53"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-						E:  0x01,
-					},
+					D:  0x01,
+					E:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("53"),
 			},
@@ -2247,19 +1925,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
+					H: 0x01,
 				},
 				mem: ram("54"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-						H:  0x01,
-					},
+					D:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("54"),
 			},
@@ -2269,19 +1943,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
+					L: 0x01,
 				},
 				mem: ram("55"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-						L:  0x01,
-					},
+					D:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("55"),
 			},
@@ -2291,21 +1961,17 @@ func TestComputer_Step(t *testing.T) {
 			"MOV D, M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
+					H: 0x00,
+					L: 0x02,
 				},
 				mem: ram("56 00 FF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0xFF,
-						H:  0x00,
-						L:  0x02,
-					},
+					D:  0xFF,
+					H:  0x00,
+					L:  0x02,
+					PC: 0x01,
 				},
 				mem: ram("56 00 FF"),
 			},
@@ -2315,21 +1981,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
 				},
 				mem: ram("5F"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					E:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("5F"),
 			},
@@ -2339,19 +1999,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
+					B: 0x01,
 				},
 				mem: ram("58"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						E:  0x01,
-					},
+					B:  0x01,
+					E:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("58"),
 			},
@@ -2361,19 +2017,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
+					C: 0x01,
 				},
 				mem: ram("59"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						E:  0x01,
-					},
+					C:  0x01,
+					E:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("59"),
 			},
@@ -2383,19 +2035,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
+					D: 0x01,
 				},
 				mem: ram("5A"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-						E:  0x01,
-					},
+					D:  0x01,
+					E:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("5A"),
 			},
@@ -2405,18 +2053,14 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
+					E: 0x01,
 				},
 				mem: ram("5B"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x01,
-					},
+					PC: 0x01,
+					E:  0x01,
 				},
 				mem: ram("5B"),
 			},
@@ -2426,19 +2070,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
+					H: 0x01,
 				},
 				mem: ram("5C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x01,
-						H:  0x01,
-					},
+					E:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("5C"),
 			},
@@ -2448,19 +2088,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
+					L: 0x01,
 				},
 				mem: ram("5D"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x01,
-						L:  0x01,
-					},
+					E:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("5D"),
 			},
@@ -2470,21 +2106,17 @@ func TestComputer_Step(t *testing.T) {
 			"MOV E, M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
+					H: 0x00,
+					L: 0x02,
 				},
 				mem: ram("5E 00 FF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0xFF,
-						H:  0x00,
-						L:  0x02,
-					},
+					E:  0xFF,
+					H:  0x00,
+					L:  0x02,
+					PC: 0x01,
 				},
 				mem: ram("5E 00 FF"),
 			},
@@ -2494,21 +2126,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
 				},
 				mem: ram("67"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("67"),
 			},
@@ -2518,19 +2144,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
+					B: 0x01,
 				},
 				mem: ram("60"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						H:  0x01,
-					},
+					B:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("60"),
 			},
@@ -2540,19 +2162,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
+					C: 0x01,
 				},
 				mem: ram("61"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						H:  0x01,
-					},
+					C:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("61"),
 			},
@@ -2562,19 +2180,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
+					D: 0x01,
 				},
 				mem: ram("62"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-						H:  0x01,
-					},
+					D:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("62"),
 			},
@@ -2584,19 +2198,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
+					E: 0x01,
 				},
 				mem: ram("63"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x01,
-						H:  0x01,
-					},
+					E:  0x01,
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("63"),
 			},
@@ -2606,18 +2216,14 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
+					H: 0x01,
 				},
 				mem: ram("64"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x01,
-					},
+					H:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("64"),
 			},
@@ -2627,19 +2233,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
+					L: 0x01,
 				},
 				mem: ram("65"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x01,
-						L:  0x01,
-					},
+					H:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("65"),
 			},
@@ -2649,20 +2251,16 @@ func TestComputer_Step(t *testing.T) {
 			"MOV H, M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
+					H: 0x00,
+					L: 0x02,
 				},
 				mem: ram("66 00 FF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0xFF,
-						L:  0x02,
-					},
+					H:  0xFF,
+					L:  0x02,
+					PC: 0x01,
 				},
 				mem: ram("66 00 FF"),
 			},
@@ -2672,21 +2270,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
 				},
 				mem: ram("6F"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						L:  0x01,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("6F"),
 			},
@@ -2696,19 +2288,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
+					B: 0x01,
 				},
 				mem: ram("68"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-						L:  0x01,
-					},
+					B:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("68"),
 			},
@@ -2718,19 +2306,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
+					C: 0x01,
 				},
 				mem: ram("69"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0x01,
-						L:  0x01,
-					},
+					C:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("69"),
 			},
@@ -2740,19 +2324,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
+					D: 0x01,
 				},
 				mem: ram("6A"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0x01,
-						L:  0x01,
-					},
+					D:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("6A"),
 			},
@@ -2762,19 +2342,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
+					E: 0x01,
 				},
 				mem: ram("6B"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0x01,
-						L:  0x01,
-					},
+					E:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("6B"),
 			},
@@ -2784,19 +2360,15 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
+					H: 0x01,
 				},
 				mem: ram("6C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						L:  0x01,
-						H:  0x01,
-					},
+					H:  0x01,
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("6C"),
 			},
@@ -2806,18 +2378,14 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
+					L: 0x01,
 				},
 				mem: ram("6D"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						L:  0x01,
-					},
+					L:  0x01,
+					PC: 0x01,
 				},
 				mem: ram("6D"),
 			},
@@ -2827,20 +2395,16 @@ func TestComputer_Step(t *testing.T) {
 			"MOV L, M",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x02,
-					},
+					H: 0x00,
+					L: 0x02,
 				},
 				mem: ram("6E 00 FF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x00,
-						L:  0xFF,
-					},
+					H:  0x00,
+					L:  0xFF,
+					PC: 0x01,
 				},
 				mem: ram("6E 00 FF"),
 			},
@@ -2850,26 +2414,18 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, A",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x03,
-					},
-					alu: alu{
-						A: 0xff,
-					},
+					A: 0xff,
+					H: 0x00,
+					L: 0x03,
 				},
 				mem: ram("77 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x00,
-						L:  0x03,
-					},
-					alu: alu{
-						A: 0xff,
-					},
+					A:  0xff,
+					H:  0x00,
+					L:  0x03,
+					PC: 0x01,
 				},
 				mem: ram("77 00 00 FF"),
 			},
@@ -2879,22 +2435,18 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0xff,
-						H: 0x00,
-						L: 0x03,
-					},
+					B: 0xff,
+					H: 0x00,
+					L: 0x03,
 				},
 				mem: ram("70 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0xff,
-						H:  0x00,
-						L:  0x03,
-					},
+					B:  0xff,
+					H:  0x00,
+					L:  0x03,
+					PC: 0x01,
 				},
 				mem: ram("70 00 00 FF"),
 			},
@@ -2904,22 +2456,18 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0xff,
-						H: 0x00,
-						L: 0x03,
-					},
+					C: 0xff,
+					H: 0x00,
+					L: 0x03,
 				},
 				mem: ram("71 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						C:  0xff,
-						H:  0x00,
-						L:  0x03,
-					},
+					C:  0xff,
+					H:  0x00,
+					L:  0x03,
+					PC: 0x01,
 				},
 				mem: ram("71 00 00 FF"),
 			},
@@ -2929,22 +2477,18 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0xff,
-						H: 0x00,
-						L: 0x03,
-					},
+					D: 0xff,
+					H: 0x00,
+					L: 0x03,
 				},
 				mem: ram("72 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						D:  0xff,
-						H:  0x00,
-						L:  0x03,
-					},
+					D:  0xff,
+					H:  0x00,
+					L:  0x03,
+					PC: 0x01,
 				},
 				mem: ram("72 00 00 FF"),
 			},
@@ -2954,22 +2498,18 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0xff,
-						H: 0x00,
-						L: 0x03,
-					},
+					E: 0xff,
+					H: 0x00,
+					L: 0x03,
 				},
 				mem: ram("73 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						E:  0xff,
-						H:  0x00,
-						L:  0x03,
-					},
+					E:  0xff,
+					H:  0x00,
+					L:  0x03,
+					PC: 0x01,
 				},
 				mem: ram("73 00 00 FF"),
 			},
@@ -2979,20 +2519,16 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x03,
-					},
+					H: 0x00,
+					L: 0x03,
 				},
 				mem: ram("74 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x00,
-						L:  0x03,
-					},
+					H:  0x00,
+					L:  0x03,
+					PC: 0x01,
 				},
 				mem: ram("74 00 00 00"),
 			},
@@ -3002,20 +2538,16 @@ func TestComputer_Step(t *testing.T) {
 			"MOV M, L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x00,
-						L: 0x03,
-					},
+					H: 0x00,
+					L: 0x03,
 				},
 				mem: ram("75 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						H:  0x00,
-						L:  0x03,
-					},
+					H:  0x00,
+					L:  0x03,
+					PC: 0x01,
 				},
 				mem: ram("75 00 00 03"),
 			},
@@ -3028,12 +2560,8 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x02,
-					},
-					alu: alu{
-						A: 0x0B,
-					},
+					A:  0x0B,
+					PC: 0x02,
 				},
 				mem: ram("3E 0B"),
 			},
@@ -3046,10 +2574,8 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x02,
-						B:  0x0B,
-					},
+					B:  0x0B,
+					PC: 0x02,
 				},
 				mem: ram("06 0B"),
 			},
@@ -3062,10 +2588,8 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x02,
-						C:  0x0B,
-					},
+					C:  0x0B,
+					PC: 0x02,
 				},
 				mem: ram("0E 0B"),
 			},
@@ -3078,10 +2602,8 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x02,
-						D:  0x0B,
-					},
+					D:  0x0B,
+					PC: 0x02,
 				},
 				mem: ram("16 0B"),
 			},
@@ -3094,10 +2616,8 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x02,
-						E:  0x0B,
-					},
+					E:  0x0B,
+					PC: 0x02,
 				},
 				mem: ram("1E 0B"),
 			},
@@ -3110,10 +2630,8 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x02,
-						H:  0x0B,
-					},
+					H:  0x0B,
+					PC: 0x02,
 				},
 				mem: ram("26 0B"),
 			},
@@ -3126,10 +2644,8 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x02,
-						L:  0x0B,
-					},
+					L:  0x0B,
+					PC: 0x02,
 				},
 				mem: ram("2E 0B"),
 			},
@@ -3142,9 +2658,7 @@ func TestComputer_Step(t *testing.T) {
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
+					PC: 0x01,
 				},
 				mem: ram("00"),
 			},
@@ -3154,197 +2668,137 @@ func TestComputer_Step(t *testing.T) {
 			"ORA A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					Flags: cf,
 				},
 				mem: ram("B7"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("B7"),
 			},
 			nil,
 		},
-
 		{
 			"ORA B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x0A,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					B:     0x0A,
+					Flags: cf,
 				},
 				mem: ram("B0"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					B:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("B0"),
 			},
 			nil,
 		},
-
 		{
 			"ORA C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					C: 0x0A,
 				},
 				mem: ram("B1"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					C:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("B1"),
 			},
 			nil,
 		},
-
 		{
 			"ORA D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					D: 0x0A,
 				},
 				mem: ram("B2"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					D:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("B2"),
 			},
 			nil,
 		},
-
 		{
 			"ORA E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					E: 0x0A,
 				},
 				mem: ram("B3"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					E:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("B3"),
 			},
 			nil,
 		},
-
 		{
 			"ORA H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					H: 0x0A,
 				},
 				mem: ram("B4"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					H:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("B4"),
 			},
 			nil,
 		},
-
 		{
 			"ORA L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					L: 0x0A,
 				},
 				mem: ram("B5"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					L:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("B5"),
 			},
@@ -3354,22 +2808,16 @@ func TestComputer_Step(t *testing.T) {
 			"SBB A: with borrow",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						Flags: cyf,
-						A:     0x01,
-					},
+					A:     0x01,
+					Flags: cf,
 				},
 				mem: ram("9F"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: sf | pf | cyf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					PC:    0x01,
+					Flags: sf | pf | cf,
 				},
 				mem: ram("9F"),
 			},
@@ -3379,22 +2827,16 @@ func TestComputer_Step(t *testing.T) {
 			"SBB A: no borrow",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						Flags: none,
-						A:     0x01,
-					},
+					A:     0x01,
+					Flags: none,
 				},
 				mem: ram("9F"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("9F"),
 			},
@@ -3404,26 +2846,18 @@ func TestComputer_Step(t *testing.T) {
 			"SBB B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x02,
-					},
+					A:     0x02,
+					B:     0x01,
+					Flags: cf,
 				},
 				mem: ram("98"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x01,
-						PC: 1,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					B:     0x01,
+					PC:    1,
+					Flags: zf | pf,
 				},
 				mem: ram("98"),
 			},
@@ -3433,26 +2867,18 @@ func TestComputer_Step(t *testing.T) {
 			"SBB C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0xFF,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x00,
-					},
+					A:     0x00,
+					C:     0xFF,
+					Flags: cf,
 				},
 				mem: ram("99"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C:  0xFF,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					C:     0xFF,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("99"),
 			},
@@ -3462,26 +2888,18 @@ func TestComputer_Step(t *testing.T) {
 			"SBB D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0xFF,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x00,
-					},
+					A:     0x00,
+					D:     0xFF,
+					Flags: cf,
 				},
 				mem: ram("9A"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0xFF,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					D:     0xFF,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("9A"),
 			},
@@ -3491,26 +2909,18 @@ func TestComputer_Step(t *testing.T) {
 			"SBB E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0xFF,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x00,
-					},
+					A:     0x00,
+					E:     0xFF,
+					Flags: cf,
 				},
 				mem: ram("9B"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E:  0xFF,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					E:     0xFF,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("9B"),
 			},
@@ -3520,26 +2930,18 @@ func TestComputer_Step(t *testing.T) {
 			"SBB H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0xFF,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x00,
-					},
+					A:     0x00,
+					H:     0xFF,
+					Flags: cf,
 				},
 				mem: ram("9C"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0xFF,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					H:     0xFF,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("9C"),
 			},
@@ -3549,26 +2951,18 @@ func TestComputer_Step(t *testing.T) {
 			"SBB L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x02,
-					},
-					alu: alu{
-						Flags: cyf,
-						A:     0x08,
-					},
+					A:     0x08,
+					L:     0x02,
+					Flags: cf,
 				},
 				mem: ram("9D"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L:  0x02,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf,
-						A:     0x05,
-					},
+					A:     0x05,
+					L:     0x02,
+					PC:    0x01,
+					Flags: pf,
 				},
 				mem: ram("9D"),
 			},
@@ -3578,26 +2972,18 @@ func TestComputer_Step(t *testing.T) {
 			"STAX B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x00,
-						C: 0x10,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					B: 0x00,
+					C: 0x10,
 				},
 				mem: ram("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x00,
-						C:  0x10,
-						PC: 0x01,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A:  0xFF,
+					B:  0x00,
+					C:  0x10,
+					PC: 0x01,
 				},
 				mem: ram("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
 			},
@@ -3607,26 +2993,18 @@ func TestComputer_Step(t *testing.T) {
 			"STAX D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x00,
-						E: 0x10,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					D: 0x00,
+					E: 0x10,
 				},
 				mem: ram("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0x00,
-						E:  0x10,
-						PC: 0x01,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A:  0xFF,
+					D:  0x00,
+					E:  0x10,
+					PC: 0x01,
 				},
 				mem: ram("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
 			},
@@ -3636,21 +3014,15 @@ func TestComputer_Step(t *testing.T) {
 			"SUB A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
 				},
 				mem: ram("97"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("97"),
 			},
@@ -3660,25 +3032,17 @@ func TestComputer_Step(t *testing.T) {
 			"SUB B: substracting 0",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x00,
-					},
-					alu: alu{
-						A: 0x00,
-					},
+					A: 0x00,
+					B: 0x00,
 				},
 				mem: ram("90"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x00,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					B:     0x00,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("90"),
 			},
@@ -3688,25 +3052,17 @@ func TestComputer_Step(t *testing.T) {
 			"SUB B: 0x02 - 0x01",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x01,
-					},
-					alu: alu{
-						A: 0x02,
-					},
+					A: 0x02,
+					B: 0x01,
 				},
 				mem: ram("90"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x01,
-					},
+					A:     0x01,
+					B:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("90"),
 			},
@@ -3716,25 +3072,17 @@ func TestComputer_Step(t *testing.T) {
 			"SUB B: 0x01 - 0x02",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x02,
-					},
-					alu: alu{
-						A: 0x01,
-					},
+					A: 0x01,
+					B: 0x02,
 				},
 				mem: ram("90"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-						B:  0x02,
-					},
-					alu: alu{
-						Flags: sf | cyf | pf,
-						A:     0xFF,
-					},
+					A:     0xFF,
+					B:     0x02,
+					PC:    0x01,
+					Flags: sf | cf | pf,
 				},
 				mem: ram("90"),
 			},
@@ -3744,25 +3092,17 @@ func TestComputer_Step(t *testing.T) {
 			"SUB C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					C: 0x01,
 				},
 				mem: ram("91"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					C:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("91"),
 			},
@@ -3772,25 +3112,17 @@ func TestComputer_Step(t *testing.T) {
 			"SUB D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					D: 0x01,
 				},
 				mem: ram("92"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					D:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("92"),
 			},
@@ -3800,25 +3132,17 @@ func TestComputer_Step(t *testing.T) {
 			"SUB E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					E: 0x01,
 				},
 				mem: ram("93"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					E:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("93"),
 			},
@@ -3828,25 +3152,17 @@ func TestComputer_Step(t *testing.T) {
 			"SUB H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					H: 0x01,
 				},
 				mem: ram("94"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					H:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("94"),
 			},
@@ -3856,25 +3172,17 @@ func TestComputer_Step(t *testing.T) {
 			"SUB L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x01,
-					},
-					alu: alu{
-						A: 0x30,
-					},
+					A: 0x30,
+					L: 0x01,
 				},
 				mem: ram("95"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L:  0x01,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: none,
-						A:     0x2F,
-					},
+					A:     0x2F,
+					L:     0x01,
+					PC:    0x01,
+					Flags: none,
 				},
 				mem: ram("95"),
 			},
@@ -3884,195 +3192,135 @@ func TestComputer_Step(t *testing.T) {
 			"XRA A",
 			&Computer{
 				cpu: cpu{
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
 				},
 				mem: ram("A8"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: zf | pf,
-						A:     0x00,
-					},
+					A:     0x00,
+					PC:    0x01,
+					Flags: zf | pf,
 				},
 				mem: ram("A8"),
 			},
 			nil,
 		},
-
 		{
 			"XRA B",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					B: 0x0A,
 				},
 				mem: ram("A9"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						B:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xF5,
-					},
+					A:     0xF5,
+					B:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("A9"),
 			},
 			nil,
 		},
-
 		{
 			"XRA C",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					C: 0x0A,
 				},
 				mem: ram("AA"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						C:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xF5,
-					},
+					A:     0xF5,
+					C:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("AA"),
 			},
 			nil,
 		},
-
 		{
 			"XRA D",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					D: 0x0A,
 				},
 				mem: ram("AB"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						D:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xF5,
-					},
+					A:     0xF5,
+					D:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("AB"),
 			},
 			nil,
 		},
-
 		{
 			"XRA E",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					E: 0x0A,
 				},
 				mem: ram("AC"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						E:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xF5,
-					},
+					A:     0xF5,
+					E:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("AC"),
 			},
 			nil,
 		},
-
 		{
 			"XRA H",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					H: 0x0A,
 				},
 				mem: ram("AD"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						H:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xF5,
-					},
+					A:     0xF5,
+					H:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("AD"),
 			},
 			nil,
 		},
-
 		{
 			"XRA L",
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L: 0x0A,
-					},
-					alu: alu{
-						A: 0xFF,
-					},
+					A: 0xFF,
+					L: 0x0A,
 				},
 				mem: ram("AF"),
 			},
 			&Computer{
 				cpu: cpu{
-					registers: registers{
-						L:  0x0A,
-						PC: 0x01,
-					},
-					alu: alu{
-						Flags: pf | sf,
-						A:     0xF5,
-					},
+					A:     0xF5,
+					L:     0x0A,
+					PC:    0x01,
+					Flags: pf | sf,
 				},
 				mem: ram("AF"),
 			},
@@ -4081,11 +3329,9 @@ func TestComputer_Step(t *testing.T) {
 	} {
 		t.Run(tC.desc, func(t *testing.T) {
 			gotErr := tC.init.Step()
-
 			if gotErr != tC.wantErr {
 				t.Fatalf("got err=%v, want=%v", gotErr, tC.wantErr)
 			}
-
 			if !reflect.DeepEqual(*tC.init, *tC.want) {
 				t.Fatalf("got: %+v\n want: %+v", *tC.init, *tC.want)
 			}
