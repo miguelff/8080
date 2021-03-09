@@ -30,11 +30,11 @@ func (e ComputerError) Error() string {
 // S  State of Sign bit: the number if negative if interpreted as signed (most significant bit of the operation result is 1)
 // Z  State of Zero bit: the result of an operation was zero (all bits of the operation result are zero)
 // 0  always 0 (ignored)
-// AC State of auxiliary Carry bit: like carry but applied to the least significant 4 bits of the number.
+// AC State of auxiliary carry bit: like carry but applied to the least significant 4 bits of the number.
 // 0  always 0 (ignored)
 // P  State of Parity bit: the amount of ones in the result of an operation is even
 // 1  always 1 (ignored)
-// C  State of Carry bit: an addition exceeded the maximum number, or there was borrow in a substraction.
+// C  State of carry bit: an addition exceeded the maximum number, or there was borrow in a substraction.
 type flags byte
 
 const (
@@ -103,14 +103,17 @@ type cpu struct {
 	SP uint16
 	PC uint16
 
-	// ALU components
 	Flags flags
 }
 
-// The CY (Carry) is set if the instruction resulted in a carry (from addition), ora a borrow (from subtraction ora a
-// comparison) out of the high-order bit. otherwise it is reset.
-func (a *cpu) CY() bool {
-	return (a.Flags & cf) != 0
+// carry returns whether the carry flag is set
+func (c *cpu) carry() bool {
+	return (c.Flags & cf) != 0
+}
+
+// zero returns whether the zero flag is set
+func (c *cpu) zero() bool {
+	return (c.Flags & zf) != 0
 }
 
 // Memory represents the computer memory
@@ -347,38 +350,39 @@ var instructionTable = []instruction{
 	0xBC: cmph,
 	0xBD: cmpl,
 	0xBF: cmpa,
+	0xC2: jnz,
 	0xC3: jmp,
 	0xCD: call,
 }
 
 // 0x88 ADC B |	A <- A + B + CY (Z, S, P, CY, AC)
 func adcb(c *Computer) error {
-	return add(c, c.B, c.CY())
+	return add(c, c.B, c.carry())
 }
 
 // 0x89 ADC C |	A <- A + C + CY (Z, S, P, CY, AC)
 func adcc(c *Computer) error {
-	return add(c, c.C, c.CY())
+	return add(c, c.C, c.carry())
 }
 
 // 0x8A ADC D |	A <- A + D + CY (Z, S, P, CY, AC)
 func adcd(c *Computer) error {
-	return add(c, c.D, c.CY())
+	return add(c, c.D, c.carry())
 }
 
 // 0x8B ADC E | A <- A + E + CY (Z, S, P, CY, AC)
 func adce(c *Computer) error {
-	return add(c, c.E, c.CY())
+	return add(c, c.E, c.carry())
 }
 
 // 0x8C ADC E | A <- A + E + CY (Z, S, P, CY, AC)
 func adch(c *Computer) error {
-	return add(c, c.H, c.CY())
+	return add(c, c.H, c.carry())
 }
 
 // 0x8D ADC L | A <- A + L + CY (Z, S, P, CY, AC)
 func adcl(c *Computer) error {
-	return add(c, c.L, c.CY())
+	return add(c, c.L, c.carry())
 }
 
 // 0x8E ADC M | A <- A + (HL) + CY (Z, S, P, CY, AC)
@@ -387,12 +391,12 @@ func adcm(c *Computer) error {
 	if err != nil {
 		return err
 	}
-	return add(c, v, c.CY())
+	return add(c, v, c.carry())
 }
 
 // 0x8F ADC A | A <- A + A + CY (Z, S, P, CY, AC)
 func adca(c *Computer) error {
-	return add(c, c.A, c.CY())
+	return add(c, c.A, c.carry())
 }
 
 // If carry is not set, the content of register r is added to the content of the accumulator.
@@ -757,6 +761,17 @@ func inxsp(c *Computer) error {
 // Jump to the address denoted by the next two bytes.
 func jmp(c *Computer) error {
 	return lxi16(c, &c.PC)
+}
+
+// 0xC2: JNZ adr | if NZ, PC <- addr
+// Jump to the address denoted by the next two bytes if the zero flag is set
+func jnz(c *Computer) error {
+	if !c.zero() {
+		return lxi16(c, &c.PC)
+	} else {
+		c.PC += 3
+		return nil
+	}
 }
 
 func ldax(c *Computer, msb, lsb byte) error {
@@ -1291,37 +1306,37 @@ func push16(c *Computer, d16 uint16) error {
 
 // 0x9F SBB A | A <- A - A - CY (Z, S, P, CY, AC)
 func sbba(c *Computer) error {
-	return sub(c, c.A, c.CY())
+	return sub(c, c.A, c.carry())
 }
 
 // 0x98 SBB B | A <- A - B - CY (Z, S, P, CY, AC)
 func sbbb(c *Computer) error {
-	return sub(c, c.B, c.CY())
+	return sub(c, c.B, c.carry())
 }
 
 // 0x99 SBB C | A <- A - C - CY (Z, S, P, CY, AC)
 func sbbc(c *Computer) error {
-	return sub(c, c.C, c.CY())
+	return sub(c, c.C, c.carry())
 }
 
 // 0x9A SBB D | A <- A - D - CY (Z, S, P, CY, AC)
 func sbbd(c *Computer) error {
-	return sub(c, c.D, c.CY())
+	return sub(c, c.D, c.carry())
 }
 
 // 0x9B SBB E | A <- A - E - CY (Z, S, P, CY, AC)
 func sbbe(c *Computer) error {
-	return sub(c, c.E, c.CY())
+	return sub(c, c.E, c.carry())
 }
 
 // 0x9C SBB E | A <- A - E - CY (Z, S, P, CY, AC)
 func sbbh(c *Computer) error {
-	return sub(c, c.H, c.CY())
+	return sub(c, c.H, c.carry())
 }
 
 // 0x9D SBB L | A <- A - L - CY (Z, S, P, CY, AC)
 func sbbl(c *Computer) error {
-	return sub(c, c.L, c.CY())
+	return sub(c, c.L, c.carry())
 }
 
 func stax(c *Computer, msb, lsb byte) error {

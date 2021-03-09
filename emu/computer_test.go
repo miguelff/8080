@@ -926,7 +926,7 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
-			"DCR B: Carry not set when there's borrow",
+			"DCR B: carry not set when there's borrow",
 			&Computer{
 				cpu: cpu{
 					B: 0x00,
@@ -944,7 +944,7 @@ func TestComputer_Step(t *testing.T) {
 			nil,
 		},
 		{
-			"DCR B: Carry not modified when there was existing carry",
+			"DCR B: carry not modified when there was existing carry",
 			&Computer{
 				cpu: cpu{
 					B:     0x00,
@@ -1282,6 +1282,36 @@ func TestComputer_Step(t *testing.T) {
 					SP: 0x10,
 				},
 				mem: ram("33"),
+			},
+			nil,
+		},
+		{
+			"JNZ adr: zero flag set",
+			&Computer{
+				cpu: cpu{
+					Flags: zf,
+				},
+				mem: ram("C2 0A 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					PC:    0x03,
+					Flags: zf,
+				},
+				mem: ram("C2 0A 00"),
+			},
+			nil,
+		},
+		{
+			"JNZ adr: zero flag not set",
+			&Computer{
+				mem: ram("C2 0A 00"),
+			},
+			&Computer{
+				cpu: cpu{
+					PC: 0x0A,
+				},
+				mem: ram("C2 0A 00"),
 			},
 			nil,
 		},

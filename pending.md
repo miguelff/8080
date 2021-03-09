@@ -27,7 +27,6 @@ Opcode	Instruction	size	flags	function
 0xbe	CMP M	1	Z, S, P, CY, AC	A - (HL)
 0xc0	RNZ	1		if NZ, RET
 0xc1	POP B	1		C <- (sp); B <- (sp+1); sp <- sp+2
-0xc2	JNZ adr	3		if NZ, PC <- adr
 0xc4	CNZ adr	3		if NZ, CALL adr
 0xc5	PUSH B	1		(sp-2)<-C; (sp-1)<-B; sp <- sp - 2
 0xc6	ADI D8	2	Z, S, P, CY, AC	A <- A + byte
