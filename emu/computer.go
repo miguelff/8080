@@ -3,11 +3,13 @@ package emu
 
 import (
 	"fmt"
+	"math"
+	"strings"
 )
 
 const (
 	kilobyte = 1 << 10
-	// MemSize is the whole amount of memory in the computer
+	// MemSize is the whole amount of Memory in the computer
 	MemSize = 16 * kilobyte
 	// RomSize is the size of the ROM area
 	RomSize = 8 * kilobyte
@@ -76,7 +78,7 @@ func zero8(b byte) flags {
 	return none
 }
 
-// cpu is the central processing unit comprised of the registers and arithmetic-logic unit (ALU).
+// CPU is the central processing unit comprised of the registers and arithmetic-logic unit (ALU).
 //
 // For simplicity, we inline the structs of the alu and the registers bank in this struct.
 //
@@ -91,7 +93,7 @@ func zero8(b byte) flags {
 // registers that belong to the ALU and not the register array: The accumulator registry (A) is used to store the result
 // of several arithmetic operations. While logically most opcodes treat the A registry as a general purpose one, this
 // resides in the ALU.
-type cpu struct {
+type CPU struct {
 	A byte
 	B byte
 	C byte
@@ -107,28 +109,113 @@ type cpu struct {
 }
 
 // carry returns whether the carry flag is set
-func (c *cpu) carry() bool {
+func (c *CPU) carry() bool {
 	return (c.Flags & cf) != 0
 }
 
+// auxiliaryCarry returns whether the auxiliary carry flag is set
+func (c *CPU) auxiliaryCarry() bool {
+	return (c.Flags & acf) != 0
+}
+
+// parity returns whether the parity flag is set
+func (c *CPU) parity() bool {
+	return (c.Flags & pf) != 0
+}
+
+// sign returns whether the sign flag is set
+func (c *CPU) sign() bool {
+	return (c.Flags & sf) != 0
+}
+
 // zero returns whether the zero flag is set
-func (c *cpu) zero() bool {
+func (c *CPU) zero() bool {
 	return (c.Flags & zf) != 0
 }
 
-// Memory represents the computer memory
-type memory []byte
+// Instruction is the algorithm that emulates a certain opcode within the computer
+type Instruction func(*Computer) error
 
-// Computer connects the memory and the cpu
+// Computer connects the Memory and the cpu
 type Computer struct {
-	cpu
-	mem memory
+	CPU
+	mem []byte
+
+	it []Instruction
 }
 
-// Load loads the ROM into the computer main memory
-func (c *Computer) Load(rom []byte) {
-	c.mem = make(memory, MemSize)
+// newComputer creates a new computer with the cpu and memory states given
+func newComputer(c CPU, m []byte) *Computer {
+	return &Computer{
+		CPU: c,
+		mem: m,
+		it:  instructionTable,
+	}
+}
+
+// Load loads the ROM into a newly created computer main Memory
+func Load(rom []byte) *Computer {
+	c := newComputer(CPU{}, make([]byte, MemSize))
 	copy(c.mem[:RomSize], rom)
+	return c
+}
+
+func (c *Computer) String() string {
+	template := `
+╔═════════════════════════════════════════════════╗
+║                       CPU                       ║
+╠═════════════════════════════════════════════════╣
+║ A    ┆ $REGA           ║  B-C  ┆  $REGB         ║
+║ D-E  ┆ $REGD           ║  H-L  ┆  $REGH         ║
+║ SP   ┆ $REGS           ║  PC   ┆  $REGP         ║
+╟─────────────────────────────────────────────────╢
+║                        ║ Flags ┆  $FLAG_VALUES  ║
+╠═════════════════════════════════════════════════╣
+║                     Memory                      ║  
+╠═════════════════════════════════════════════════╣
+║ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ║
+╚═════════════════════════════════════════════════╝
+`
+
+	s := strings.Replace(template, "$REGA", fmt.Sprintf("%02X   ", c.A), 1)
+	s = strings.Replace(s, "$REGB", fmt.Sprintf("%02X%02X ", c.B, c.C), 1)
+	s = strings.Replace(s, "$REGD", fmt.Sprintf("%02X%02X ", c.D, c.E), 1)
+	s = strings.Replace(s, "$REGH", fmt.Sprintf("%02X%02X ", c.H, c.L), 1)
+	s = strings.Replace(s, "$REGS", fmt.Sprintf("%04X ", c.SP), 1)
+	s = strings.Replace(s, "$REGP", fmt.Sprintf("%04X ", c.PC), 1)
+
+	flagValues := strings.Builder{}
+	if c.zero() {
+		flagValues.WriteString("Z ")
+	}
+	if c.sign() {
+		flagValues.WriteString("S ")
+	}
+	if c.parity() {
+		flagValues.WriteString("P ")
+	}
+	if c.carry() {
+		flagValues.WriteString("CY ")
+	}
+	if c.auxiliaryCarry() {
+		flagValues.WriteString("AC ")
+	}
+	s = strings.Replace(s, " $FLAG_VALUES  ", fmt.Sprintf("%-15s", flagValues.String()), 1)
+
+	memory := strings.Builder{}
+	buf := make([]byte, 0x10)
+	rows := int(math.Ceil(float64(len(c.mem)) / 0x10))
+	for r := 0; r < rows; r++ {
+		memory.WriteString("║ ")
+		copy(buf, c.mem[r*0x10:])
+		for pos := range buf {
+			memory.WriteString(fmt.Sprintf("%02x ", buf[pos]))
+		}
+		memory.WriteString("║\n")
+	}
+
+	s = strings.Replace(s, "║ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ║\n", memory.String(), 1)
+	return s
 }
 
 // Step executes one instruction of the code pointed by the Program Counter (PC) of the CPU
@@ -138,7 +225,7 @@ func (c *Computer) Step() error {
 		return err
 	}
 
-	if int(opcode) > len(instructionTable) || instructionTable[opcode] == nil {
+	if int(opcode) > len(c.it) || c.it[opcode] == nil {
 		return fmt.Errorf("unimplemented opcode %02X", opcode)
 	}
 
@@ -188,9 +275,7 @@ func (c *Computer) write8Indirect(v byte) error {
 	return c.write8(addr, v)
 }
 
-type instruction func(*Computer) error
-
-var instructionTable = []instruction{
+var instructionTable = []Instruction{
 	0x00: nop,
 	0x05: dcrb,
 	0x01: lxib,
@@ -1301,6 +1386,12 @@ func push16(c *Computer, d16 uint16) error {
 		return err
 	}
 	c.SP -= 2
+	return nil
+}
+
+// 0xC9 RET | PC.lo <- (sp); PC.hi<-(sp+1); SP <- SP+2
+func Ret(c *Computer) error {
+
 	return nil
 }
 

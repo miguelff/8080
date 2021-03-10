@@ -1,13 +1,13 @@
 package emu
 
 import (
-	"reflect"
+	"bytes"
 	"testing"
 
 	"github.com/miguelff/8080/encoding"
 )
 
-func ram(bytes string) memory {
+func ram(bytes string) []byte {
 	return encoding.HexToBin(bytes)
 }
 func TestParity(t *testing.T) {
@@ -69,725 +69,690 @@ func TestZero(t *testing.T) {
 }
 func TestComputer_Step(t *testing.T) {
 	for _, tC := range []struct {
-		desc    string
-		init    *Computer
-		want    *Computer
-		wantErr error
+		desc string
+		init *Computer
+		want *Computer
 	}{
 		{
 			"ADC A: with carry",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x02,
 					Flags: cf,
 				},
-				mem: ram("8F"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("8F"),
+			),
+			newComputer(
+				CPU{
 					A:     0x05,
 					PC:    0x01,
 					Flags: pf,
 				},
-				mem: ram("8F"),
-			},
-			nil,
+				ram("8F"),
+			),
 		},
 		{
 			"ADC A: no carry",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x02,
 					Flags: none,
 				},
-				mem: ram("8F"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("8F"),
+			),
+			newComputer(
+				CPU{
 					A:     0x04,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("8F"),
-			},
-			nil,
+				ram("8F"),
+			),
 		},
 		{
 			"ADC B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x02,
 					B:     0x01,
 					Flags: cf,
 				},
-				mem: ram("88"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("88"),
+			),
+			newComputer(
+				CPU{
 					A:     0x04,
 					B:     0x01,
 					PC:    1,
 					Flags: none,
 				},
-				mem: ram("88"),
-			},
-			nil,
+				ram("88"),
+			),
 		},
 		{
 			"ADC C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x01,
 					C:     0xFD,
 					Flags: cf,
 				},
-				mem: ram("89"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("89"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					C:     0xFD,
 					PC:    0x01,
 					Flags: sf | pf,
 				},
-				mem: ram("89"),
-			},
-			nil,
+				ram("89"),
+			),
 		},
 		{
 			"ADC D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x00,
 					D:     0xFD,
 					Flags: cf,
 				},
-				mem: ram("8A"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("8A"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFE,
 					D:     0xFD,
 					PC:    0x01,
 					Flags: sf,
 				},
-				mem: ram("8A"),
-			},
-			nil,
+				ram("8A"),
+			),
 		},
 		{
 			"ADC E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x00,
 					E:     0xFD,
 					Flags: cf,
 				},
-				mem: ram("8B"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("8B"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFE,
 					E:     0xFD,
 					PC:    0x01,
 					Flags: sf,
 				},
-				mem: ram("8B"),
-			},
-			nil,
+				ram("8B"),
+			),
 		},
 		{
 			"ADC H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x00,
 					H:     0xFD,
 					Flags: cf,
 				},
-				mem: ram("8C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("8C"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFE,
 					H:     0xFD,
 					PC:    0x01,
 					Flags: sf,
 				},
-				mem: ram("8C"),
-			},
-			nil,
+				ram("8C"),
+			),
 		},
 		{
 			"ADC L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x00,
 					L:     0xFD,
 					Flags: cf,
 				},
-				mem: ram("8D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("8D"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFE,
 					L:     0xFD,
 					PC:    0x01,
 					Flags: sf,
 				},
-				mem: ram("8D"),
-			},
-			nil,
+				ram("8D"),
+			),
 		},
 		{
 			"ADC M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x01,
 					H:     0x00,
 					L:     0x02,
 					Flags: cf,
 				},
-				mem: ram("8E 00 FD"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("8E 00 FD"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					H:     0x00,
 					L:     0x02,
 					PC:    0x01,
 					Flags: sf | pf,
 				},
-				mem: ram("8E 00 FD"),
-			},
-			nil,
+				ram("8E 00 FD"),
+			),
 		},
 		{
 			"ADD A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x02,
 				},
-				mem: ram("87"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("87"),
+			),
+			newComputer(
+				CPU{
 					A:     0x04,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("87"),
-			},
-			nil,
+				ram("87"),
+			),
 		},
 		{
 			"ADD B: adding two values that sum 0x0 sets the zero8 and parity8 flags",
-			&Computer{
-				mem: ram("80"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("80"),
+			),
+			newComputer(
+				CPU{
 					PC:    1,
 					Flags: zf | pf,
 				},
-				mem: ram("80"),
-			},
-			nil,
+				ram("80"),
+			),
 		},
 		{
 			"ADD B: adding 0x09 + 0x07 sets the auxiliary carry flag",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x09,
 					B: 0x07,
 				},
-				mem: ram("80"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("80"),
+			),
+			newComputer(
+				CPU{
 					A:     0x10,
 					B:     0x07,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("80"),
-			},
-			nil,
+				ram("80"),
+			),
 		},
 		{
 			"ADD B: adding 0xFE and 0x02 sets the carry and auxiliary carry flags",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x03,
 					B: 0xFE,
 				},
-				mem: ram("80"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("80"),
+			),
+			newComputer(
+				CPU{
 					A:     0x01,
 					B:     0xFE,
 					PC:    0x01,
 					Flags: cf | acf,
 				},
-				mem: ram("80"),
-			},
-			nil,
+				ram("80"),
+			),
 		},
 		{
 			"ADD C: adding 0xFE and 0x01 set the parity8 and sign8 flags",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 					C: 0xFE,
 				},
-				mem: ram("81"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("81"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					C:     0xFE,
 					PC:    0x01,
 					Flags: sf | pf,
 				},
-				mem: ram("81"),
-			},
-			nil,
+				ram("81"),
+			),
 		},
 		{
 			"ADD D: adding 0xFf and 0x00 set the sign8 flag",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x00,
 					D: 0xFE,
 				},
-				mem: ram("82"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("82"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFE,
 					D:     0xFE,
 					PC:    0x01,
 					Flags: sf,
 				},
-				mem: ram("82"),
-			},
-			nil,
+				ram("82"),
+			),
 		},
 		{
 			"ADD E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x00,
 					E: 0xFE,
 				},
-				mem: ram("83"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("83"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFE,
 					E:     0xFE,
 					PC:    0x01,
 					Flags: sf,
 				},
-				mem: ram("83"),
-			},
-			nil,
+				ram("83"),
+			),
 		},
 		{
 			"ADD H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x00,
 					H: 0xFE,
 				},
-				mem: ram("84"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("84"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFE,
 					H:     0xFE,
 					PC:    0x01,
 					Flags: sf,
 				},
-				mem: ram("84"),
-			},
-			nil,
+				ram("84"),
+			),
 		},
 		{
 			"ADD L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x00,
 					L: 0xFE,
 				},
-				mem: ram("85"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("85"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFE,
 					L:     0xFE,
 					PC:    0x01,
 					Flags: sf,
 				},
-				mem: ram("85"),
-			},
-			nil,
+				ram("85"),
+			),
 		},
 		{
 			"ADD M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 					H: 0x00,
 					L: 0x02,
 				},
-				mem: ram("86 00 FE"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("86 00 FE"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					H:     0x00,
 					L:     0x02,
 					PC:    0x01,
 					Flags: sf | pf,
 				},
-				mem: ram("86 00 FE"),
-			},
-			nil,
+				ram("86 00 FE"),
+			),
 		},
 		{
 			"ANA A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					Flags: cf,
 				},
-				mem: ram("A7"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A7"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("A7"),
-			},
-			nil,
+				ram("A7"),
+			),
 		},
 		{
 			"ANA B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					B:     0x0A,
 					Flags: cf,
 				},
-				mem: ram("A0"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A0"),
+			),
+			newComputer(
+				CPU{
 					A:     0x0A,
 					B:     0x0A,
 					PC:    0x01,
 					Flags: pf,
 				},
-				mem: ram("A0"),
-			},
-			nil,
+				ram("A0"),
+			),
 		},
 		{
 			"ANA C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					C:     0x0A,
 					Flags: cf,
 				},
-				mem: ram("A1"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A1"),
+			),
+			newComputer(
+				CPU{
 					A:     0x0A,
 					C:     0x0A,
 					PC:    0x01,
 					Flags: pf,
 				},
-				mem: ram("A1"),
-			},
-			nil,
+				ram("A1"),
+			),
 		},
 		{
 			"ANA D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					D:     0x0A,
 					Flags: cf,
 				},
-				mem: ram("A2"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A2"),
+			),
+			newComputer(
+				CPU{
 					A:     0x0A,
 					D:     0x0A,
 					PC:    0x01,
 					Flags: pf,
 				},
-				mem: ram("A2"),
-			},
-			nil,
+				ram("A2"),
+			),
 		},
 		{
 			"ANA E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					E:     0x0A,
 					Flags: cf,
 				},
-				mem: ram("A3"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A3"),
+			),
+			newComputer(
+				CPU{
 					A:     0x0A,
 					E:     0x0A,
 					PC:    0x01,
 					Flags: pf,
 				},
-				mem: ram("A3"),
-			},
-			nil,
+				ram("A3"),
+			),
 		},
 		{
 			"ANA H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					H:     0x0A,
 					Flags: cf,
 				},
-				mem: ram("A4"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A4"),
+			),
+			newComputer(
+				CPU{
 					A:     0x0A,
 					H:     0x0A,
 					PC:    0x01,
 					Flags: pf,
 				},
-				mem: ram("A4"),
-			},
-			nil,
+				ram("A4"),
+			),
 		},
 		{
 			"ANA L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					L:     0x0A,
 					Flags: cf,
 				},
-				mem: ram("A5"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A5"),
+			),
+			newComputer(
+				CPU{
 					A:     0x0A,
 					L:     0x0A,
 					PC:    0x01,
 					Flags: pf,
 				},
-				mem: ram("A5"),
-			},
-			nil,
+				ram("A5"),
+			),
 		},
 		{
 			"CALL adr",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					PC: 0x01,
 					SP: 0x07,
 				},
-				mem: ram("00 CD 0A 00 00 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("00 CD 0A 00 00 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					PC: 0x0A,
 					SP: 0x05,
 				},
-				mem: ram("00 CD 0A 00 00 00 01 00"),
-			},
-			nil,
+				ram("00 CD 0A 00 00 00 01 00"),
+			),
 		},
 		{
 			"CMP A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 				},
-				mem: ram("BF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("BF"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("BF"),
-			},
-			nil,
+				ram("BF"),
+			),
 		},
 		{
 			"CMP B: generates carry",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					B: 0x31,
 				},
-				mem: ram("B8"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B8"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					B:     0x31,
 					PC:    0x01,
 					Flags: cf | pf | sf,
 				},
-				mem: ram("B8"),
-			},
-			nil,
+				ram("B8"),
+			),
 		}, {
 			"CMP B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					B: 0x01,
 				},
-				mem: ram("B8"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B8"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					B:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("B8"),
-			},
-			nil,
+				ram("B8"),
+			),
 		},
 		{
 			"CMP C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					C: 0x01,
 				},
-				mem: ram("B9"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B9"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					C:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("B9"),
-			},
-			nil,
+				ram("B9"),
+			),
 		},
 		{
 			"CMP D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					D: 0x01,
 				},
-				mem: ram("BA"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("BA"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					D:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("BA"),
-			},
-			nil,
+				ram("BA"),
+			),
 		},
 		{
 			"CMP E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					E: 0x01,
 				},
-				mem: ram("BB"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("BB"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					E:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("BB"),
-			},
-			nil,
+				ram("BB"),
+			),
 		},
 		{
 			"CMP H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					H: 0x01,
 				},
-				mem: ram("BC"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("BC"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					H:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("BC"),
-			},
-			nil,
+				ram("BC"),
+			),
 		},
 		{
 			"CMP L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					L: 0x01,
 				},
-				mem: ram("BD"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("BD"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					L:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("BD"),
-			},
-			nil,
+				ram("BD"),
+			),
 		},
 		{
 			"DAD B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x01,
 					C: 0x01,
 					H: 0x01,
 					L: 0x01,
 				},
-				mem: ram("09"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("09"),
+			),
+			newComputer(
+				CPU{
 					B:     0x01,
 					C:     0x01,
 					H:     0x02,
@@ -795,23 +760,22 @@ func TestComputer_Step(t *testing.T) {
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("09"),
-			},
-			nil,
+				ram("09"),
+			),
 		},
 		{
 			"DAD B: generates carry",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0xFF,
 					C: 0xFE,
 					H: 0x00,
 					L: 0x03,
 				},
-				mem: ram("09"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("09"),
+			),
+			newComputer(
+				CPU{
 					B:     0xFF,
 					C:     0xFE,
 					H:     0x00,
@@ -819,23 +783,22 @@ func TestComputer_Step(t *testing.T) {
 					PC:    0x01,
 					Flags: cf,
 				},
-				mem: ram("09"),
-			},
-			nil,
+				ram("09"),
+			),
 		},
 		{
 			"DAD D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x01,
 					E: 0xFF,
 					H: 0x01,
 					L: 0x01,
 				},
-				mem: ram("19"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("19"),
+			),
+			newComputer(
+				CPU{
 					D:     0x01,
 					E:     0xFF,
 					H:     0x03,
@@ -843,2527 +806,2403 @@ func TestComputer_Step(t *testing.T) {
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("19"),
-			},
-			nil,
+				ram("19"),
+			),
 		},
 		{
 			"DAD H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x01,
 					L: 0x01,
 				},
-				mem: ram("29"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("29"),
+			),
+			newComputer(
+				CPU{
 					H:     0x02,
 					L:     0x02,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("29"),
-			},
-			nil,
+				ram("29"),
+			),
 		},
 		{
 			"DAD SP",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H:  0x01,
 					L:  0x03,
 					SP: 0x0FFF,
 				},
-				mem: ram("39"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("39"),
+			),
+			newComputer(
+				CPU{
 					H:     0x11,
 					L:     0x02,
 					SP:    0x0FFF,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("39"),
-			},
-			nil,
+				ram("39"),
+			),
 		},
 		{
 			"DCR A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x02,
 				},
-				mem: ram("3D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("3D"),
+			),
+			newComputer(
+				CPU{
 					A:     0x01,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("3D"),
-			},
-			nil,
+				ram("3D"),
+			),
 		},
 		{
 			"DCR B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x02,
 				},
-				mem: ram("05"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("05"),
+			),
+			newComputer(
+				CPU{
 					B:     0x01,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("05"),
-			},
-			nil,
+				ram("05"),
+			),
 		},
 		{
 			"DCR B: carry not set when there's borrow",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x00,
 				},
-				mem: ram("05"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("05"),
+			),
+			newComputer(
+				CPU{
 					B:     0xff,
 					PC:    0x01,
 					Flags: sf | pf,
 				},
-				mem: ram("05"),
-			},
-			nil,
+				ram("05"),
+			),
 		},
 		{
 			"DCR B: carry not modified when there was existing carry",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B:     0x00,
 					Flags: cf,
 				},
-				mem: ram("05"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("05"),
+			),
+			newComputer(
+				CPU{
 					B:     0xff,
 					PC:    0x01,
 					Flags: sf | pf | cf,
 				},
-				mem: ram("05"),
-			},
-			nil,
+				ram("05"),
+			),
 		},
 		{
 			"DCR B: Generates auxiliary carry when there's carry in the lower nibble",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x1D,
 				},
-				mem: ram("05"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("05"),
+			),
+			newComputer(
+				CPU{
 					B:     0x1C,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("05"),
-			},
-			nil,
+				ram("05"),
+			),
 		},
 		{
 			"DCR C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x02,
 				},
-				mem: ram("0D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("0D"),
+			),
+			newComputer(
+				CPU{
 					C:     0x01,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("0D"),
-			},
-			nil,
+				ram("0D"),
+			),
 		},
 		{
 			"DCR D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x02,
 				},
-				mem: ram("15"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("15"),
+			),
+			newComputer(
+				CPU{
 					D:     0x01,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("15"),
-			},
-			nil,
+				ram("15"),
+			),
 		},
 		{
 			"DCR E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x02,
 				},
-				mem: ram("1D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("1D"),
+			),
+			newComputer(
+				CPU{
 					E:     0x01,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("1D"),
-			},
-			nil,
+				ram("1D"),
+			),
 		},
 		{
 			"DCR H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x02,
 				},
-				mem: ram("20"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("20"),
+			),
+			newComputer(
+				CPU{
 					H:     0x01,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("20"),
-			},
-			nil,
+				ram("20"),
+			),
 		},
 		{
 			"DCR L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x02,
 				},
-				mem: ram("2D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("2D"),
+			),
+			newComputer(
+				CPU{
 					L:     0x01,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("2D"),
-			},
-			nil,
+				ram("2D"),
+			),
 		},
 		{
 			"INR A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 				},
-				mem: ram("3C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("3C"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("3C"),
-			},
-			nil,
+				ram("3C"),
+			),
 		},
 		{
 			"INR B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0xFF,
 				},
-				mem: ram("04"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("04"),
+			),
+			newComputer(
+				CPU{
 					B:     0x00,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("04"),
-			},
-			nil,
+				ram("04"),
+			),
 		},
 		{
 			"INR B: generates auxiliary carry",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x0F,
 				},
-				mem: ram("04"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("04"),
+			),
+			newComputer(
+				CPU{
 					B:     0x10,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("04"),
-			},
-			nil,
+				ram("04"),
+			),
 		},
 		{
 			"INR C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x0f,
 				},
-				mem: ram("0C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("0C"),
+			),
+			newComputer(
+				CPU{
 					C:     0x10,
 					PC:    0x01,
 					Flags: acf,
 				},
-				mem: ram("0C"),
-			},
-			nil,
+				ram("0C"),
+			),
 		},
 		{
 			"INR D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x03,
 				},
-				mem: ram("14"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("14"),
+			),
+			newComputer(
+				CPU{
 					D:     0x04,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("14"),
-			},
-			nil,
+				ram("14"),
+			),
 		},
 		{
 			"INR E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x03,
 				},
-				mem: ram("1C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("1C"),
+			),
+			newComputer(
+				CPU{
 					E:     0x04,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("1C"),
-			},
-			nil,
+				ram("1C"),
+			),
 		},
 		{
 			"INR H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x03,
 				},
-				mem: ram("24"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("24"),
+			),
+			newComputer(
+				CPU{
 					H:     0x04,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("24"),
-			},
-			nil,
+				ram("24"),
+			),
 		},
 		{
 			"INR L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x03,
 				},
-				mem: ram("2C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("2C"),
+			),
+			newComputer(
+				CPU{
 					L:     0x04,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("2C"),
-			},
-			nil,
+				ram("2C"),
+			),
 		},
 		{
 			"INX B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0xFF,
 				},
-				mem: ram("03"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("03"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					C:  0x00,
 					PC: 0x01,
 				},
-				mem: ram("03"),
-			},
-			nil,
+				ram("03"),
+			),
 		},
 		{
 			"INX D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0xFF,
 				},
-				mem: ram("13"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("13"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					E:  0x00,
 					PC: 0x01,
 				},
-				mem: ram("13"),
-			},
-			nil,
+				ram("13"),
+			),
 		},
 		{
 			"INX H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0xFF,
 				},
-				mem: ram("23"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("23"),
+			),
+			newComputer(
+				CPU{
 					H:  0x01,
 					L:  0x00,
 					PC: 0x01,
 				},
-				mem: ram("23"),
-			},
-			nil,
+				ram("23"),
+			),
 		},
 		{
 			"INX SP",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					SP: 0x0F,
 				},
-				mem: ram("33"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("33"),
+			),
+			newComputer(
+				CPU{
 					PC: 0x01,
 					SP: 0x10,
 				},
-				mem: ram("33"),
-			},
-			nil,
+				ram("33"),
+			),
 		},
 		{
 			"JNZ adr: zero flag set",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					Flags: zf,
 				},
-				mem: ram("C2 0A 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("C2 0A 00"),
+			),
+			newComputer(
+				CPU{
 					PC:    0x03,
 					Flags: zf,
 				},
-				mem: ram("C2 0A 00"),
-			},
-			nil,
+				ram("C2 0A 00"),
+			),
 		},
 		{
 			"JNZ adr: zero flag not set",
-			&Computer{
-				mem: ram("C2 0A 00"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("C2 0A 00"),
+			),
+			newComputer(
+				CPU{
 					PC: 0x0A,
 				},
-				mem: ram("C2 0A 00"),
-			},
-			nil,
+				ram("C2 0A 00"),
+			),
 		},
 		{
 			"JMP adr",
-			&Computer{
-				mem: ram("C3 0A 00"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("C3 0A 00"),
+			),
+			newComputer(
+				CPU{
 					PC: 0x0A,
 				},
-				mem: ram("C3 0A 00"),
-			},
-			nil,
+				ram("C3 0A 00"),
+			),
 		},
 		{
 			"LDAX B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x00,
 					C: 0x02,
 				},
-				mem: ram("0a 00 ff"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("0a 00 ff"),
+			),
+			newComputer(
+				CPU{
 					A:  0xFF,
 					B:  0x00,
 					C:  0x02,
 					PC: 0x01,
 				},
-				mem: ram("0a 00 ff"),
-			},
-			nil,
+				ram("0a 00 ff"),
+			),
 		},
 		{
 			"LDAX D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x00,
 					E: 0x02,
 				},
-				mem: ram("1a 00 ff"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("1a 00 ff"),
+			),
+			newComputer(
+				CPU{
 					A:  0xFF,
 					D:  0x00,
 					E:  0x02,
 					PC: 0x01,
 				},
-				mem: ram("1a 00 ff"),
-			},
-			nil,
+				ram("1a 00 ff"),
+			),
 		},
 		{
 			"LXI B, D16",
-			&Computer{
-				mem: ram("01 0B 01"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("01 0B 01"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					C:  0x0B,
 					PC: 0x03,
 				},
-				mem: ram("01 0B 01"),
-			},
-			nil,
+				ram("01 0B 01"),
+			),
 		},
 		{
 			"LXI D, D16",
-			&Computer{
-				mem: ram("11 0B 01"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("11 0B 01"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					E:  0x0B,
 					PC: 0x03,
 				},
-				mem: ram("11 0B 01"),
-			},
-			nil,
+				ram("11 0B 01"),
+			),
 		},
 		{
 			"LXI H, D16",
-			&Computer{
-				mem: ram("21 0B 01"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("21 0B 01"),
+			),
+			newComputer(
+				CPU{
 					H:  0x01,
 					L:  0x0B,
 					PC: 0x03,
 				},
-				mem: ram("21 0B 01"),
-			},
-			nil,
+				ram("21 0B 01"),
+			),
 		},
 		{
 			"LXI SP, D16",
-			&Computer{
-				mem: ram("31 0B 01"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("31 0B 01"),
+			),
+			newComputer(
+				CPU{
 					PC: 0x03,
 					SP: 0x010B,
 				},
-				mem: ram("31 0B 01"),
-			},
-			nil,
+				ram("31 0B 01"),
+			),
 		},
 		{
 			"MOV A, A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 				},
-				mem: ram("7F"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("7F"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("7F"),
-			},
-			nil,
+				ram("7F"),
+			),
 		},
 		{
 			"MOV A, B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x01,
 				},
-				mem: ram("78"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("78"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					B:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("78"),
-			},
-			nil,
+				ram("78"),
+			),
 		},
 		{
 			"MOV A, C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x01,
 				},
-				mem: ram("79"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("79"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					C:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("79"),
-			},
-			nil,
+				ram("79"),
+			),
 		},
 		{
 			"MOV A, D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x01,
 				},
-				mem: ram("7A"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("7A"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					D:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("7A"),
-			},
-			nil,
+				ram("7A"),
+			),
 		},
 		{
 			"MOV A, E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x01,
 				},
-				mem: ram("7B"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("7B"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					E:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("7B"),
-			},
-			nil,
+				ram("7B"),
+			),
 		},
 		{
 			"MOV A, H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x01,
 				},
-				mem: ram("7C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("7C"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("7C"),
-			},
-			nil,
+				ram("7C"),
+			),
 		},
 		{
 			"MOV A, L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x01,
 				},
-				mem: ram("7D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("7D"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("7D"),
-			},
-			nil,
+				ram("7D"),
+			),
 		},
 		{
 			"MOV A, M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x02,
 				},
-				mem: ram("7E 00 FF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("7E 00 FF"),
+			),
+			newComputer(
+				CPU{
 					A:  0xFF,
 					H:  0x00,
 					L:  0x02,
 					PC: 0x01,
 				},
-				mem: ram("7E 00 FF"),
-			},
-			nil,
+				ram("7E 00 FF"),
+			),
 		},
 		{
 			"MOV B, A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 				},
-				mem: ram("47"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("47"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					B:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("47"),
-			},
-			nil,
+				ram("47"),
+			),
 		},
 		{
 			"MOV B, B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x01,
 				},
-				mem: ram("40"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("40"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("40"),
-			},
-			nil,
+				ram("40"),
+			),
 		},
 		{
 			"MOV B, C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x01,
 				},
-				mem: ram("41"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("41"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					C:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("41"),
-			},
-			nil,
+				ram("41"),
+			),
 		},
 		{
 			"MOV B, D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x01,
 				},
-				mem: ram("42"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("42"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					D:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("42"),
-			},
-			nil,
+				ram("42"),
+			),
 		},
 		{
 			"MOV B, E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x01,
 				},
-				mem: ram("43"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("43"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					E:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("43"),
-			},
-			nil,
+				ram("43"),
+			),
 		},
 		{
 			"MOV B, H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x01,
 				},
-				mem: ram("44"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("44"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("44"),
-			},
-			nil,
+				ram("44"),
+			),
 		},
 		{
 			"MOV B, L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x01,
 				},
-				mem: ram("45"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("45"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("45"),
-			},
-			nil,
+				ram("45"),
+			),
 		},
 		{
 			"MOV B, M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x02,
 				},
-				mem: ram("46 00 FF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("46 00 FF"),
+			),
+			newComputer(
+				CPU{
 					B:  0xFF,
 					H:  0x00,
 					L:  0x02,
 					PC: 0x01,
 				},
-				mem: ram("46 00 FF"),
-			},
-			nil,
+				ram("46 00 FF"),
+			),
 		},
 		{
 			"MOV C, A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 				},
-				mem: ram("4F"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("4F"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					C:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("4F"),
-			},
-			nil,
+				ram("4F"),
+			),
 		},
 		{
 			"MOV C, B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x01,
 				},
-				mem: ram("48"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("48"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					C:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("48"),
-			},
-			nil,
+				ram("48"),
+			),
 		},
 		{
 			"MOV C, C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x01,
 				},
-				mem: ram("49"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("49"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("49"),
-			},
-			nil,
+				ram("49"),
+			),
 		},
 		{
 			"MOV C, D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x01,
 				},
-				mem: ram("4A"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("4A"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					D:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("4A"),
-			},
-			nil,
+				ram("4A"),
+			),
 		},
 		{
 			"MOV C, E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x01,
 				},
-				mem: ram("4B"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("4B"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					E:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("4B"),
-			},
-			nil,
+				ram("4B"),
+			),
 		},
 		{
 			"MOV C, H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x01,
 				},
-				mem: ram("4C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("4C"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("4C"),
-			},
-			nil,
+				ram("4C"),
+			),
 		},
 		{
 			"MOV C, L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x01,
 				},
-				mem: ram("4D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("4D"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("4D"),
-			},
-			nil,
+				ram("4D"),
+			),
 		},
 		{
 			"MOV C, M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x02,
 				},
-				mem: ram("4E 00 FF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("4E 00 FF"),
+			),
+			newComputer(
+				CPU{
 					C:  0xFF,
 					H:  0x00,
 					L:  0x02,
 					PC: 0x01,
 				},
-				mem: ram("4E 00 FF"),
-			},
-			nil,
+				ram("4E 00 FF"),
+			),
 		},
 		{
 			"MOV D, A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 				},
-				mem: ram("57"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("57"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					D:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("57"),
-			},
-			nil,
+				ram("57"),
+			),
 		},
 		{
 			"MOV D, B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x01,
 				},
-				mem: ram("50"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("50"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					D:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("50"),
-			},
-			nil,
+				ram("50"),
+			),
 		},
 		{
 			"MOV D, C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x01,
 				},
-				mem: ram("51"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("51"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					D:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("51"),
-			},
-			nil,
+				ram("51"),
+			),
 		},
 		{
 			"MOV D, D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x01,
 				},
-				mem: ram("52"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("52"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("52"),
-			},
-			nil,
+				ram("52"),
+			),
 		},
 		{
 			"MOV D, E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x01,
 				},
-				mem: ram("53"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("53"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					E:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("53"),
-			},
-			nil,
+				ram("53"),
+			),
 		},
 		{
 			"MOV D, H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x01,
 				},
-				mem: ram("54"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("54"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("54"),
-			},
-			nil,
+				ram("54"),
+			),
 		},
 		{
 			"MOV D, L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x01,
 				},
-				mem: ram("55"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("55"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("55"),
-			},
-			nil,
+				ram("55"),
+			),
 		},
 		{
 			"MOV D, M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x02,
 				},
-				mem: ram("56 00 FF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("56 00 FF"),
+			),
+			newComputer(
+				CPU{
 					D:  0xFF,
 					H:  0x00,
 					L:  0x02,
 					PC: 0x01,
 				},
-				mem: ram("56 00 FF"),
-			},
-			nil,
+				ram("56 00 FF"),
+			),
 		},
 		{
 			"MOV E, A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 				},
-				mem: ram("5F"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("5F"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					E:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("5F"),
-			},
-			nil,
+				ram("5F"),
+			),
 		},
 		{
 			"MOV E, B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x01,
 				},
-				mem: ram("58"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("58"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					E:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("58"),
-			},
-			nil,
+				ram("58"),
+			),
 		},
 		{
 			"MOV E, C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x01,
 				},
-				mem: ram("59"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("59"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					E:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("59"),
-			},
-			nil,
+				ram("59"),
+			),
 		},
 		{
 			"MOV E, D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x01,
 				},
-				mem: ram("5A"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("5A"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					E:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("5A"),
-			},
-			nil,
+				ram("5A"),
+			),
 		},
 		{
 			"MOV E, E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x01,
 				},
-				mem: ram("5B"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("5B"),
+			),
+			newComputer(
+				CPU{
 					PC: 0x01,
 					E:  0x01,
 				},
-				mem: ram("5B"),
-			},
-			nil,
+				ram("5B"),
+			),
 		},
 		{
 			"MOV E, H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x01,
 				},
-				mem: ram("5C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("5C"),
+			),
+			newComputer(
+				CPU{
 					E:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("5C"),
-			},
-			nil,
+				ram("5C"),
+			),
 		},
 		{
 			"MOV E, L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x01,
 				},
-				mem: ram("5D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("5D"),
+			),
+			newComputer(
+				CPU{
 					E:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("5D"),
-			},
-			nil,
+				ram("5D"),
+			),
 		},
 		{
 			"MOV E, M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x02,
 				},
-				mem: ram("5E 00 FF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("5E 00 FF"),
+			),
+			newComputer(
+				CPU{
 					E:  0xFF,
 					H:  0x00,
 					L:  0x02,
 					PC: 0x01,
 				},
-				mem: ram("5E 00 FF"),
-			},
-			nil,
+				ram("5E 00 FF"),
+			),
 		},
 		{
 			"MOV H, A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 				},
-				mem: ram("67"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("67"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("67"),
-			},
-			nil,
+				ram("67"),
+			),
 		},
 		{
 			"MOV H, B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x01,
 				},
-				mem: ram("60"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("60"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("60"),
-			},
-			nil,
+				ram("60"),
+			),
 		},
 		{
 			"MOV H, C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x01,
 				},
-				mem: ram("61"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("61"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("61"),
-			},
-			nil,
+				ram("61"),
+			),
 		},
 		{
 			"MOV H, D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x01,
 				},
-				mem: ram("62"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("62"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("62"),
-			},
-			nil,
+				ram("62"),
+			),
 		},
 		{
 			"MOV H, E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x01,
 				},
-				mem: ram("63"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("63"),
+			),
+			newComputer(
+				CPU{
 					E:  0x01,
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("63"),
-			},
-			nil,
+				ram("63"),
+			),
 		},
 		{
 			"MOV H, H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x01,
 				},
-				mem: ram("64"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("64"),
+			),
+			newComputer(
+				CPU{
 					H:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("64"),
-			},
-			nil,
+				ram("64"),
+			),
 		},
 		{
 			"MOV H, L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x01,
 				},
-				mem: ram("65"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("65"),
+			),
+			newComputer(
+				CPU{
 					H:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("65"),
-			},
-			nil,
+				ram("65"),
+			),
 		},
 		{
 			"MOV H, M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x02,
 				},
-				mem: ram("66 00 FF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("66 00 FF"),
+			),
+			newComputer(
+				CPU{
 					H:  0xFF,
 					L:  0x02,
 					PC: 0x01,
 				},
-				mem: ram("66 00 FF"),
-			},
-			nil,
+				ram("66 00 FF"),
+			),
 		},
 		{
 			"MOV L, A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 				},
-				mem: ram("6F"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("6F"),
+			),
+			newComputer(
+				CPU{
 					A:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("6F"),
-			},
-			nil,
+				ram("6F"),
+			),
 		},
 		{
 			"MOV L, B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0x01,
 				},
-				mem: ram("68"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("68"),
+			),
+			newComputer(
+				CPU{
 					B:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("68"),
-			},
-			nil,
+				ram("68"),
+			),
 		},
 		{
 			"MOV L, C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0x01,
 				},
-				mem: ram("69"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("69"),
+			),
+			newComputer(
+				CPU{
 					C:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("69"),
-			},
-			nil,
+				ram("69"),
+			),
 		},
 		{
 			"MOV L, D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0x01,
 				},
-				mem: ram("6A"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("6A"),
+			),
+			newComputer(
+				CPU{
 					D:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("6A"),
-			},
-			nil,
+				ram("6A"),
+			),
 		},
 		{
 			"MOV L, E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0x01,
 				},
-				mem: ram("6B"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("6B"),
+			),
+			newComputer(
+				CPU{
 					E:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("6B"),
-			},
-			nil,
+				ram("6B"),
+			),
 		},
 		{
 			"MOV L, H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x01,
 				},
-				mem: ram("6C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("6C"),
+			),
+			newComputer(
+				CPU{
 					H:  0x01,
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("6C"),
-			},
-			nil,
+				ram("6C"),
+			),
 		},
 		{
 			"MOV L, L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					L: 0x01,
 				},
-				mem: ram("6D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("6D"),
+			),
+			newComputer(
+				CPU{
 					L:  0x01,
 					PC: 0x01,
 				},
-				mem: ram("6D"),
-			},
-			nil,
+				ram("6D"),
+			),
 		},
 		{
 			"MOV L, M",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x02,
 				},
-				mem: ram("6E 00 FF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("6E 00 FF"),
+			),
+			newComputer(
+				CPU{
 					H:  0x00,
 					L:  0xFF,
 					PC: 0x01,
 				},
-				mem: ram("6E 00 FF"),
-			},
-			nil,
+				ram("6E 00 FF"),
+			),
 		},
 		{
 			"MOV M, A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xff,
 					H: 0x00,
 					L: 0x03,
 				},
-				mem: ram("77 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("77 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					A:  0xff,
 					H:  0x00,
 					L:  0x03,
 					PC: 0x01,
 				},
-				mem: ram("77 00 00 FF"),
-			},
-			nil,
+				ram("77 00 00 FF"),
+			),
 		},
 		{
 			"MOV M, B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					B: 0xff,
 					H: 0x00,
 					L: 0x03,
 				},
-				mem: ram("70 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("70 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					B:  0xff,
 					H:  0x00,
 					L:  0x03,
 					PC: 0x01,
 				},
-				mem: ram("70 00 00 FF"),
-			},
-			nil,
+				ram("70 00 00 FF"),
+			),
 		},
 		{
 			"MOV M, C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					C: 0xff,
 					H: 0x00,
 					L: 0x03,
 				},
-				mem: ram("71 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("71 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					C:  0xff,
 					H:  0x00,
 					L:  0x03,
 					PC: 0x01,
 				},
-				mem: ram("71 00 00 FF"),
-			},
-			nil,
+				ram("71 00 00 FF"),
+			),
 		},
 		{
 			"MOV M, D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					D: 0xff,
 					H: 0x00,
 					L: 0x03,
 				},
-				mem: ram("72 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("72 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					D:  0xff,
 					H:  0x00,
 					L:  0x03,
 					PC: 0x01,
 				},
-				mem: ram("72 00 00 FF"),
-			},
-			nil,
+				ram("72 00 00 FF"),
+			),
 		},
 		{
 			"MOV M, E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					E: 0xff,
 					H: 0x00,
 					L: 0x03,
 				},
-				mem: ram("73 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("73 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					E:  0xff,
 					H:  0x00,
 					L:  0x03,
 					PC: 0x01,
 				},
-				mem: ram("73 00 00 FF"),
-			},
-			nil,
+				ram("73 00 00 FF"),
+			),
 		},
 		{
 			"MOV M, H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x03,
 				},
-				mem: ram("74 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("74 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					H:  0x00,
 					L:  0x03,
 					PC: 0x01,
 				},
-				mem: ram("74 00 00 00"),
-			},
-			nil,
+				ram("74 00 00 00"),
+			),
 		},
 		{
 			"MOV M, L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					H: 0x00,
 					L: 0x03,
 				},
-				mem: ram("75 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("75 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					H:  0x00,
 					L:  0x03,
 					PC: 0x01,
 				},
-				mem: ram("75 00 00 03"),
-			},
-			nil,
+				ram("75 00 00 03"),
+			),
 		},
 		{
 			"MVI A, D8",
-			&Computer{
-				mem: ram("3E 0B"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("3E 0B"),
+			),
+			newComputer(
+				CPU{
 					A:  0x0B,
 					PC: 0x02,
 				},
-				mem: ram("3E 0B"),
-			},
-			nil,
+				ram("3E 0B"),
+			),
 		},
 		{
 			"MVI B, D8",
-			&Computer{
-				mem: ram("06 0B"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("06 0B"),
+			),
+			newComputer(
+				CPU{
 					B:  0x0B,
 					PC: 0x02,
 				},
-				mem: ram("06 0B"),
-			},
-			nil,
+				ram("06 0B"),
+			),
 		},
 		{
 			"MVI C, D8",
-			&Computer{
-				mem: ram("0E 0B"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("0E 0B"),
+			),
+			newComputer(
+				CPU{
 					C:  0x0B,
 					PC: 0x02,
 				},
-				mem: ram("0E 0B"),
-			},
-			nil,
+				ram("0E 0B"),
+			),
 		},
 		{
 			"MVI D, D8",
-			&Computer{
-				mem: ram("16 0B"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("16 0B"),
+			),
+			newComputer(
+				CPU{
 					D:  0x0B,
 					PC: 0x02,
 				},
-				mem: ram("16 0B"),
-			},
-			nil,
+				ram("16 0B"),
+			),
 		},
 		{
 			"MVI E, D8",
-			&Computer{
-				mem: ram("1E 0B"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("1E 0B"),
+			),
+			newComputer(
+				CPU{
 					E:  0x0B,
 					PC: 0x02,
 				},
-				mem: ram("1E 0B"),
-			},
-			nil,
+				ram("1E 0B"),
+			),
 		},
 		{
 			"MVI H, D8",
-			&Computer{
-				mem: ram("26 0B"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("26 0B"),
+			),
+			newComputer(
+				CPU{
 					H:  0x0B,
 					PC: 0x02,
 				},
-				mem: ram("26 0B"),
-			},
-			nil,
+				ram("26 0B"),
+			),
 		},
 		{
 			"MVI L, D8",
-			&Computer{
-				mem: ram("2E 0B"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("2E 0B"),
+			),
+			newComputer(
+				CPU{
 					L:  0x0B,
 					PC: 0x02,
 				},
-				mem: ram("2E 0B"),
-			},
-			nil,
+				ram("2E 0B"),
+			),
 		},
 		{
 			"NOP",
-			&Computer{
-				mem: ram("00"),
-			},
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{},
+				ram("00"),
+			),
+			newComputer(
+				CPU{
 					PC: 0x01,
 				},
-				mem: ram("00"),
-			},
-			nil,
+				ram("00"),
+			),
 		},
 		{
 			"ORA A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					Flags: cf,
 				},
-				mem: ram("B7"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B7"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("B7"),
-			},
-			nil,
+				ram("B7"),
+			),
 		},
 		{
 			"ORA B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0xFF,
 					B:     0x0A,
 					Flags: cf,
 				},
-				mem: ram("B0"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B0"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					B:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("B0"),
-			},
-			nil,
+				ram("B0"),
+			),
 		},
 		{
 			"ORA C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					C: 0x0A,
 				},
-				mem: ram("B1"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B1"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					C:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("B1"),
-			},
-			nil,
+				ram("B1"),
+			),
 		},
 		{
 			"ORA D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					D: 0x0A,
 				},
-				mem: ram("B2"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B2"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					D:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("B2"),
-			},
-			nil,
+				ram("B2"),
+			),
 		},
 		{
 			"ORA E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					E: 0x0A,
 				},
-				mem: ram("B3"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B3"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					E:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("B3"),
-			},
-			nil,
+				ram("B3"),
+			),
 		},
 		{
 			"ORA H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					H: 0x0A,
 				},
-				mem: ram("B4"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B4"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					H:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("B4"),
-			},
-			nil,
+				ram("B4"),
+			),
 		},
 		{
 			"ORA L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					L: 0x0A,
 				},
-				mem: ram("B5"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("B5"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					L:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("B5"),
-			},
-			nil,
+				ram("B5"),
+			),
 		},
 		{
 			"SBB A: with borrow",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x01,
 					Flags: cf,
 				},
-				mem: ram("9F"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("9F"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					PC:    0x01,
 					Flags: sf | pf | cf,
 				},
-				mem: ram("9F"),
-			},
-			nil,
+				ram("9F"),
+			),
 		},
 		{
 			"SBB A: no borrow",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x01,
 					Flags: none,
 				},
-				mem: ram("9F"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("9F"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("9F"),
-			},
-			nil,
+				ram("9F"),
+			),
 		},
 		{
 			"SBB B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x02,
 					B:     0x01,
 					Flags: cf,
 				},
-				mem: ram("98"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("98"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					B:     0x01,
 					PC:    1,
 					Flags: zf | pf,
 				},
-				mem: ram("98"),
-			},
-			nil,
+				ram("98"),
+			),
 		},
 		{
 			"SBB C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x00,
 					C:     0xFF,
 					Flags: cf,
 				},
-				mem: ram("99"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("99"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					C:     0xFF,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("99"),
-			},
-			nil,
+				ram("99"),
+			),
 		},
 		{
 			"SBB D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x00,
 					D:     0xFF,
 					Flags: cf,
 				},
-				mem: ram("9A"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("9A"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					D:     0xFF,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("9A"),
-			},
-			nil,
+				ram("9A"),
+			),
 		},
 		{
 			"SBB E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x00,
 					E:     0xFF,
 					Flags: cf,
 				},
-				mem: ram("9B"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("9B"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					E:     0xFF,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("9B"),
-			},
-			nil,
+				ram("9B"),
+			),
 		},
 		{
 			"SBB H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x00,
 					H:     0xFF,
 					Flags: cf,
 				},
-				mem: ram("9C"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("9C"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					H:     0xFF,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("9C"),
-			},
-			nil,
+				ram("9C"),
+			),
 		},
 		{
 			"SBB L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A:     0x08,
 					L:     0x02,
 					Flags: cf,
 				},
-				mem: ram("9D"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("9D"),
+			),
+			newComputer(
+				CPU{
 					A:     0x05,
 					L:     0x02,
 					PC:    0x01,
 					Flags: pf,
 				},
-				mem: ram("9D"),
-			},
-			nil,
+				ram("9D"),
+			),
 		},
 		{
 			"STAX B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					B: 0x00,
 					C: 0x10,
 				},
-				mem: ram("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					A:  0xFF,
 					B:  0x00,
 					C:  0x10,
 					PC: 0x01,
 				},
-				mem: ram("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
-			},
-			nil,
+				ram("02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
+			),
 		},
 		{
 			"STAX D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					D: 0x00,
 					E: 0x10,
 				},
-				mem: ram("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"),
+			),
+			newComputer(
+				CPU{
 					A:  0xFF,
 					D:  0x00,
 					E:  0x10,
 					PC: 0x01,
 				},
-				mem: ram("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
-			},
-			nil,
+				ram("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF"),
+			),
 		},
 		{
 			"SUB A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 				},
-				mem: ram("97"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("97"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("97"),
-			},
-			nil,
+				ram("97"),
+			),
 		},
 		{
 			"SUB B: substracting 0",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x00,
 					B: 0x00,
 				},
-				mem: ram("90"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("90"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					B:     0x00,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("90"),
-			},
-			nil,
+				ram("90"),
+			),
 		},
 		{
 			"SUB B: 0x02 - 0x01",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x02,
 					B: 0x01,
 				},
-				mem: ram("90"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("90"),
+			),
+			newComputer(
+				CPU{
 					A:     0x01,
 					B:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("90"),
-			},
-			nil,
+				ram("90"),
+			),
 		},
 		{
 			"SUB B: 0x01 - 0x02",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x01,
 					B: 0x02,
 				},
-				mem: ram("90"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("90"),
+			),
+			newComputer(
+				CPU{
 					A:     0xFF,
 					B:     0x02,
 					PC:    0x01,
 					Flags: sf | cf | pf,
 				},
-				mem: ram("90"),
-			},
-			nil,
+				ram("90"),
+			),
 		},
 		{
 			"SUB C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					C: 0x01,
 				},
-				mem: ram("91"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("91"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					C:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("91"),
-			},
-			nil,
+				ram("91"),
+			),
 		},
 		{
 			"SUB D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					D: 0x01,
 				},
-				mem: ram("92"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("92"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					D:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("92"),
-			},
-			nil,
+				ram("92"),
+			),
 		},
 		{
 			"SUB E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					E: 0x01,
 				},
-				mem: ram("93"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("93"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					E:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("93"),
-			},
-			nil,
+				ram("93"),
+			),
 		},
 		{
 			"SUB H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					H: 0x01,
 				},
-				mem: ram("94"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("94"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					H:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("94"),
-			},
-			nil,
+				ram("94"),
+			),
 		},
 		{
 			"SUB L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0x30,
 					L: 0x01,
 				},
-				mem: ram("95"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("95"),
+			),
+			newComputer(
+				CPU{
 					A:     0x2F,
 					L:     0x01,
 					PC:    0x01,
 					Flags: none,
 				},
-				mem: ram("95"),
-			},
-			nil,
+				ram("95"),
+			),
 		},
 		{
 			"XRA A",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 				},
-				mem: ram("A8"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A8"),
+			),
+			newComputer(
+				CPU{
 					A:     0x00,
 					PC:    0x01,
 					Flags: zf | pf,
 				},
-				mem: ram("A8"),
-			},
-			nil,
+				ram("A8"),
+			),
 		},
 		{
 			"XRA B",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					B: 0x0A,
 				},
-				mem: ram("A9"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("A9"),
+			),
+			newComputer(
+				CPU{
 					A:     0xF5,
 					B:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("A9"),
-			},
-			nil,
+				ram("A9"),
+			),
 		},
 		{
 			"XRA C",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					C: 0x0A,
 				},
-				mem: ram("AA"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("AA"),
+			),
+			newComputer(
+				CPU{
 					A:     0xF5,
 					C:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("AA"),
-			},
-			nil,
+				ram("AA"),
+			),
 		},
 		{
 			"XRA D",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					D: 0x0A,
 				},
-				mem: ram("AB"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("AB"),
+			),
+			newComputer(
+				CPU{
 					A:     0xF5,
 					D:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("AB"),
-			},
-			nil,
+				ram("AB"),
+			),
 		},
 		{
 			"XRA E",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					E: 0x0A,
 				},
-				mem: ram("AC"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("AC"),
+			),
+			newComputer(
+				CPU{
 					A:     0xF5,
 					E:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("AC"),
-			},
-			nil,
+				ram("AC"),
+			),
 		},
 		{
 			"XRA H",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					H: 0x0A,
 				},
-				mem: ram("AD"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("AD"),
+			),
+			newComputer(
+				CPU{
 					A:     0xF5,
 					H:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("AD"),
-			},
-			nil,
+				ram("AD"),
+			),
 		},
 		{
 			"XRA L",
-			&Computer{
-				cpu: cpu{
+			newComputer(
+				CPU{
 					A: 0xFF,
 					L: 0x0A,
 				},
-				mem: ram("AF"),
-			},
-			&Computer{
-				cpu: cpu{
+				ram("AF"),
+			),
+			newComputer(
+				CPU{
 					A:     0xF5,
 					L:     0x0A,
 					PC:    0x01,
 					Flags: pf | sf,
 				},
-				mem: ram("AF"),
-			},
-			nil,
+				ram("AF"),
+			),
 		},
 	} {
 		t.Run(tC.desc, func(t *testing.T) {
-			gotErr := tC.init.Step()
-			if gotErr != tC.wantErr {
-				t.Fatalf("got err=%v, want=%v", gotErr, tC.wantErr)
+			err := tC.init.Step()
+			if err != nil {
+				t.Fatalf("Unexpected error %v", err)
 			}
-			if !reflect.DeepEqual(*tC.init, *tC.want) {
-				t.Fatalf("got: %+v\n want: %+v", *tC.init, *tC.want)
+			if !(tC.init.CPU == tC.want.CPU && bytes.Equal(tC.init.mem, tC.want.mem)) {
+				t.Fatalf("got: \n%v\n want: \n%v", tC.init, tC.want)
 			}
 		})
 	}

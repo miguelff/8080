@@ -13,8 +13,7 @@ func main() {
 	var rom []byte
 	var err error
 
-	c := emu.Computer{}
-	c.Load(rom)
+	c := emu.Load(rom)
 
 	for err == nil {
 		err = c.Step()
