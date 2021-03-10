@@ -55,6 +55,37 @@ func TestDisassemble(t *testing.T) {
 	}
 }
 
+func TestDisassembleFirst(t *testing.T) {
+	for _, tC := range []struct {
+		desc string
+		code string
+		want string
+	}{
+		{
+			"NOP",
+			"00",
+			"NOP",
+		},
+		{
+			"JMP",
+			"c3 d4 18",
+			"JMP $18D4",
+		},
+	} {
+		t.Run(tC.desc, func(t *testing.T) {
+			got, err := DisassembleFirst(encoding.HexToBin(tC.code))
+			if err != nil {
+				t.Errorf("unexpected error when dissassembling binary: %v", err)
+			}
+
+			want := squish(tC.want)
+			if got != want {
+				t.Errorf("got:\n%s\nwant:\n%s", got, want)
+			}
+		})
+	}
+}
+
 func TestDisassemble_EndToEnd(t *testing.T) {
 	bin, err := os.Open("../invaders/invaders.h")
 	if err != nil {

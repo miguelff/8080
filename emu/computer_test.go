@@ -13,7 +13,7 @@ func ram(bytes string) []byte {
 func TestParity(t *testing.T) {
 	for _, tC := range []struct {
 		b    byte
-		want flags
+		want Flags
 	}{
 		{
 			0b00001111,
@@ -32,7 +32,7 @@ func TestParity(t *testing.T) {
 func TestSign(t *testing.T) {
 	for _, tC := range []struct {
 		b    byte
-		want flags
+		want Flags
 	}{
 		{
 			0b10001111,
@@ -51,7 +51,7 @@ func TestSign(t *testing.T) {
 func TestZero(t *testing.T) {
 	for _, tC := range []struct {
 		b    byte
-		want flags
+		want Flags
 	}{
 		{
 			0b10001111,
@@ -269,7 +269,7 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
-			"ADD B: adding two values that sum 0x0 sets the zero8 and parity8 flags",
+			"ADD B: adding two values that sum 0x0 sets the zero8 and parity8 Flags",
 			newComputer(
 				CPU{},
 				ram("80"),
@@ -302,7 +302,7 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
-			"ADD B: adding 0xFE and 0x02 sets the carry and auxiliary carry flags",
+			"ADD B: adding 0xFE and 0x02 sets the carry and auxiliary carry Flags",
 			newComputer(
 				CPU{
 					A: 0x03,
@@ -321,7 +321,7 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
-			"ADD C: adding 0xFE and 0x01 set the parity8 and sign8 flags",
+			"ADD C: adding 0xFE and 0x01 set the parity8 and sign8 Flags",
 			newComputer(
 				CPU{
 					A: 0x01,
@@ -2700,6 +2700,22 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
+			"RET",
+			newComputer(
+				CPU{
+					SP: 0x01,
+				},
+				ram("C9 04 00 00 00"),
+			),
+			newComputer(
+				CPU{
+					SP: 0x03,
+					PC: 0x04,
+				},
+				ram("C9 04 00 00 00"),
+			),
+		},
+		{
 			"SBB A: with borrow",
 			newComputer(
 				CPU{
@@ -3201,7 +3217,7 @@ func TestComputer_Step(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Unexpected error %v", err)
 			}
-			if !(tC.init.CPU == tC.want.CPU && bytes.Equal(tC.init.mem, tC.want.mem)) {
+			if !(tC.init.CPU == tC.want.CPU && bytes.Equal(tC.init.Mem, tC.want.Mem)) {
 				t.Fatalf("got: \n%v\n want: \n%v", tC.init, tC.want)
 			}
 		})

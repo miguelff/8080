@@ -3,6 +3,7 @@ package dasm
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -305,6 +306,38 @@ func DisassembleFrom(r io.Reader, w io.Writer, offset int) error {
 	}
 
 	return nil
+}
+
+// DisassembleFirst dissasemble a single machine instruction
+func DisassembleFirst(bin []byte) (string, error) {
+	buf := new(bytes.Buffer)
+	bw := bufio.NewWriter(buf)
+
+	br := newByteReader(bytes.NewReader(bin), 0)
+	op, err := br.ReadByte()
+
+	if err != nil {
+		return "", err
+	}
+
+	lastOp := byte(len(instructions) - 1)
+	if op > lastOp {
+		return "", fmt.Errorf("unkown op code 0x%02X", op)
+	}
+
+	if instDasm := instructions[op]; instDasm != nil {
+		err = instDasm(br, bw)
+		if err != nil {
+			return "", err
+		}
+		err := bw.Flush()
+		if err != nil {
+			return "", err
+		}
+		return buf.String(), nil
+	} else {
+		return "", fmt.Errorf("unkown op code 0x%02X", op)
+	}
 }
 
 func inst8(inst string) instDasm {

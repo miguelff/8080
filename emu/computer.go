@@ -23,7 +23,7 @@ func (e ComputerError) Error() string {
 	return string(e)
 }
 
-// flags hold the settings of the five condition bits, i.e., Carry, Zero, Sign, Parity, and Auxiliary Carry.
+// Flags hold the settings of the five condition bits, i.e., Carry, Zero, Sign, Parity, and Auxiliary Carry.
 // The format of this byte is, according to the 8080 assembly programming manual:
 //
 //	| | | |A| | | | |
@@ -37,11 +37,11 @@ func (e ComputerError) Error() string {
 // P  State of Parity bit: the amount of ones in the result of an operation is even
 // 1  always 1 (ignored)
 // C  State of carry bit: an addition exceeded the maximum number, or there was borrow in a substraction.
-type flags byte
+type Flags byte
 
 const (
-	none flags = iota
-	cf   flags = 1 << (iota - 1)
+	none Flags = iota
+	cf   Flags = 1 << (iota - 1)
 	_
 	pf
 	_
@@ -51,8 +51,54 @@ const (
 	sf
 )
 
-// parity8 calculates the parity of the given byte, and returns a flags value with the parity8 flag set appropriately
-func parity8(b byte) flags {
+// String returns a string containing a code for each of the flags set
+func (f Flags) String() string {
+	var flags []string
+	if f.zero() {
+		flags = append(flags, "Z")
+	}
+	if f.sign() {
+		flags = append(flags, "S")
+	}
+	if f.parity() {
+		flags = append(flags, "P")
+	}
+	if f.carry() {
+		flags = append(flags, "CY")
+	}
+	if f.auxiliaryCarry() {
+		flags = append(flags, "AC")
+	}
+	return strings.Join(flags, " ")
+}
+
+// carry returns whether the carry flag is set
+func (f Flags) carry() bool {
+	return (f & cf) != 0
+}
+
+// auxiliaryCarry returns whether the auxiliary carry flag is set
+func (f Flags) auxiliaryCarry() bool {
+	return (f & acf) != 0
+}
+
+// parity returns whether the parity flag is set
+func (f Flags) parity() bool {
+	return (f & pf) != 0
+}
+
+// sign returns whether the sign flag is set
+func (f Flags) sign() bool {
+	return (f & sf) != 0
+}
+
+// zero returns whether the zero flag is set
+func (f Flags) zero() bool {
+	return (f & zf) != 0
+}
+
+// parity8 calculates the parity of the given byte, and returns a Flags value with the parity8 flag set appropriately
+func parity8(b byte) Flags {
 	i := b ^ (b >> 1)
 	i = i ^ (i >> 2)
 	i = i ^ (i >> 4)
@@ -62,16 +108,16 @@ func parity8(b byte) flags {
 	return 0
 }
 
-// sign8 calculates the sign of the given byte, and returns a flags value with the sign flag set appropriately
-func sign8(b byte) flags {
+// sign8 calculates the sign of the given byte, and returns a Flags value with the sign flag set appropriately
+func sign8(b byte) Flags {
 	if b&0x80 == 0x80 {
 		return sf
 	}
 	return none
 }
 
-// zero8 calculates the zero flag of the given byte, and returns a flags value with the sign flag set appropriately
-func zero8(b byte) flags {
+// zero8 calculates the zero flag of the given byte, and returns a Flags value with the sign flag set appropriately
+func zero8(b byte) Flags {
 	if b == 0x0 {
 		return zf
 	}
@@ -89,7 +135,7 @@ func zero8(b byte) flags {
 //
 // the 8 bit registers come in pairs (B-C, D-E, H-L) and some opcodes operate on the pair itself, for instance LXI B, D16.
 //
-// The alu (arithmetic-logic unit) contains 5 flags (zero, sign, parity, carry, and auxiliary carry), and special
+// The alu (arithmetic-logic unit) contains 5 Flags (zero, sign, parity, carry, and auxiliary carry), and special
 // registers that belong to the ALU and not the register array: The accumulator registry (A) is used to store the result
 // of several arithmetic operations. While logically most opcodes treat the A registry as a general purpose one, this
 // resides in the ALU.
@@ -105,32 +151,7 @@ type CPU struct {
 	SP uint16
 	PC uint16
 
-	Flags flags
-}
-
-// carry returns whether the carry flag is set
-func (c *CPU) carry() bool {
-	return (c.Flags & cf) != 0
-}
-
-// auxiliaryCarry returns whether the auxiliary carry flag is set
-func (c *CPU) auxiliaryCarry() bool {
-	return (c.Flags & acf) != 0
-}
-
-// parity returns whether the parity flag is set
-func (c *CPU) parity() bool {
-	return (c.Flags & pf) != 0
-}
-
-// sign returns whether the sign flag is set
-func (c *CPU) sign() bool {
-	return (c.Flags & sf) != 0
-}
-
-// zero returns whether the zero flag is set
-func (c *CPU) zero() bool {
-	return (c.Flags & zf) != 0
+	Flags Flags
 }
 
 // Instruction is the algorithm that emulates a certain opcode within the computer
@@ -139,42 +160,44 @@ type Instruction func(*Computer) error
 // Computer connects the Memory and the cpu
 type Computer struct {
 	CPU
-	mem []byte
-
-	it []Instruction
+	Mem []byte
 }
 
 // newComputer creates a new computer with the cpu and memory states given
 func newComputer(c CPU, m []byte) *Computer {
 	return &Computer{
 		CPU: c,
-		mem: m,
-		it:  instructionTable,
+		Mem: m,
 	}
 }
 
 // Load loads the ROM into a newly created computer main Memory
 func Load(rom []byte) *Computer {
 	c := newComputer(CPU{}, make([]byte, MemSize))
-	copy(c.mem[:RomSize], rom)
+	copy(c.Mem[:RomSize], rom)
 	return c
+}
+
+// snapshot creates a copy of the current state of the computer
+func (c *Computer) snapshot() *Computer {
+	return newComputer(c.CPU, c.Mem)
 }
 
 func (c *Computer) String() string {
 	template := `
-╔═════════════════════════════════════════════════╗
-║                       CPU                       ║
-╠═════════════════════════════════════════════════╣
-║ A    ┆ $REGA           ║  B-C  ┆  $REGB         ║
-║ D-E  ┆ $REGD           ║  H-L  ┆  $REGH         ║
-║ SP   ┆ $REGS           ║  PC   ┆  $REGP         ║
-╟─────────────────────────────────────────────────╢
-║                        ║ Flags ┆  $FLAG_VALUES  ║
-╠═════════════════════════════════════════════════╣
-║                     Memory                      ║  
-╠═════════════════════════════════════════════════╣
-║ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ║
-╚═════════════════════════════════════════════════╝
+╔═══════════════════════════════════════════════════════╗
+║                          CPU                          ║
+╠═══════════════════════════════════════════════════════╣
+║ A    ┆ $REGA              ║  B-C  ┆  $REGB            ║
+║ D-E  ┆ $REGD              ║  H-L  ┆  $REGH            ║
+║ SP   ┆ $REGS              ║  PC   ┆  $REGP            ║
+╟───────────────────────────────────────────────────────╢
+║                           ║ Flags ┆  $FLAG_VALUES     ║
+╠═══════════════════════════════════════════════════════╣
+║                        Memory                         ║  
+╠═══════════════════════════════════════════════════════╣
+║ 0000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ║
+╚═══════════════════════════════════════════════════════╝
 `
 
 	s := strings.Replace(template, "$REGA", fmt.Sprintf("%02X   ", c.A), 1)
@@ -183,49 +206,39 @@ func (c *Computer) String() string {
 	s = strings.Replace(s, "$REGH", fmt.Sprintf("%02X%02X ", c.H, c.L), 1)
 	s = strings.Replace(s, "$REGS", fmt.Sprintf("%04X ", c.SP), 1)
 	s = strings.Replace(s, "$REGP", fmt.Sprintf("%04X ", c.PC), 1)
-
-	flagValues := strings.Builder{}
-	if c.zero() {
-		flagValues.WriteString("Z ")
-	}
-	if c.sign() {
-		flagValues.WriteString("S ")
-	}
-	if c.parity() {
-		flagValues.WriteString("P ")
-	}
-	if c.carry() {
-		flagValues.WriteString("CY ")
-	}
-	if c.auxiliaryCarry() {
-		flagValues.WriteString("AC ")
-	}
-	s = strings.Replace(s, " $FLAG_VALUES  ", fmt.Sprintf("%-15s", flagValues.String()), 1)
+	s = strings.Replace(s, " $FLAG_VALUES  ", fmt.Sprintf("%-15s", c.Flags.String()), 1)
 
 	memory := strings.Builder{}
 	buf := make([]byte, 0x10)
-	rows := int(math.Ceil(float64(len(c.mem)) / 0x10))
+	rows := int(math.Ceil(float64(len(c.Mem)) / 0x10))
 	for r := 0; r < rows; r++ {
 		memory.WriteString("║ ")
-		copy(buf, c.mem[r*0x10:])
+		copy(buf, c.Mem[r*0x10:])
+		memory.WriteString(fmt.Sprintf("%03X0: ", r))
 		for pos := range buf {
 			memory.WriteString(fmt.Sprintf("%02x ", buf[pos]))
 		}
 		memory.WriteString("║\n")
 	}
 
-	s = strings.Replace(s, "║ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ║\n", memory.String(), 1)
+	s = strings.Replace(s, "║ 0000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ║\n", memory.String(), 1)
 	return s
 }
 
 // Step executes one instruction of the code pointed by the Program Counter (PC) of the CPU
-func (c *Computer) Step() error {
+func (c *Computer) Step(debug bool) error {
+	if debug {
+		prev := c.snapshot()
+		defer c.debug(prev)
+	}
+
 	opcode, err := c.read8(c.PC)
+
 	if err != nil {
 		return err
 	}
 
-	if int(opcode) > len(c.it) || c.it[opcode] == nil {
+	if int(opcode) > len(instructionTable) || instructionTable[opcode] == nil {
 		return fmt.Errorf("unimplemented opcode %02X", opcode)
 	}
 
@@ -251,17 +264,17 @@ func (c *Computer) read16(addr uint16) (uint16, error) {
 }
 
 func (c *Computer) read8(addr uint16) (byte, error) {
-	if int(addr) > len(c.mem) {
+	if int(addr) > len(c.Mem) {
 		return 0, ComputerError(fmt.Sprintf("segfault accessing %04X", addr))
 	}
-	return c.mem[addr], nil
+	return c.Mem[addr], nil
 }
 
 func (c *Computer) write8(addr uint16, d8 byte) error {
-	if int(addr) > len(c.mem) {
+	if int(addr) > len(c.Mem) {
 		return ComputerError(fmt.Sprintf("segfault accessing %04X", addr))
 	}
-	c.mem[addr] = d8
+	c.Mem[addr] = d8
 	return nil
 }
 
@@ -295,10 +308,10 @@ var instructionTable = []Instruction{
 	0x15: dcrd,
 	0x16: mvid,
 	0x19: dadd,
+	0x1A: ldaxd,
 	0x1C: inre,
 	0x1D: dcre,
 	0x1E: mvie,
-	0x1A: ldaxd,
 	0x20: dcrh,
 	0x21: lxih,
 	0x23: inxh,
@@ -437,37 +450,38 @@ var instructionTable = []Instruction{
 	0xBF: cmpa,
 	0xC2: jnz,
 	0xC3: jmp,
+	0xC9: ret,
 	0xCD: call,
 }
 
 // 0x88 ADC B |	A <- A + B + CY (Z, S, P, CY, AC)
 func adcb(c *Computer) error {
-	return add(c, c.B, c.carry())
+	return add(c, c.B, c.Flags.carry())
 }
 
 // 0x89 ADC C |	A <- A + C + CY (Z, S, P, CY, AC)
 func adcc(c *Computer) error {
-	return add(c, c.C, c.carry())
+	return add(c, c.C, c.Flags.carry())
 }
 
 // 0x8A ADC D |	A <- A + D + CY (Z, S, P, CY, AC)
 func adcd(c *Computer) error {
-	return add(c, c.D, c.carry())
+	return add(c, c.D, c.Flags.carry())
 }
 
 // 0x8B ADC E | A <- A + E + CY (Z, S, P, CY, AC)
 func adce(c *Computer) error {
-	return add(c, c.E, c.carry())
+	return add(c, c.E, c.Flags.carry())
 }
 
 // 0x8C ADC E | A <- A + E + CY (Z, S, P, CY, AC)
 func adch(c *Computer) error {
-	return add(c, c.H, c.carry())
+	return add(c, c.H, c.Flags.carry())
 }
 
 // 0x8D ADC L | A <- A + L + CY (Z, S, P, CY, AC)
 func adcl(c *Computer) error {
-	return add(c, c.L, c.carry())
+	return add(c, c.L, c.Flags.carry())
 }
 
 // 0x8E ADC M | A <- A + (HL) + CY (Z, S, P, CY, AC)
@@ -476,12 +490,12 @@ func adcm(c *Computer) error {
 	if err != nil {
 		return err
 	}
-	return add(c, v, c.carry())
+	return add(c, v, c.Flags.carry())
 }
 
 // 0x8F ADC A | A <- A + A + CY (Z, S, P, CY, AC)
 func adca(c *Computer) error {
-	return add(c, c.A, c.carry())
+	return add(c, c.A, c.Flags.carry())
 }
 
 // If carry is not set, the content of register r is added to the content of the accumulator.
@@ -699,7 +713,7 @@ func dadsp(c *Computer) error {
 }
 
 // The content of register reg is decremented by one.
-// Note: All condition flags except CY are affected.
+// Note: All condition Flags except CY are affected.
 func dcr(c *Computer, reg *byte) error {
 	sum := *reg - 1
 
@@ -754,7 +768,7 @@ func dcrl(c *Computer) error {
 }
 
 // The content of register reg is incremented by one.
-// Note: All condition flags except CY are affected.
+// Note: All condition Flags except CY are affected.
 func inr(c *Computer, reg *byte) error {
 	sum := *reg + 1
 
@@ -851,7 +865,7 @@ func jmp(c *Computer) error {
 // 0xC2: JNZ adr | if NZ, PC <- addr
 // Jump to the address denoted by the next two bytes if the zero flag is set
 func jnz(c *Computer) error {
-	if !c.zero() {
+	if !c.Flags.zero() {
 		return lxi16(c, &c.PC)
 	} else {
 		c.PC += 3
@@ -1326,7 +1340,7 @@ func nop(c *Computer) error {
 }
 
 // The content of register r is inclusive-OR'd with the content of the accumulator.
-// The result is placed in the accumulator. The CY and AC flags are cleared.
+// The result is placed in the accumulator. The CY and AC Flags are cleared.
 func ora(c *Computer, v byte) error {
 	and := c.A | v
 
@@ -1372,9 +1386,18 @@ func oral(c *Computer) error {
 	return ora(c, c.L)
 }
 
+func pop16(c *Computer) (uint16, error) {
+	v, err := c.read16(c.SP)
+	if err != nil {
+		return 0, err
+	}
+	c.SP += 2
+	return v, nil
+}
+
 func push16(c *Computer, d16 uint16) error {
-	msb := byte(d16 & 0x00FF)
-	lsb := byte(d16 >> 8)
+	lsb := byte(d16 & 0x00FF)
+	msb := byte(d16 >> 8)
 
 	err := c.write8(c.SP-1, msb)
 	if err != nil {
@@ -1390,44 +1413,48 @@ func push16(c *Computer, d16 uint16) error {
 }
 
 // 0xC9 RET | PC.lo <- (sp); PC.hi<-(sp+1); SP <- SP+2
-func Ret(c *Computer) error {
-
+func ret(c *Computer) error {
+	pc, err := pop16(c)
+	if err != nil {
+		return err
+	}
+	c.PC = pc
 	return nil
 }
 
 // 0x9F SBB A | A <- A - A - CY (Z, S, P, CY, AC)
 func sbba(c *Computer) error {
-	return sub(c, c.A, c.carry())
+	return sub(c, c.A, c.Flags.carry())
 }
 
 // 0x98 SBB B | A <- A - B - CY (Z, S, P, CY, AC)
 func sbbb(c *Computer) error {
-	return sub(c, c.B, c.carry())
+	return sub(c, c.B, c.Flags.carry())
 }
 
 // 0x99 SBB C | A <- A - C - CY (Z, S, P, CY, AC)
 func sbbc(c *Computer) error {
-	return sub(c, c.C, c.carry())
+	return sub(c, c.C, c.Flags.carry())
 }
 
 // 0x9A SBB D | A <- A - D - CY (Z, S, P, CY, AC)
 func sbbd(c *Computer) error {
-	return sub(c, c.D, c.carry())
+	return sub(c, c.D, c.Flags.carry())
 }
 
 // 0x9B SBB E | A <- A - E - CY (Z, S, P, CY, AC)
 func sbbe(c *Computer) error {
-	return sub(c, c.E, c.carry())
+	return sub(c, c.E, c.Flags.carry())
 }
 
 // 0x9C SBB E | A <- A - E - CY (Z, S, P, CY, AC)
 func sbbh(c *Computer) error {
-	return sub(c, c.H, c.carry())
+	return sub(c, c.H, c.Flags.carry())
 }
 
 // 0x9D SBB L | A <- A - L - CY (Z, S, P, CY, AC)
 func sbbl(c *Computer) error {
-	return sub(c, c.L, c.carry())
+	return sub(c, c.L, c.Flags.carry())
 }
 
 func stax(c *Computer, msb, lsb byte) error {

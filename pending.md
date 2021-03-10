@@ -32,7 +32,6 @@ Opcode	Instruction	size	flags	function
 0xc6	ADI D8	2	Z, S, P, CY, AC	A <- A + byte
 0xc7	RST 0	1		CALL $0
 0xc8	RZ	1		if Z, RET
-0xc9	RET	1		PC.lo <- (sp); PC.hi<-(sp+1); SP <- SP+2
 0xca	JZ adr	3		if Z, PC <- adr
 0xcb	-			
 0xcc	CZ adr	3		if Z, CALL adr
