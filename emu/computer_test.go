@@ -2710,7 +2710,7 @@ func TestComputer_Step(t *testing.T) {
 			newComputer(
 				CPU{
 					SP: 0x03,
-					PC: 0x04,
+					PC: 0x05,
 				},
 				ram("C9 04 00 00 00"),
 			),

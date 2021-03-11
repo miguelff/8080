@@ -1416,7 +1416,7 @@ func ret(c *Computer) error {
 	if err != nil {
 		return err
 	}
-	c.PC = pc
+	c.PC = pc + 1
 	return nil
 }
 
