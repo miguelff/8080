@@ -759,6 +759,23 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
+			"CPI",
+			newComputer(
+				CPU{
+					A: 0x30,
+				},
+				ram("FE 31"),
+			),
+			newComputer(
+				CPU{
+					A:     0xFF,
+					PC:    0x02,
+					Flags: cf | pf | sf,
+				},
+				ram("FE 31"),
+			),
+		},
+		{
 			"DAD B",
 			newComputer(
 				CPU{

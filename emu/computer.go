@@ -452,6 +452,7 @@ var instructionTable = []Instruction{
 	0xC9: ret,
 	0xCD: call,
 	0xE6: ani,
+	0xFE: cpi,
 }
 
 // 0x88 ADC B |	A <- A + B + CY (Z, S, P, CY, AC)
@@ -647,6 +648,11 @@ func call(c *Computer) error {
 	return nil
 }
 
+// 0xBF	CMP A | A - A (Z, S, P, CY, AC)
+func cmpa(c *Computer) error {
+	return sub(c, c.A, false)
+}
+
 // 0xB8	CMP B | A - B (Z, S, P, CY, AC)
 func cmpb(c *Computer) error {
 	return sub(c, c.B, false)
@@ -677,9 +683,18 @@ func cmpl(c *Computer) error {
 	return sub(c, c.L, false)
 }
 
-// 0xBF	CMP A | A - A (Z, S, P, CY, AC)
-func cmpa(c *Computer) error {
-	return sub(c, c.A, false)
+//0xFE CPI D8 | A - data (Z, S, P, CY, AC)
+func cpi(c *Computer) error {
+	v, err := c.read8(c.PC + 1)
+	if err != nil {
+		return err
+	}
+	err = sub(c, v, false)
+	if err != nil {
+		return err
+	}
+	c.PC++
+	return nil
 }
 
 func dad8(c *Computer, msb, lsb byte) error {

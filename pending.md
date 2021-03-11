@@ -81,6 +81,5 @@ Opcode	Instruction	size	flags	function
 0xfa	JM adr	3		if M, PC <- adr
 0xfb	EI	1		special
 0xfc	CM adr	3		if M, CALL adr
-0xfd	-			
-0xfe	CPI D8	2	Z, S, P, CY, AC	A - data
+0xfd	-
 0xff	RST 7	1		CALL $38
