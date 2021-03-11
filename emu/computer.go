@@ -321,6 +321,7 @@ var instructionTable = []Instruction{
 	0x2E: mvil,
 	0x31: lxisp,
 	0x33: inxsp,
+	0x36: mvim,
 	0x39: dadsp,
 	0x3C: inra,
 	0x3D: dcra,
@@ -1345,6 +1346,21 @@ func mvih(c *Computer) error {
 // 0x2E: MVI L, D8 | L <- byte 2
 func mvil(c *Computer) error {
 	return mvi(c, &c.L)
+}
+
+// 0x36: MVI M, D8 | (H L) <- byte 2
+func mvim(c *Computer) error {
+	v, err := c.read8(c.PC + 1)
+	if err != nil {
+		return err
+	}
+	err = movtom(c, v)
+	if err != nil {
+		return err
+	}
+
+	c.PC++
+	return nil
 }
 
 // 0x00: NOP

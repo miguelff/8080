@@ -2558,17 +2558,21 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
-			"MVI L, D8",
+			"MVI M, D8",
 			newComputer(
-				CPU{},
-				ram("2E 0B"),
+				CPU{
+					H: 0x00,
+					L: 0x02,
+				},
+				ram("36 0B 00"),
 			),
 			newComputer(
 				CPU{
-					L:  0x0B,
+					H:  0x00,
+					L:  0x02,
 					PC: 0x02,
 				},
-				ram("2E 0B"),
+				ram("36 0B 0B"),
 			),
 		},
 		{
