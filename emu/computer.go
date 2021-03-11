@@ -462,11 +462,19 @@ var instructionTable = []Instruction{
 	0xBF: cmpa,
 	0xC2: jnz,
 	0xC3: jmp,
+	0xC7: rst0,
 	0xC9: ret,
 	0xCD: call,
+	0xCF: rst1,
 	0xD5: pushd,
+	0xD7: rst2,
+	0xDF: rst3,
 	0xE6: ani,
+	0xE7: rst4,
+	0xEF: rst5,
 	0xFE: cpi,
+	0xF7: rst6,
+	0xFF: rst7,
 }
 
 // 0x88 ADC B |	A <- A + B + CY (Z, S, P, CY, AC)
@@ -1492,6 +1500,46 @@ func ret(c *Computer) error {
 	}
 	c.PC = pc + 1
 	return nil
+}
+
+//0xC7 RST 0 | CALL $0
+func rst0(c *Computer) error {
+	return calladdr(c, 0x0)
+}
+
+//0xCF RST 1 | CALL $8
+func rst1(c *Computer) error {
+	return calladdr(c, 0x08)
+}
+
+//0xD7 RST 2 | CALL $10
+func rst2(c *Computer) error {
+	return calladdr(c, 0x10)
+}
+
+//0xDF RST 3 | CALL $18
+func rst3(c *Computer) error {
+	return calladdr(c, 0x18)
+}
+
+//0xE7 RST 4 | CALL $20
+func rst4(c *Computer) error {
+	return calladdr(c, 0x20)
+}
+
+//0xEF RST 5 | CALL $28
+func rst5(c *Computer) error {
+	return calladdr(c, 0x28)
+}
+
+//0xF7 RST 6 | CALL $30
+func rst6(c *Computer) error {
+	return calladdr(c, 0x30)
+}
+
+//0xFF RST 7 | CALL $38
+func rst7(c *Computer) error {
+	return calladdr(c, 0x38)
 }
 
 // 0x9F SBB A | A <- A - A - CY (Z, S, P, CY, AC)

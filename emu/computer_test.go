@@ -2780,6 +2780,142 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
+			"RST 0",
+			newComputer(
+				CPU{
+					PC: 0x02,
+					SP: 0x05,
+				},
+				ram("00 00 C7 00 00"),
+			),
+			newComputer(
+				CPU{
+					PC: 0x00,
+					SP: 0x03,
+				},
+				ram("00 00 C7 02 00"),
+			),
+		},
+		{
+			"RST 1",
+			newComputer(
+				CPU{
+					PC: 0x02,
+					SP: 0x05,
+				},
+				ram("00 00 CF 00 00"),
+			),
+			newComputer(
+				CPU{
+					PC: 0x08,
+					SP: 0x03,
+				},
+				ram("00 00 CF 02 00"),
+			),
+		},
+		{
+			"RST 2",
+			newComputer(
+				CPU{
+					PC: 0x02,
+					SP: 0x05,
+				},
+				ram("00 00 D7 00 00"),
+			),
+			newComputer(
+				CPU{
+					PC: 0x10,
+					SP: 0x03,
+				},
+				ram("00 00 D7 02 00"),
+			),
+		},
+		{
+			"RST 3",
+			newComputer(
+				CPU{
+					PC: 0x02,
+					SP: 0x05,
+				},
+				ram("00 00 DF 00 00"),
+			),
+			newComputer(
+				CPU{
+					PC: 0x18,
+					SP: 0x03,
+				},
+				ram("00 00 DF 02 00"),
+			),
+		},
+		{
+			"RST 4",
+			newComputer(
+				CPU{
+					PC: 0x02,
+					SP: 0x05,
+				},
+				ram("00 00 E7 00 00"),
+			),
+			newComputer(
+				CPU{
+					PC: 0x20,
+					SP: 0x03,
+				},
+				ram("00 00 E7 02 00"),
+			),
+		},
+		{
+			"RST 5",
+			newComputer(
+				CPU{
+					PC: 0x02,
+					SP: 0x05,
+				},
+				ram("00 00 EF 00 00"),
+			),
+			newComputer(
+				CPU{
+					PC: 0x28,
+					SP: 0x03,
+				},
+				ram("00 00 EF 02 00"),
+			),
+		},
+		{
+			"RST 6",
+			newComputer(
+				CPU{
+					PC: 0x02,
+					SP: 0x05,
+				},
+				ram("00 00 F7 00 00"),
+			),
+			newComputer(
+				CPU{
+					PC: 0x30,
+					SP: 0x03,
+				},
+				ram("00 00 F7 02 00"),
+			),
+		},
+		{
+			"RST 7",
+			newComputer(
+				CPU{
+					PC: 0x02,
+					SP: 0x05,
+				},
+				ram("00 00 FF 00 00"),
+			),
+			newComputer(
+				CPU{
+					PC: 0x38,
+					SP: 0x03,
+				},
+				ram("00 00 FF 02 00"),
+			),
+		},
+		{
 			"SBB A: with borrow",
 			newComputer(
 				CPU{
