@@ -21,6 +21,9 @@ func main() {
 
 	for err == nil {
 		err = c.Step(emu.MakeDebugFilter(*debug))
+		if err != nil {
+			fmt.Println(c)
+		}
 	}
 
 	fmt.Fprintf(os.Stderr, "%+v\n", err)

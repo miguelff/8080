@@ -2739,6 +2739,31 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
+			"PUSH D",
+			newComputer(
+				CPU{
+					D:  0xAA,
+					E:  0xBB,
+					H:  0x00,
+					L:  0x03,
+					SP: 0x03,
+				},
+				ram("D5 00 00"),
+			),
+			newComputer(
+				CPU{
+					D:  0xAA,
+					E:  0xBB,
+					H:  0x00,
+					L:  0x03,
+					SP: 0x01,
+					PC: 0x02,
+				},
+				ram("D5 BB AA"),
+			),
+		},
+
+		{
 			"RET",
 			newComputer(
 				CPU{

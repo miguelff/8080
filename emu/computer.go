@@ -246,7 +246,7 @@ func (c *Computer) Step(df DebugFilter) error {
 	if err != nil {
 		return err
 	}
-	if int(opcode) > len(instructionTable) || instructionTable[opcode] == nil {
+	if int(opcode) >= len(instructionTable) || instructionTable[opcode] == nil {
 		return fmt.Errorf("unimplemented opcode %02X", opcode)
 	}
 
@@ -464,6 +464,7 @@ var instructionTable = []Instruction{
 	0xC3: jmp,
 	0xC9: ret,
 	0xCD: call,
+	0xD5: pushd,
 	0xE6: ani,
 	0xFE: cpi,
 }
@@ -1440,7 +1441,7 @@ func oral(c *Computer) error {
 	return ora(c, c.L)
 }
 
-func pop16(c *Computer) (uint16, error) {
+func pop(c *Computer) (uint16, error) {
 	v, err := c.read16(c.SP)
 	if err != nil {
 		return 0, err
@@ -1449,7 +1450,7 @@ func pop16(c *Computer) (uint16, error) {
 	return v, nil
 }
 
-func push16(c *Computer, d16 uint16) error {
+func push(c *Computer, d16 uint16) error {
 	lsb := byte(d16 & 0x00FF)
 	msb := byte(d16 >> 8)
 
@@ -1466,9 +1467,19 @@ func push16(c *Computer, d16 uint16) error {
 	return nil
 }
 
+// 0xD5	PUSH D | (sp-2)<-E; (sp-1)<-D; sp <- sp - 2
+func pushd(c *Computer) error {
+	err := push(c, c.DE())
+	if err != nil {
+		return err
+	}
+	c.PC += 2
+	return nil
+}
+
 // 0xC9 RET | PC.lo <- (sp); PC.hi<-(sp+1); SP <- SP+2
 func ret(c *Computer) error {
-	pc, err := pop16(c)
+	pc, err := pop(c)
 	if err != nil {
 		return err
 	}

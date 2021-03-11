@@ -42,7 +42,6 @@ Opcode	Instruction	size	flags	function
 0xd2	JNC adr	3		if NCY, PC<-adr
 0xd3	OUT D8	2		special
 0xd4	CNC adr	3		if NCY, CALL adr
-0xd5	PUSH D	1		(sp-2)<-E; (sp-1)<-D; sp <- sp - 2
 0xd6	SUI D8	2	Z, S, P, CY, AC	A <- A - data
 0xd7	RST 2	1		CALL $10
 0xd8	RC	1		if CY, RET
