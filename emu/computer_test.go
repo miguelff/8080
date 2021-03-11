@@ -296,7 +296,7 @@ func TestComputer_Step(t *testing.T) {
 					A:     0x10,
 					B:     0x07,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("80"),
 			),
@@ -315,7 +315,7 @@ func TestComputer_Step(t *testing.T) {
 					A:     0x01,
 					B:     0xFE,
 					PC:    0x01,
-					Flags: cf | acf,
+					Flags: cf | hc,
 				},
 				ram("80"),
 			),
@@ -579,7 +579,7 @@ func TestComputer_Step(t *testing.T) {
 			newComputer(
 				CPU{
 					A:     0xE5,
-					Flags: cf | acf,
+					Flags: cf | hc,
 				},
 				ram("E6 BF"),
 			),
@@ -896,7 +896,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					A:     0x01,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("3D"),
 			),
@@ -913,7 +913,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					B:     0x01,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("05"),
 			),
@@ -965,7 +965,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					B:     0x1C,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("05"),
 			),
@@ -982,7 +982,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					C:     0x01,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("0D"),
 			),
@@ -999,7 +999,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					D:     0x01,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("15"),
 			),
@@ -1016,7 +1016,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					E:     0x01,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("1D"),
 			),
@@ -1033,7 +1033,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					H:     0x01,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("20"),
 			),
@@ -1050,7 +1050,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					L:     0x01,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("2D"),
 			),
@@ -1101,7 +1101,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					B:     0x10,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("04"),
 			),
@@ -1118,7 +1118,7 @@ func TestComputer_Step(t *testing.T) {
 				CPU{
 					C:     0x10,
 					PC:    0x01,
-					Flags: acf,
+					Flags: hc,
 				},
 				ram("0C"),
 			),

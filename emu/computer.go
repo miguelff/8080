@@ -45,7 +45,7 @@ const (
 	_
 	pf
 	_
-	acf
+	hc
 	_
 	zf
 	sf
@@ -64,10 +64,10 @@ func (f Flags) String() string {
 		flags = append(flags, "P")
 	}
 	if f.carry() {
-		flags = append(flags, "CY")
+		flags = append(flags, "C")
 	}
-	if f.auxiliaryCarry() {
-		flags = append(flags, "AC")
+	if f.halfCarry() {
+		flags = append(flags, "H")
 	}
 	return strings.Join(flags, " ")
 }
@@ -77,9 +77,9 @@ func (f Flags) carry() bool {
 	return (f & cf) != 0
 }
 
-// auxiliaryCarry returns whether the auxiliary carry flag is set
-func (f Flags) auxiliaryCarry() bool {
-	return (f & acf) != 0
+// halfCarry returns whether the auxiliary carry flag is set
+func (f Flags) halfCarry() bool {
+	return (f & hc) != 0
 }
 
 // parity returns whether the parity flag is set
