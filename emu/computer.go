@@ -450,6 +450,7 @@ var instructionTable = []Instruction{
 	0xC3: jmp,
 	0xC9: ret,
 	0xCD: call,
+	0xE6: ani,
 }
 
 // 0x88 ADC B |	A <- A + B + CY (Z, S, P, CY, AC)
@@ -611,6 +612,22 @@ func anah(c *Computer) error {
 // 0xA5 ANA L | A <- A & L (Z, S, P, CY)
 func anal(c *Computer) error {
 	return ana(c, c.L)
+}
+
+// 0xE6 ANI D8 | A <- A & data (Z, S, P, CY, AC)
+// CY and AC are cleared
+func ani(c *Computer) error {
+	v, err := c.read8(c.PC + 1)
+	if err != nil {
+		return err
+	}
+	and := c.A & v
+	flags := zero8(and) | sign8(and) | parity8(and)
+
+	c.Flags = flags
+	c.A = and
+	c.PC += 2
+	return nil
 }
 
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr

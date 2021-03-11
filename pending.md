@@ -59,7 +59,6 @@ Opcode	Instruction	size	flags	function
 0xe3	XTHL	1		L <-> (SP); H <-> (SP+1)
 0xe4	CPO adr	3		if PO, CALL adr
 0xe5	PUSH H	1		(sp-2)<-L; (sp-1)<-H; sp <- sp - 2
-0xe6	ANI D8	2	Z, S, P, CY, AC	A <- A & data
 0xe7	RST 4	1		CALL $20
 0xe8	RPE	1		if PE, RET
 0xe9	PCHL	1		PC.hi <- H; PC.lo <- L

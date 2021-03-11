@@ -575,6 +575,24 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
+			"ANI",
+			newComputer(
+				CPU{
+					A:     0xE5,
+					Flags: cf | acf,
+				},
+				ram("E6 BF"),
+			),
+			newComputer(
+				CPU{
+					A:     0xA5,
+					PC:    0x02,
+					Flags: sf | pf,
+				},
+				ram("E6 BF"),
+			),
+		},
+		{
 			"CALL adr",
 			newComputer(
 				CPU{
