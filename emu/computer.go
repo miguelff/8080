@@ -226,20 +226,18 @@ func (c *Computer) String() string {
 }
 
 // Step executes one instruction of the code pointed by the Program Counter (PC) of the CPU
-func (c *Computer) Step(debug bool) error {
-	if debug {
-		prev := c.snapshot()
-		defer c.debug(prev)
-	}
-
+func (c *Computer) Step(df DebugFilter) error {
 	opcode, err := c.read8(c.PC)
-
 	if err != nil {
 		return err
 	}
-
 	if int(opcode) > len(instructionTable) || instructionTable[opcode] == nil {
 		return fmt.Errorf("unimplemented opcode %02X", opcode)
+	}
+
+	if df != nil && df(opcode) {
+		prev := c.snapshot()
+		defer c.debug(prev)
 	}
 
 	err = instructionTable[opcode](c)

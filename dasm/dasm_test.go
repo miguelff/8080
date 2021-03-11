@@ -41,7 +41,7 @@ func TestDisassemble(t *testing.T) {
 		},
 	} {
 		t.Run(tC.desc, func(t *testing.T) {
-			w := strings.Builder{}
+			var w strings.Builder
 			err := Disassemble(bytes.NewReader(encoding.HexToBin(tC.code)), &w)
 			if err != nil {
 				t.Errorf("unexpected error when dissassembling binary: %v", err)
@@ -96,7 +96,7 @@ func TestDisassemble_EndToEnd(t *testing.T) {
 		t.Fatal("cannot read input assembly file")
 	}
 
-	w := strings.Builder{}
+	var w strings.Builder
 	err = Disassemble(bin, &w)
 	if err != nil {
 		t.Errorf("unexpected error when dissassembling binary: %v", err)

@@ -5,8 +5,42 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/miguelff/8080/encoding"
+
 	"github.com/miguelff/8080/dasm"
 )
+
+// DebugFilter is a predicate indicating wether or not
+// to issue a debug trace for the give opcode
+type DebugFilter func(opcode byte) bool
+
+// DebugAll debugs all opcodes
+func DebugAll(_ byte) bool { return true }
+
+// DebugNone doesn't debug any opcode
+func DebugNone(_ byte) bool { return false }
+
+// MakeDebugFilter creates a DebugFilter that will select the
+// opcodes denoted by the given string.
+//
+// MakeDebugFilter("all") will debug all symbols
+// MakeDebugFilter("C9 CD") will debug CALL and RET instructions
+func MakeDebugFilter(def string) DebugFilter {
+	if def == "all" {
+		return DebugAll
+	} else {
+		opcodes := encoding.HexToBin(def)
+
+		return func(opcode byte) bool {
+			for i := range opcodes {
+				if opcode == opcodes[i] {
+					return true
+				}
+			}
+			return false
+		}
+	}
+}
 
 func (c *Computer) debug(prev *Computer) {
 	context := make([]byte, 4)
@@ -21,65 +55,37 @@ func (c *Computer) debug(prev *Computer) {
 	fmt.Println(prev.diff(c))
 }
 
-func (c *Computer) diff(other *Computer) diff {
-	var d diff
+func (c *Computer) diff(other *Computer) string {
+	var sb strings.Builder
 	if c.A != other.A {
-		d = append(d, makeChange("A", fmt.Sprintf("%02X", c.A), fmt.Sprintf("%02X", other.A)))
+		sb.WriteString(fmt.Sprintf("- A: %02X → %02X\n", c.A, other.A))
 	}
 	if c.B != other.B {
-		d = append(d, makeChange("B", fmt.Sprintf("%02X", c.B), fmt.Sprintf("%02X", other.B)))
+		sb.WriteString(fmt.Sprintf("- B: %02X → %02X\n", c.B, other.B))
 	}
 	if c.C != other.C {
-		d = append(d, makeChange("C", fmt.Sprintf("%02X", c.C), fmt.Sprintf("%02X", other.C)))
+		sb.WriteString(fmt.Sprintf("- C: %02X → %02X\n", c.C, other.C))
 	}
 	if c.D != other.D {
-		d = append(d, makeChange("D", fmt.Sprintf("%02X", c.D), fmt.Sprintf("%02X", other.D)))
+		sb.WriteString(fmt.Sprintf("- D: %02X → %02X\n", c.D, other.D))
 	}
 	if c.E != other.E {
-		d = append(d, makeChange("E", fmt.Sprintf("%02X", c.E), fmt.Sprintf("%02X", other.E)))
+		sb.WriteString(fmt.Sprintf("- E: %02X → %02X\n", c.E, other.E))
 	}
 	if c.H != other.H {
-		d = append(d, makeChange("H", fmt.Sprintf("%02X", c.H), fmt.Sprintf("%02X", other.H)))
+		sb.WriteString(fmt.Sprintf("- H: %02X → %02X\n", c.H, other.H))
 	}
 	if c.L != other.L {
-		d = append(d, makeChange("L", fmt.Sprintf("%02X", c.L), fmt.Sprintf("%02X", other.L)))
+		sb.WriteString(fmt.Sprintf("- E: %02X → %02X\n", c.E, other.E))
 	}
 	if c.SP != other.SP {
-		d = append(d, makeChange("SP", fmt.Sprintf("%04X", c.SP), fmt.Sprintf("%04X", other.SP)))
+		sb.WriteString(fmt.Sprintf("- SP: %04X → %04X\n", c.SP, other.SP))
 	}
 	if c.PC != other.PC {
-		d = append(d, makeChange("PC", fmt.Sprintf("%04X", c.PC), fmt.Sprintf("%04X", other.PC)))
+		sb.WriteString(fmt.Sprintf("- PC: %04X → %04X\n", c.PC, other.PC))
 	}
 	if c.Flags != other.Flags {
-		d = append(d, makeChange("Flags", c.Flags.String(), other.Flags.String()))
-	}
-	return d
-}
-
-type diff []change
-
-func (d diff) String() string {
-	if len(d) == 0 {
-		return "No changes"
-	}
-
-	sb := strings.Builder{}
-	for i := range d {
-		sb.WriteString(fmt.Sprintf("\t- %s\n", d[i].String()))
+		sb.WriteString(fmt.Sprintf("- Flags: %s → %s\n", c.Flags, other.Flags))
 	}
 	return sb.String()
-}
-
-type change struct {
-	name string
-	old  string
-	new  string
-}
-
-func makeChange(name, old, new string) change {
-	return change{name, old, new}
-}
-
-func (c *change) String() string {
-	return fmt.Sprintf("%s changed: %s → %s", c.name, c.old, c.new)
 }

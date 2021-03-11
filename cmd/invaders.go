@@ -14,13 +14,13 @@ func main() {
 	var rom []byte
 	var err error
 
-	debug := flag.Bool("d", false, "debug execution")
+	debug := flag.String("d", "all", "debug opcode execution. Examples: '-d all' '-d \"C9 CD\"'")
 	flag.Parse()
 
 	c := emu.Load(rom)
 
 	for err == nil {
-		err = c.Step(*debug)
+		err = c.Step(emu.MakeDebugFilter(*debug))
 	}
 
 	fmt.Fprintf(os.Stderr, "%+v\n", err)

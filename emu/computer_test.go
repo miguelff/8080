@@ -588,7 +588,7 @@ func TestComputer_Step(t *testing.T) {
 					PC: 0x0A,
 					SP: 0x05,
 				},
-				ram("00 CD 0A 00 00 00 01 00"),
+				ram("00 CD 0A 00 00 01 00 00"),
 			),
 		},
 		{
@@ -3213,7 +3213,7 @@ func TestComputer_Step(t *testing.T) {
 		},
 	} {
 		t.Run(tC.desc, func(t *testing.T) {
-			err := tC.init.Step()
+			err := tC.init.Step(DebugNone)
 			if err != nil {
 				t.Fatalf("Unexpected error %v", err)
 			}
