@@ -649,16 +649,20 @@ func ani(c *Computer) error {
 // 0xCD: CALL adr | (SP-1)<-PC.hi;(SP-2)<-PC.lo;SP<-SP-2;PC=adr
 // CALL pushes the program counter (PC) into the stack (SP), and updates the program counter to point to adr.
 func call(c *Computer) error {
-	err := push16(c, c.PC)
+	addr, err := c.read16(c.PC + 1)
+	if err != nil {
+		return err
+	}
+	return calladdr(c, addr)
+}
+
+func calladdr(c *Computer, addr uint16) error {
+	err := push(c, c.PC)
 	if err != nil {
 		return err
 	}
 
-	err = jmp(c)
-	if err != nil {
-		return err
-	}
-
+	c.PC = addr
 	return nil
 }
 
@@ -899,14 +903,19 @@ func inxsp(c *Computer) error {
 // 0xC3: JMP adr | PC <- adr.
 // Jump to the address denoted by the next two bytes.
 func jmp(c *Computer) error {
-	return lxi16(c, &c.PC)
+	addr, err := c.read16(c.PC + 1)
+	if err != nil {
+		return err
+	}
+	c.PC = addr
+	return nil
 }
 
 // 0xC2: JNZ adr | if NZ, PC <- addr
 // Jump to the address denoted by the next two bytes if the zero flag is set
 func jnz(c *Computer) error {
 	if !c.Flags.zero() {
-		return lxi16(c, &c.PC)
+		return jmp(c)
 	} else {
 		c.PC += 3
 		return nil
@@ -959,9 +968,7 @@ func lxi16(c *Computer, reg *uint16) error {
 	}
 
 	*reg = dw
-	if reg != &c.PC {
-		c.PC += 3
-	}
+	c.PC += 3
 	return nil
 }
 
