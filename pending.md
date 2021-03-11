@@ -10,8 +10,7 @@ Opcode	Instruction	size	flags	function
 0x2a	LHLD adr	3		L <- (adr); H<-(adr+1)
 0x2b	DCX H	1		HL = HL-1
 0x2f	CMA	1		A <- !A
-0x30	-			
-0x32	STA adr	3		(adr) <- A
+0x30	-
 0x34	INR M	1	Z, S, P, AC	(HL) <- (HL)+1
 0x35	DCR M	1	Z, S, P, AC	(HL) <- (HL)-1
 0x37	STC	1	CY	CY = 1

@@ -38,6 +38,7 @@ var it = []Instruction{
 	0x2D: dcrl,
 	0x2E: mvil,
 	0x31: lxisp,
+	0x32: sta,
 	0x33: inxsp,
 	0x36: mvim,
 	0x39: dadsp,
@@ -1040,6 +1041,20 @@ func sbbh(c *Computer) error {
 // 0x9D SBB L | A <- A - L - CY (Z, S, P, CY, AC)
 func sbbl(c *Computer) error {
 	return sub(c, c.L, c.Flags.carry())
+}
+
+// 0x32 STA addr
+func sta(c *Computer) error {
+	addr, err := c.read16(c.PC + 1)
+	if err != nil {
+		return err
+	}
+	err = c.write8(addr, c.A)
+	if err != nil {
+		return err
+	}
+	c.PC += 3
+	return nil
 }
 
 // 0x02 STAX B | (BC) <- A

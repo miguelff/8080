@@ -3072,6 +3072,23 @@ func TestComputer_Step(t *testing.T) {
 			),
 		},
 		{
+			"STA",
+			newComputer(
+				CPU{
+					A:  0xFF,
+					PC: 0x01,
+				},
+				ram("00 32 04 00 00"),
+			),
+			newComputer(
+				CPU{
+					A:  0xFF,
+					PC: 0x04,
+				},
+				ram("00 32 04 00 FF"),
+			),
+		},
+		{
 			"STAX B",
 			newComputer(
 				CPU{
