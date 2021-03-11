@@ -154,6 +154,21 @@ type CPU struct {
 	Flags Flags
 }
 
+// BC returns the register-pair B-C
+func (c *CPU) BC() uint16 {
+	return uint16(c.B)<<8 + uint16(c.C)
+}
+
+// DE returns the register-pair D-E
+func (c *CPU) DE() uint16 {
+	return uint16(c.D)<<8 + uint16(c.E)
+}
+
+// HL returns the register-pair H-L
+func (c *CPU) HL() uint16 {
+	return uint16(c.H)<<8 + uint16(c.L)
+}
+
 // Instruction is the algorithm that emulates a certain opcode within the computer
 type Instruction func(*Computer) error
 
@@ -201,9 +216,9 @@ func (c *Computer) String() string {
 `
 
 	s := strings.Replace(template, "$REGA", fmt.Sprintf("%02X   ", c.A), 1)
-	s = strings.Replace(s, "$REGB", fmt.Sprintf("%02X%02X ", c.B, c.C), 1)
-	s = strings.Replace(s, "$REGD", fmt.Sprintf("%02X%02X ", c.D, c.E), 1)
-	s = strings.Replace(s, "$REGH", fmt.Sprintf("%02X%02X ", c.H, c.L), 1)
+	s = strings.Replace(s, "$REGB", fmt.Sprintf("%04X ", c.BC()), 1)
+	s = strings.Replace(s, "$REGD", fmt.Sprintf("%04X ", c.DE()), 1)
+	s = strings.Replace(s, "$REGH", fmt.Sprintf("%04X ", c.HL()), 1)
 	s = strings.Replace(s, "$REGS", fmt.Sprintf("%04X ", c.SP), 1)
 	s = strings.Replace(s, "$REGP", fmt.Sprintf("%04X ", c.PC), 1)
 	s = strings.Replace(s, " $FLAG_VALUES  ", fmt.Sprintf("%-15s", c.Flags.String()), 1)
@@ -277,13 +292,11 @@ func (c *Computer) write8(addr uint16, d8 byte) error {
 }
 
 func (c *Computer) read8Indirect() (byte, error) {
-	addr := uint16(c.H)<<8 + uint16(c.L)
-	return c.read8(addr)
+	return c.read8(c.HL())
 }
 
 func (c *Computer) write8Indirect(v byte) error {
-	addr := uint16(c.H)<<8 + uint16(c.L)
-	return c.write8(addr, v)
+	return c.write8(c.HL(), v)
 }
 
 var instructionTable = []Instruction{
@@ -697,16 +710,11 @@ func cpi(c *Computer) error {
 	return nil
 }
 
-func dad8(c *Computer, msb, lsb byte) error {
-	reg := uint16(msb)<<8 + uint16(lsb)
-	return dad16(c, reg)
-}
-
-// (From the manual) The content of the register pair rp is added to the content of the
-// register pair Hand L. The result is placed in the register pair Hand L.
+// The content of the register pair rp is added to the content of the
+// register pair HL. The result is placed in the register pair HL.
 // Note: Only the CY flag is affected.
-func dad16(c *Computer, d16 uint16) error {
-	s := uint16(c.H)<<8 + uint16(c.L)
+func dad(c *Computer, d16 uint16) error {
+	s := c.HL()
 	sum := s + d16
 
 	c.H = byte(sum >> 8)
@@ -725,22 +733,22 @@ func dad16(c *Computer, d16 uint16) error {
 
 // 0x09	DAD B | HL = HL + BC (CY)
 func dadb(c *Computer) error {
-	return dad8(c, c.B, c.C)
+	return dad(c, c.BC())
 }
 
 // 0x19	DAD D | HL = HL + DE (CY)
 func dadd(c *Computer) error {
-	return dad8(c, c.D, c.E)
+	return dad(c, c.DE())
 }
 
 // 0x29	DAD H | HL = HL + HL (CY)
 func dadh(c *Computer) error {
-	return dad8(c, c.H, c.L)
+	return dad(c, c.HL())
 }
 
 // 0x39	DAD B | HL = HL + SP (CY)
 func dadsp(c *Computer) error {
-	return dad16(c, c.SP)
+	return dad(c, c.SP)
 }
 
 // The content of register reg is decremented by one.
